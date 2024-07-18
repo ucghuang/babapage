@@ -24,11 +24,16 @@
 
         let score = 0;
 
+        const playerImage = new Image();
+        const playerImage2 = new Image();
+        playerImage.src = 'plane.png';  // 確保這裡的文件名與您的圖片文件名相匹配
+        playerImage2.src = 'plane2.png';  // 確保這裡的文件名與您的圖片文件名相匹配
+
         const player = {
             x: canvas.width / 2,
-            y: canvas.height - 30,
-            width: 20,
-            height: 20,
+            y: canvas.height - 50,
+            width: 40,
+            height: 40,
             speed: 5
         };
 
@@ -39,19 +44,18 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             // 繪製玩家
-            ctx.fillStyle = 'blue';
-            ctx.fillRect(player.x, player.y, player.width, player.height);
+            ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
 
             // 繪製並更新子彈
             bullets.forEach((bullet, bulletIndex) => {
                 ctx.fillStyle = 'red';
-                ctx.fillRect(bullet.x, bullet.y, 5, 10);
+                ctx.fillRect(bullet.x, bullet.y, 3, 10);
                 bullet.y -= 5;
 
                 // 檢查子彈是否擊中敵機
                 enemies.forEach((enemy, enemyIndex) => {
                     if (bullet.x < enemy.x + enemy.width &&
-                        bullet.x + 5 > enemy.x &&
+                        bullet.x + 3 > enemy.x &&
                         bullet.y < enemy.y + enemy.height &&
                         bullet.y + 10 > enemy.y) {
                         // 子彈擊中敵機
@@ -67,8 +71,7 @@
 
             // 繪製並更新敵機
             enemies.forEach((enemy, index) => {
-                ctx.fillStyle = 'green';
-                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                ctx.drawImage(playerImage2, enemy.x, enemy.y, enemy.width, enemy.height);
                 enemy.y += 1;
                 if (enemy.y > canvas.height) enemies.splice(index, 1);
             });
@@ -76,20 +79,20 @@
             requestAnimationFrame(gameLoop);
         }
 
-        gameLoop();
+        playerImage.onload = gameLoop;  // 圖片加載完成後開始遊戲循環
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft' && player.x > 0) player.x -= player.speed;
             if (e.key === 'ArrowRight' && player.x < canvas.width - player.width) player.x += player.speed;
-            if (e.key === ' ') bullets.push({x: player.x + player.width / 2 - 2.5, y: player.y});
+            if (e.key === ' ') bullets.push({x: player.x + player.width / 2 - 1.5, y: player.y});
         });
 
         setInterval(() => {
             enemies.push({
-                x: Math.random() * (canvas.width - 20),
+                x: Math.random() * (canvas.width - 40),
                 y: 0,
-                width: 20,
-                height: 20
+                width: 40,
+                height: 40
             });
         }, 2000);
     </script>
