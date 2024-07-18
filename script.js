@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             obstacleLeft = 500;
         }
 
-        if (obstacleLeft > 0 && obstacleLeft < 30 && dinoBottom < 60) {
+        if (obstacleLeft > 30 && obstacleLeft < 40 && dinoBottom < 60) {
             alert('Game over');
             clearInterval(obstacleTimerId);
             isGameOver = true;
