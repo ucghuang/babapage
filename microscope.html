@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!-- saved from url=(0090)https://chihhsiangchien.github.io/%E6%A8%A1%E6%93%AC%E9%A1%AF%E5%BE%AE%E9%8F%A1/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <link rel="stylesheet" href="style.css">
+  
+</head>
+
+<body>
+  <title>顯微鏡模擬</title>
+
+  <div class="container">
+	顯微鏡種類：<br>
+    <input type="radio" id="noncompound" name="compound" > <label for="noncompound">解剖顯微鏡</label>
+    <input type="radio" id="compound" name="compound" checked=""> <label for="compound">複式顯微鏡</label>
+  </div>
+  <div class="container">
+	物鏡：<br>
+    <button style="background-color: lightblue;" onclick="zoom(3, this)" class="large-button"><img src="aaa.jpg" ></button>
+    <button onclick="zoom(9, this)" class="large-button"><img src="bbb.jpg" ></button>
+    <button onclick="zoom(40, this)" class="large-button"><img src="ccc.jpg" ></button>
+  </div>
+  <div class="container">
+	調整輪：<br>
+    <button onclick="moveStage(-5)" class="large-button">順時針轉動粗調整輪</button>
+    <button onclick="moveStage(5)" class="large-button">逆時針轉動粗調整輪</button>
+	<br>
+    <button onclick="moveStage(-1)" class="large-button">順時針轉動細調整輪</button>
+    <button onclick="moveStage(1)" class="large-button">逆時針轉動細調整輪</button>
+  </div>
+  <div class="container">
+	光圈：<br>
+    <button onclick="setBrightness(-5)" class="large-button">光圈調小</button>
+    <button onclick="setBrightness(5)" class="large-button">光圈調大</button>
+    <input type="hidden" id="bugs" name="bugs"> <label for="bugs"></label>
+  </div>
+
+  <canvas id="canvas" width="400" height="300"></canvas>
+  <canvas id="zoomCanvas" width="400" height="300"></canvas>
+  <script src="bug.js"></script>
+  <script src="script.js"></script>
+  <div class="footer">
+  </div>
+
+
+
+</body></html>
