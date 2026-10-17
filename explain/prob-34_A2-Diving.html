@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#34 201911_A2-Diving - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#34</span> 201911_A2-Diving (潛水)</h1>
+                <div class="header-right">
+                    <a href="../questions/201911_A2-Diving.pdf" class="file-name-meta" target="_blank">PDF: 201911_A2-Diving.pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-34" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 小軒想從島嶼 $A$ 經由潛水方式移動到島嶼 $B$。每條潛水路徑都有對應需要的氧氣量 $W$（代表該路徑的難度/消耗量）。到達每個島嶼都可以將氧氣筒重新裝滿。小軒希望能背負<strong>容量最小</strong>的氧氣筒，順利從 $A$ 島移動到 $B$ 島（即最小化路徑中單段最大的氧氣消耗量）。若無法到達則輸出 `-1`。</p>
+                    <p><strong>輸入格式：</strong> 第一列有兩個整數 $N$ 與 $M$ ($2 \le N \le 500$)，代表小島數與潛水路徑數；接著 $M$ 列每列三個整數，代表兩島編號與所需氧氣量 $W$ ($2 \le W \le 50000$)；最後一列有兩個整數 $A$ 與 $B$。</p>
+                    <p><strong>輸出格式：</strong> 輸出小軒最少要背多少容量的氧氣筒；若無法到達輸出 `-1`。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【圖論演算法 / Kruskal 最小生成樹 (MST) 變形】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>Kruskal 演算法與併查集 (Disjoint Set Union, DSU)</strong>：</p>
+                    <ul>
+                        <li>題目要求找出從 $A$ 到 $B$ 的一條路徑，使得該路徑上的最大邊權（氧氣消耗量）達到最小，這正是經典的<strong>最大權最小邊 / 最小生成樹 (MST) 應用</strong>。</li>
+                        <li>我們將所有潛水路徑依據氧氣量 $W$ 由小到大進行排序。</li>
+                        <li>使用 DSU 將邊逐一加入，當島嶼 $A$ 與島嶼 $B$ 連通時，當前加入的邊權就是能讓 $A$ 到 $B$ 暢通且容量最小的氧氣筒需求。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+4 4
+0 2 3
+0 1 1
+1 3 6
+2 3 5
+0 3</pre>
+                    <ul>
+                        <li><strong>所有邊依權重排序：</strong>
+                            <ul>
+                                <li>(0, 1) 權重 1</li>
+                                <li>(0, 2) 權重 3</li>
+                                <li>(2, 3) 權重 5</li>
+                                <li>(1, 3) 權重 6</li>
+                            </ul>
+                        </li>
+                        <li><strong>逐步加入 Kruskal MST：</strong>
+                            <ul>
+                                <li>加入 (0, 1) 權重 1：島 0 與島 1 連通。</li>
+                                <li>加入 (0, 2) 權重 3：島 0, 1, 2 連通。</li>
+                                <li>加入 (2, 3) 權重 5：島 0, 1, 2, 3 全部連通。此時檢查目標 $A = 0$ 與 $B = 3$ 已經連通！</li>
+                            </ul>
+                        </li>
+                        <li>最後加入的邊權重為 5，即為最小氧氣筒容量。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>5</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+5 6
+0 1 1
+0 2 2
+1 3 4
+3 2 5
+4 2 6
+3 4 7
+0 4</pre>
+                    <ul>
+                        <li><strong>所有邊依權重排序：</strong>
+                            <ul>
+                                <li>(0, 1) 權重 1</li>
+                                <li>(0, 2) 權重 2</li>
+                                <li>(1, 3) 權重 4</li>
+                                <li>(3, 2) 權重 5</li>
+                                <li>(4, 2) 權重 6</li>
+                                <li>(3, 4) 權重 7</li>
+                            </ul>
+                        </li>
+                        <li><strong>逐步加入 Kruskal MST：</strong>
+                            <ul>
+                                <li>依序加入權重 1、2、4、5 後，島 0 與島 4 尚未連通。</li>
+                                <li>加入權重 6 的邊 (4, 2) 後，起點 $A = 0$ 與終點 $B = 4$ 順利連通。</li>
+                            </ul>
+                        </li>
+                        <li>最後加入且讓 $A$、$B$ 連通的邊權重為 6。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>6</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱,含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;iostream&gt;
+#include &lt;algorithm&gt;
+#include &lt;vector&gt;
+#define endl '\n'
+#define IOS cin.tie(0), cout.tie(0), ios::sync_with_stdio(false)
+#define N 1500
+using namespace std;
+
+// 定義結構體儲存邊的資訊（起點 st、終點 en、權重/氧氣量 w）
+struct edge
+{
+    int st;
+    int en;
+    int w;
+    edge(int a, int b, int c):
+        st(a), en(b), w(c){};
+};
+
+int dis[N] = {};  // DSU 併查集陣列，用來記錄每個節點的根節點
+
+// 自定義比較函式：將邊依據權重 w 由小到大排序（Kruskal 核心步驟）
+bool cmp(edge l, edge r)
+{
+    return l.w &lt; r.w;
+}
+
+// 初始化 DSU，一開始每個節點的根都是自己
+void init(int n)
+{
+    for(int i = 0; i &lt; n; i++)
+    {
+        dis[i] = i;
+    }
+}
+
+// 尋找根節點（帶有路徑壓縮優化）
+int find_(int x)
+{
+    if(x == dis[x])
+    {
+        return x;
+    }
+    return dis[x] = find_(dis[x]);
+}
+
+// 合併兩個集合
+void union_(int x, int y)
+{
+    x = find_(x);
+    y = find_(y);
+    if(x != y)
+    {
+        dis[x] = y;
+    }
+}
+
+int main()
+{
+    IOS;  // 加速輸入輸出
+    int n, m;
+    vector&lt;edge&gt; v;  // 宣告儲存所有邊的動態陣列
+    cin &gt;&gt; n &gt;&gt; m;  // 讀入島嶼數 n 與路徑數 m
+    for(int i = 0; i &lt; m; i++)
+    {
+        int x, y, z;
+        cin &gt;&gt; x &gt;&gt; y &gt;&gt; z;  // 讀入兩島編號 x, y 與所需氧氣量 z
+        v.emplace_back(edge(x, y, z));  // 將邊加入陣列中
+    }
+    int a, b;
+    cin &gt;&gt; a &gt;&gt; b;  // 讀入想從島 a 移動到島 b
+    
+    sort(v.begin(), v.end(), cmp);  // 將所有潛水路徑依氧氣量由小到大排序
+    init(n);  // 初始化併查集
+    int ans = 0;  // 記錄最終所需的最小氧氣筒容量
+    
+    // 依序走訪排序好的每一條邊
+    for(int i = 0; i &lt; m; i++)
+    {
+        int x = v[i].st, y = v[i].en;
+        if(find_(x) != find_(y))  // 若兩島尚未連通
+        {
+            union_(x, y);  // 將兩島合併在同一集合中
+        }
+        if(find_(a) == find_(b))  // 若此時起點 a 與終點 b 已經連通
+        {
+            ans = v[i].w;  // 當前加入的邊權重即為滿足條件的最大邊（也就是最小氧氣筒容量）
+            break;  // 達成目標，結束迴圈
+        }
+    }
+    
+    // 輸出結果：若 ans 不為 0 代表成功找到路徑，否則輸出 -1
+    if(ans != 0)
+        cout &lt;&lt; ans &lt;&lt; endl;
+    else
+        cout &lt;&lt; "-1" &lt;&lt; endl;
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

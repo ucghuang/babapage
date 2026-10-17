@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圖論演練：C++ 與 視覺化虛擬碼完整註解對照</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+        pre { background-color: #1e293b; color: #38bdf8; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.8rem; line-height: 1.5; }
+        .code-cpp { color: #f472b6; }
+        .code-pseudo { color: #34d399; }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-7xl mx-auto">
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl font-bold mb-2 text-sky-400">資訊科技課程：圖論演算法（Kruskal + DSU）雙向註解對照</h1>
+            <p class="text-slate-400">詳細拆解 C++ 效能寫法與 Blockly / 虛擬碼教學邏輯的「作法、原因與目的」</p>
+        </header>
+
+        <!-- 上方：程式碼左右對照（內含詳細註解） -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- C++ 欄位 -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-pink-400">📦 原版 C++ 程式碼（含詳細註解）</h2>
+                    <span class="text-xs bg-pink-900/50 text-pink-300 px-2.5 py-1 rounded-full border border-pink-700">高效能 / 競程導向</span>
+                </div>
+                <p class="text-sm text-slate-300 mb-4">運用結構體封裝、動態陣列與指標，追求最佳執行效率與記憶體控制。</p>
+                <pre><code class="code-cpp">#include &lt;iostream&gt;
+#include &lt;algorithm&gt;
+#include &lt;vector&gt;
+#define endl '\n'
+#define IOS cin.tie(0), cout.tie(0), ios::sync_with_stdio(false)
+#define N 1500
+using namespace std;
+
+// 【作法】定義結構體儲存邊資訊
+// 【原因】將起點、終點、權重綁定為單一物件
+// 【目的】方便後續排序與整體管理
+struct edge {
+    int st, en, w;
+    edge(int a, int b, int c): st(a), en(b), w(c){};
+};
+
+int dis[N] = {};
+
+// 【作法】自訂比較函式給 sort 使用
+// 【目的】讓系統知道要依據邊的權重 (w) 由小到大排序
+bool cmp(edge l, edge r) {
+    return l.w &lt; r.w;
+}
+
+// 【作法】併查集初始化
+// 【目的】一開始每個節點的根都是自己（獨立集合）
+void init(int n) {
+    for(int i = 0; i &lt; n; i++) {
+        dis[i] = i;
+    }
+}
+
+// 【作法】尋找根節點並進行「路徑壓縮」
+// 【目的】將查詢路徑上的節點直接指向根，大幅加速後續查詢
+int find_(int x) {
+    if(x == dis[x]) return x;
+    return dis[x] = find_(dis[x]);
+}
+
+// 【作法】合併兩個集合
+// 【目的】將兩個不同集合的根節點接在一起，代表連通
+void union_(int x, int y) {
+    x = find_(x);
+    y = find_(y);
+    if(x != y) {
+        dis[x] = y;
+    }
+}
+
+int main() {
+    IOS;
+    int n, m;
+    vector&lt;edge&gt; v;
+    cin &gt;&gt; n &gt;&gt; m;
+    for(int i = 0; i &lt; m; i++) {
+        int x, y, z;
+        cin &gt;&gt; x &gt;&gt; y &gt;&gt; z;
+        v.emplace_back(edge(x, y, z));
+    }
+    int a, b;
+    cin &gt;&gt; a &gt;&gt; b;
+
+    // 【作法】使用內建 sort 排序所有邊
+    // 【目的】依 Kruskal 演算法精神，優先處理權重最小的邊
+    sort(v.begin(), v.end(), cmp);
+    init(n);
+    int ans = 0;
+
+    // 【作法】遍歷排序後的邊
+    for(int i = 0; i &lt; m; i++) {
+        int x = v[i].st, y = v[i].en;
+        if(find_(x) != find_(y)) {
+            union_(x, y);
+        }
+        // 【作法】檢查目標點 a 與 b 是否已經連通
+        // 【目的】一旦連通，當前邊的權重即為兩點間的瓶頸最小值
+        if(find_(a) == find_(b)) {
+            ans = v[i].w;
+            break;
+        }
+    }
+    if(ans != 0) cout &lt;&lt; ans &lt;&lt; endl;
+    else cout &lt;&lt; "-1" &lt;&lt; endl;
+}</code></pre>
+            </div>
+
+            <!-- 虛擬碼欄位 -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-emerald-400">🧩 邏輯虛擬碼 (Blockly 對應含註解)</h2>
+                    <span class="text-xs bg-emerald-900/50 text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-700">模組化 / 教學導向</span>
+                </div>
+                <p class="text-sm text-slate-300 mb-4">將複雜物件拆解為平行列表，並透過直覺的迴圈與自訂函式呈現核心演算法邏輯。</p>
+                <pre><code class="code-pseudo">// 【作法】宣告平行列表與變數
+// 【原因】Blockly 無法自訂 struct，故拆成獨立清單
+// 【目的】以相同索引值（Index）對應同一條邊的屬性
+List edge_st = []   // 紀錄起點
+List edge_en = []   // 紀錄終點
+List edge_w = []    // 紀錄權重
+List parent = []    // 紀錄父節點（併查集）
+Integer n, m, a, b
+
+// 【作法】併查集初始化積木
+// 【目的】設定每個節點的初始父節點為自己
+Function init(n_count)
+    For i from 0 to n_count - 1
+        Set parent[i] = i
+    End For
+End Function
+
+// 【作法】查詢與路徑壓縮積木
+// 【目的】遞迴尋找根節點並扁平化樹狀結構，提升效率
+Function find_(x)
+    If parent[x] == x Then Return x
+    Set parent[x] = find_(parent[x])
+    Return parent[x]
+End Function
+
+// 【作法】集合合併積木
+// 【目的】確認兩端點根節點不同後，將其聯集
+Function union_(x, y)
+    RootX = find_(x), RootY = find_(y)
+    If RootX != RootY Then Set parent[RootX] = RootY
+End Function
+
+// 【作法】讀入資料並加入平行列表
+Input n, m
+For i from 0 to m-1
+    Input x, y, z
+    Add x to edge_st, Add y to edge_en, Add z to edge_w
+End For
+Input a, b
+
+// 【作法】氣泡排序法（取代 C++ 的 sort）
+// 【原因】視覺化環境通常無內建進階物件排序
+// 【目的】依權重升冪排列，且交換權重時「起點與終點必須同步對調」以防資料錯位
+For i from 0 to m-2
+    For j from 0 to m-2-i
+        If edge_w[j] > edge_w[j+1] Then
+            Swap(edge_w[j], edge_w[j+1])
+            Swap(edge_st[j], edge_st[j+1])
+            Swap(edge_en[j], edge_en[j+1])
+        End If
+    End For
+End For
+
+// 【作法】主迴圈執行 Kruskal 檢索
+Call init(n)
+Integer ans = 0
+For i from 0 to m-1
+    Call union_(edge_st[i], edge_en[i])
+    // 【作法】判斷 a 與 b 是否連通
+    If find_(a) == find_(b) Then
+        Set ans = edge_w[i]
+        Break
+    End If
+End For
+
+// 【作法】輸出結果
+If ans != 0 Then Print ans Else Print "-1"</code></pre>
+            </div>
+        </div>
+
+        <!-- 下方：結構轉換與教學目的總結 -->
+        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
+            <h2 class="text-2xl font-semibold mb-4 text-sky-300 border-b border-slate-700 pb-3">💡 核心轉換對照總結（黑板解說重點）</h2>
+            
+            <div class="space-y-6 text-slate-300">
+                <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700">
+                    <h3 class="text-lg font-bold text-pink-400 mb-2">1. 資料結構：`struct` ➔ 平行列表 (`edge_st`, `edge_en`, `edge_w`)</h3>
+                    <p class="text-sm mb-1"><strong class="text-white">作法：</strong>將一個結構體拆解成多個獨立的一維陣列/列表。</p>
+                    <p class="text-sm mb-1"><strong class="text-white">原因：</strong>視覺化積木（Blockly/Scratch）不支援自定義複雜物件或物件陣列。</p>
+                    <p class="text-sm"><strong class="text-sky-300">教學目的：</strong>培養學生「用平行索引管理關聯資料」的抽象思維能力。</p>
+                </div>
+
+                <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700">
+                    <h3 class="text-lg font-bold text-emerald-400 mb-2">2. 排序機制：`sort` + `cmp` ➔ 氣泡排序 + 資料同步交換</h3>
+                    <p class="text-sm mb-1"><strong class="text-white">作法：</strong>使用雙層迴圈比對權重，若需對調則權重、起點、終點一起換。</p>
+                    <p class="text-sm mb-1"><strong class="text-white">原因：</strong>積木環境缺乏帶自訂比較函式的強大排序工具。</p>
+                    <p class="text-sm"><strong class="text-sky-300">教學目的：</strong>讓學生深刻理解排序演算法原理，並體會多筆列表「連動一致性」的重要性。</p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-8 text-center text-xs text-slate-500">
+            <p>科技教育模組化教學資源 | 結構拆解與邏輯建構</p>
+        </footer>
+    </div>
+</body>
+</html>

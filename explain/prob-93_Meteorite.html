@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#93 202012_Meteorite - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#93</span> 202012_Meteorite (流星雨)</h1>
+                <div class="header-right">
+                    <a href="../questions/202012_Meteorite(Q).pdf" class="file-name-meta" target="_blank">PDF: 202012_Meteorite(Q).pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-93" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> OI 國即將有 N 顆重量分別為 $W_1, W_2, \dots, W_N$ 的隕石要掉落。現有 M 個隕石捕捉器，每一個捕捉器只能使用一次且均可捕捉一個隕石。第 $i$ 個捕捉器可以捕捉一個重量不超過 $C_i$ 單位重的隕石。由於隕石上的稀有物質含量正比於其重量，請計算科學家利用這些捕捉器最多能捕捉到總重量多少的隕石。</p>
+                    <p><strong>輸入格式：</strong> 第一行有兩個正整數 N 和 M ($1 \le N, M \le 10^5$)；第二行有 N 個正整數表示隕石重量；第三行有 M 個正整數表示各個捕捉器的最大承載重量限制。</p>
+                    <p><strong>輸出格式：</strong> 輸出一行正整數，表示科學家最大能捕捉隕石的重量總和。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【貪心法 (Greedy) 與指標遍歷】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>貪心策略（Greedy Strategy）</strong>進行最佳匹配：</p>
+                    <ul>
+                        <li>將隕石重量陣列與捕捉器承載上限陣列分別進行由小到大的排序。</li>
+                        <li>利用雙指針從兩者最大值（由大到小）開始逆向掃描，優先讓最重的隕石去匹配能夠承載它的最大捕捉器。</li>
+                        <li>若當前最大捕捉器無法承載該隕石，則略過該隕石；若可以承載則累加重量，並將捕捉器指針移向次大者。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+4 3
+23 45 67 99
+46 67 100</pre>
+                    <ul>
+                        <li><strong>隕石重量陣列（排序後）：</strong> 23, 45, 67, 99</li>
+                        <li><strong>捕捉器上限陣列（排序後）：</strong> 46, 67, 100</li>
+                        <li><strong>逐步配對過程（從大到小 i 指向隕石，j 指向捕捉器）：</strong>
+                            <ul>
+                                <li>$i$ 指向 99， $j$ 指向 100：$99 \le 100$ 成立 ➔ 成功捕捉！累加 99，兩指針同時往前（$i$ 減 1, $j$ 減 1）。</li>
+                                <li>$i$ 指向 67， $j$ 指向 67：$67 \le 67$ 成立 ➔ 成功捕捉！累加 67，兩指針往前。</li>
+                                <li>$i$ 指向 45， $j$ 指向 46：$45 \le 46$ 成立 ➔ 成功捕捉！累加 45，兩指針往前。</li>
+                                <li>$i$ 指向 23， $j$ 已經越界 ➔ 迴圈結束。</li>
+                            </ul>
+                        </li>
+                        <li><strong>總重量計算：</strong> $99 + 67 + 45 = 211$。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>211</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+4 4
+1 8 5 7
+1 9 6 6</pre>
+                    <ul>
+                        <li><strong>隕石重量陣列（排序後）：</strong> 1, 5, 7, 8</li>
+                        <li><strong>捕捉器上限陣列（排序後）：</strong> 1, 6, 6, 9</li>
+                        <li><strong>逐步配對過程：</strong>
+                            <ul>
+                                <li>$i$ 指向 8， $j$ 指向 9：$8 \le 9$ 成立 ➔ 成功捕捉！累加 8，兩指針往前。</li>
+                                <li>$i$ 指向 7， $j$ 指向 6：$7 > 6$ 不成立 ➔ 捕捉器太小，僅將隕石指針 $i$ 往前。</li>
+                                <li>$i$ 指向 5， $j$ 指向 6：$5 \le 6$ 成立 ➔ 成功捕捉！累加 5，兩指針往前。</li>
+                                <li>$i$ 指向 1， $j$ 指向 6：$1 \le 6$ 成立 ➔ 成功捕捉！累加 1，兩指針往前。</li>
+                            </ul>
+                        </li>
+                        <li><strong>總重量計算：</strong> $8 + 5 + 1 = 14$。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>14</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>//fast version  
+#include&lt;cstdio&gt;  // 引入標準輸入輸出標頭檔，以便使用 scanf 與 printf
+#include&lt;algorithm&gt;  // 引入演算法標頭檔，以便使用 sort 排序函式
+using namespace std;  
+const int N = 100000 + 5, M = 100000 + 5;  // 定義陣列的最大容量常數
+typedef long long ll;  // 將 long long 簡稱為 ll，避免總重量總和溢位
+  
+int main()  
+{  
+    ll ans = 0;  // 初始化 ans 用來累加捕捉到的隕石總重量，型態為 long long
+    static int n, m, meteorite[N], machine[N];  // 宣告 n(隕石數)、m(捕捉器數)、meteorite(隕石重量陣列)、machine(捕捉器容量陣列)
+    scanf("%d%d", &amp;n, &amp;m);  // 讀入隕石數量 n 與捕捉器數量 m
+    for(int i=0; i&lt;n; ++i) scanf("%d", &amp;meteorite[i]);  // 迴圈讀入每顆隕石的重量
+    for(int i=0; i&lt;m; ++i) scanf("%d", &amp;machine[i]);  // 迴圈讀入每個捕捉器的最大承載容量
+    
+    sort(meteorite, meteorite+n);  // 將隕石重量由小到大進行排序
+    sort(machine, machine+m);  // 將捕捉器容量由小到大進行排序
+    
+    // 從最大的隕石 (i = n-1) 與最大的捕捉器 (j = m-1) 開始進行倒序貪心匹配
+    for(int i=n-1, j=m-1; i&gt;=0 &amp;&amp; j&gt;=0; --i)  
+    {  
+        if(meteorite[i] &gt; machine[j]) continue;  // 若當前最重的隕石超過目前最大捕捉器的承載極限，則此隕石無法被捕捉，略過
+        ans += (ll)meteorite[i];  // 若可以捕捉，將該隕石重量轉型為長整數並累加至 ans 中
+        --j;  // 使用掉當前最大捕捉器，將捕捉器指針往前移一位
+    }  
+    
+    printf("%lld\n", ans);  // 輸出最終計算出的最大隕石總重量
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

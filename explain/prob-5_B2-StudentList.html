@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#5 201903_B2-StudentList - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#5</span> 201903_B2-StudentList (班級名單)</h1>
+                <div class="header-right">
+                    <a href="../questions/201903_B2-StudentList(Q).pdf" class="file-name-meta" target="_blank">PDF: 201903_B2-StudentList(Q).pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-5" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 阿旺老師規定每堂課固定有三位同學請假。老師習慣從最後一個座號開始點名，因此名條必須將「有出席」同學的座號由後往前印出來（格式為 <code>No. 座號</code>）[cite: 1]。</p>
+                    <p><strong>輸入格式：</strong> 總共有兩行。第一行輸入一個整數 $N$ ($3 < N \le 20$) 代表全班總人數（座號從 1 到 $N$）；第二行固定輸入三個以空白隔開的數字，代表三位請假同學的座號[cite: 1]。</p>
+                    <p><strong>輸出格式：</strong> 輸出 $N - 3$ 列，每列為一個出席同學的座號（格式如 <code>No. 5</code>），無多餘換行[cite: 1]。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【逆向迴圈過濾與條件判斷】</h2>
+                <div class="analysis-box">
+                    <p>本題透過由大到小的反向迴圈（從 $N$ 遞減到 $1$）來滿足「由後往前印出」的要求[cite: 1]。</p>
+                    <ul>
+                        <li>在迴圈中逐一檢查當前座號 $i$ 是否等於三位請假同學中任一人的座號（$a, b, c$）[cite: 1]。</li>
+                        <li>若 $i$ 不是請假座號，則印出 <code>No. i</code>，並利用條件控制格式與換行，確保符合題目無多餘換行的輸出規範[cite: 1]。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+5
+3 4 5</pre>
+                    <ul>
+                        <li>全班人數 $N = 5$，請假座號為 $3, 4, 5$。</li>
+                        <li>由後往前檢查座號：
+                            <ul>
+                                <li>$i = 5$：是請假生，略過。</li>
+                                <li>$i = 4$：是請假生，略過。</li>
+                                <li>$i = 3$：是請假生，略過。</li>
+                                <li>$i = 2$：出席，輸出 <code>No. 2</code>。</li>
+                                <li>$i = 1$：出席，輸出 <code>No. 1</code>。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong><br>No. 2<br>No. 1</p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+8
+1 2 3</pre>
+                    <ul>
+                        <li>全班人數 $N = 8$，請假座號為 $1, 2, 3$。</li>
+                        <li>從 $8$ 倒數到 $1$，排除 $1, 2, 3$ 後，依序印出 $8$ 到 $4$。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong><br>No. 8<br>No. 7<br>No. 6<br>No. 5<br>No. 4</p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 3 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+10
+3 6 9</pre>
+                    <ul>
+                        <li>全班人數 $N = 10$，請假座號為 $3, 6, 9$。</li>
+                        <li>從 $10$ 倒數到 $1$，排除 $3, 6, 9$ 後，依序印出：$10, 8, 7, 5, 4, 2, 1$。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 3 結果：</strong><br>No. 10<br>No. 8<br>No. 7<br>No. 5<br>No. 4<br>No. 2<br>No. 1</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;iostream&gt; // 引入標準輸入輸出標頭檔，以便使用 cin 與 cout
+using namespace std; // 使用標準命名空間，避免每次都要寫 std::
+
+int main()
+{
+    int n; // 宣告變數 n 儲存全班總人數
+    int a,b,c; // 宣告三個變數 a, b, c 分別儲存三位請假同學的座號
+    cin&gt;&gt;n; // 讀入全班總人數 n
+    cin&gt;&gt;a&gt;&gt;b&gt;&gt;c; // 讀入三位請假同學的座號
+    int j=1; // 宣告計數器 j，用來控制換行與輸出的格式
+    
+    // 使用由大到小的迴圈，從最後一個座號 n 開始往前檢查到 1 號
+    for(int i=n; i&gt;0; i-=1)
+    {
+        // 檢查當前座號 i 是否不等於任何一位請假同學的座號 (a, b, c)
+        if(i!=a &amp;&amp; i!=b &amp;&amp; i!=c)
+        {
+            cout&lt;&lt;"No. "&lt;&lt;i; // 若為出席同學，則印出 "No. " 加上該座號
+            
+            // 控制換行：若還沒印完所有應出席的同學，則換行並將計數器 j 加 1
+            if(j&lt;n-3)
+            {
+                cout&lt;&lt;endl; // 換行
+                j+=1; // 計數器累加
+            }
+        }
+    }
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

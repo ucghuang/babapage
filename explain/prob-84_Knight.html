@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#84 202010_Knight - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#84</span> 202010_Knight (騎士走棋)</h1>
+                <div class="header-right">
+                    <a href="../questions/202010_Knight.pdf" class="file-name-meta" target="_blank">PDF: 202010_Knight.pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-84" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-path">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 在西洋棋盤中，馬（Knight）的移動方式是走「日」字型（即橫走兩格再直走一格，或橫走一格再直走兩格，總共 8 種可能的跳躍方向）。給定棋盤大小以及騎士的起始位置與目標位置，請計算騎士要到達目標位置所需的<strong>最少移動步數</strong>。</p>
+                    <p><strong>輸入格式：</strong> 第一行由兩個整數 $x, y$ 構成，表示棋盤的直行數和橫列數；第二行由兩個數字 $S_x$ 與 $S_y$ 構成，表示起點；第三行由兩個數字 $E_x$ 與 $E_y$ 構成，表示終點。(0, 0) 為地圖左下角。</p>
+                    <p><strong>輸出格式：</strong> 輸出騎士從起點到終點的最少移動步數，若是不存在路徑，則輸出 <code>-1</code>。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【廣度優先搜尋 (BFS) / 8 方向最短路徑】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>廣度優先搜尋 (BFS) 尋找騎士的最短跳躍路徑</strong>：</p>
+                    <ul>
+                        <li>西洋棋盤中的騎士移動擁有 8 個固定的「日」字型方向。由於每次移動的邊權重皆為 1，因此使用 BFS 可以確保第一次碰到目標座標時即為最短步數。</li>
+                        <li>我們維護一個距離陣列（<code>dist</code>）或拜訪狀態紀錄，並利用 8 個方向的偏移量陣列在每次迴圈中計算下一個合法的落點座標。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 詳細拆解與 8 方向擴散推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+8 8
+4 3
+3 1</pre>
+                    <ul>
+                        <li><strong>步驟一：起點與終點設定</strong>
+                            <ul>
+                                <li>棋盤大小 $8 \times 8$，起點座標 $(S_x, S_y) = (4, 3)$，終點座標 $(E_x, E_y) = (3, 1)$。</li>
+                                <li>將起點 <code>(4, 3)</code> 放入佇列中，設定其起始距離 <code>dist[4][3] = 0</code>。</li>
+                            </ul>
+                        </li>
+                        <li><strong>步驟二：8 個「日」字型方向擴散 (BFS 佇列運作)</strong>
+                            <ul>
+                                <li>騎士每次跳躍的 8 種偏移量組合為：`(-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1)`。</li>
+                                <li>從 <code>(4, 3)</code> 出發，第一步跳躍可以到達 8 個不同的周邊落點。經計算，其中某一方向跳躍一次即可直接抵達終點 <code>(3, 1)</code>。</li>
+                            </ul>
+                        </li>
+                        <li><strong>步驟三：抵達終點回傳結果</strong>
+                            <ul>
+                                <li>首度觸碰到目標終點 <code>(3, 1)</code>，對應的最少移動步數為 1 步。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>1</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 詳細拆解與 8 方向擴散推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+2 2
+0 0
+1 1</pre>
+                    <ul>
+                        <li><strong>步驟一：起點與終點設定</strong>
+                            <ul>
+                                <li>棋盤大小僅 $2 \times 2$，起點 $(0, 0)$，終點 $(1, 1)$。</li>
+                                <li>將 <code>(0, 0)</code> 放入佇列中，距離設為 0。</li>
+                            </ul>
+                        </li>
+                        <li><strong>步驟二：BFS 擴散受阻</strong>
+                            <ul>
+                                <li>在 $2 \times 2$ 的極小棋盤中，騎士從 <code>(0, 0)</code> 按照「日」字型跳躍的任何落點都會超出邊界範圍，導致佇列無法擴散出任何新格子。</li>
+                            </ul>
+                        </li>
+                        <li><strong>步驟三：結束迴圈</strong>
+                            <ul>
+                                <li>佇列清空且無法抵達終點，回傳題目規定的無路徑標記 <code>-1</code>。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>-1</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;bits/stdc++.h&gt;  // 引入常用 C++ 標頭檔
+using namespace std;
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);  // 加速輸入輸出
+
+    int N, M;
+    if (!(cin &gt;&gt; N &gt;&gt; M)) return 0;  // 讀入棋盤的直行數 N 與橫列數 M
+
+    int sr, sc, tr, tc;
+    cin &gt;&gt; sr &gt;&gt; sc;  // 讀入騎士起點座標 (sr, sc)
+    cin &gt;&gt; tr &gt;&gt; tc;  // 讀入目標終點座標 (tr, tc)
+
+    // 宣告距離陣列，記錄從起點到各點的最短步數，初始設為 -1
+    vector&lt;vector&lt;int&gt;&gt; dist(N, vector&lt;int&gt;(M, -1));
+    queue&lt;pair&lt;int, int&gt;&gt; q;  // 宣告 BFS 用的座標佇列
+
+    q.push({sr, sc});  // 將起點放入佇列
+    dist[sr][sc] = 0;   // 起點到起點的距離設為 0
+
+    // 定義西洋棋馬（Knight）移動的 8 個「日」字型方向偏移量
+    int dr[] = {-2, -2, -1, -1, 1, 1, 2, 2};
+    int dc[] = {-1, 1, -2, 2, -2, 2, -1, 1};
+
+    int ans = -1;  // 記錄最終的最少步數，若無法到達則維持 -1
+
+    while (!q.empty())
+    {
+        auto [r, c] = q.front();
+        q.pop();
+
+        // 若抵達目標終點
+        if (r == tr &amp;&amp; c == tc)
+        {
+            ans = dist[r][sc == sc ? r : r][c];  // 記錄當前最短步數
+            ans = dist[r][c];
+            break;
+        }
+
+        // 走訪 8 個可能的跳躍方向
+        for (int i = 0; i &lt; 8; i++)
+        {
+            int nr = r + dr[i];
+            int nc = c + dc[i];
+
+            // 檢查新座標是否在棋盤範圍內且尚未被造訪過
+            if (nr &gt;= 0 &amp;&amp; nr &lt; N &amp;&amp; nc &gt;= 0 &amp;&amp; nc &lt; M &amp;&amp; dist[nr][nc] == -1)
+            {
+                dist[nr][nc] = dist[r][c] + 1;  // 記錄步數 +1
+                q.push({nr, nc});  // 將新座標推入佇列
+            }
+        }
+    }
+
+    cout &lt;&lt; ans &lt;&lt; "\n";  // 輸出最少移動步數或 -1
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#39 201912-onsite_1-GoldenRatio - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            dt, dl, dd { margin: 0; }
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#39</span> 201912-onsite_1-GoldenRatio (黃金比例)</h1>
+                <div class="header-right">
+                    <a href="../questions/201912-onsite_1-GoldenRatio.pdf" class="file-name-meta" target="_blank">PDF: 201912-onsite_1-GoldenRatio.pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-39" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 費氏數列（Fibonacci sequence）可以用來組成黃金比例螺線。若將以費氏數列前 $n$ 項為邊長的正方形組合成一個長方形，其長寬比會對應到費氏數列的相鄰項。給定一個正整數 $n$ ($1 \le n \le 45$)，代表作品是以費氏數列第 1 至 $n$ 項為邊長的正方形來組成，請根據費氏數列求出該作品的「長：寬」比例。</p>
+                    <p><strong>輸入格式：</strong> 輸入僅有一個正整數 $n$ ($1 \le n \le 45$)。</p>
+                    <p><strong>輸出格式：</strong> 輸出長寬比格式為 <code>h:w</code>（數字與冒號之間沒有空白）。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【數論與數學 / 費氏數列與迴圈遞推】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>費氏數列遞推性質</strong>：</p>
+                    <ul>
+                        <li>費氏數列的定義為前兩項相加等於第三項（$F_1=1, F_2=1, F_3=2, F_4=3 \dots$）。</li>
+                        <li>當組合到第 $n$ 項時，所形成的長方形長寬剛好對應到費氏數列的特定項。例如當 $n=1$ 時長寬比為 $1:1$；當 $n \ge 2$ 時，長與寬分別對應到 $F_n$ 與 $F_n + F_{n-1}$（或相鄰的費氏數列數值）。</li>
+                        <li>透過迴圈預先算出對應的費氏數列數值，即可直接印出格式化的比例。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+6</pre>
+                    <ul>
+                        <li><strong>計算費氏數列直到第 6 項：</strong>
+                            <ul>
+                                <li>$F_1 = 1, F_2 = 1, F_3 = 2, F_4 = 3, F_5 = 5, F_6 = 8$。</li>
+                            </ul>
+                        </li>
+                        <li><strong>對應長寬比：</strong> 當 $n = 6$ 時，對應的邊長組合數值為 $8$ 與 $(8 + 5 = 13)$。</li>
+                        <li><strong>輸出格式化：</strong> <code>8:13</code>。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>8:13</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+8</pre>
+                    <ul>
+                        <li><strong>計算費氏數列直到第 8 項：</strong>
+                            <ul>
+                                <li>$F_7 = 13, F_8 = 21$。</li>
+                            </ul>
+                        </li>
+                        <li><strong>對應長寬比：</strong> 當 $n = 8$ 時，對應數值為 $21$ 與 $(21 + 13 = 34)$。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>21:34</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;stdio.h&gt;  // 引入標準輸入輸出標頭檔
+
+int main()
+{	
+	int N = 0;  // 宣告變數 N 代表輸入的費氏數列項數
+	int h = 0, w = 0;  // 宣告變數 h(高/短邊) 與 w(寬/長邊)
+	scanf("%d", &amp;N);  // 讀入項數 N
+
+	int num1 = 0, num2 = 1;  // 初始化費氏數列的前兩項基礎值
+	int num3 = 0;  // 宣告變數儲存當前計算出的費氏數列新項
+	
+	// 使用迴圈計算費氏數列直到第 N 項
+	for(int i=2; i&lt;=N; i+=1)
+	{
+		num3 = num1 + num2;  // 第三項等於前兩項相加
+		if( i == N )
+			break;  // 若達到指定的第 N 項則跳出迴圈
+		num1 = num2;  // 更新前一項數值
+		num2 = num3;  // 更新當前項數值
+	}
+
+	// 根據 N 的大小決定長寬比輸出
+	if( N == 1 ){
+		h = 1;
+		w = 1;  // 若 N 為 1，長寬皆為 1
+	}
+	else{
+		h = num3;  // 高度為費氏數列第 N 項
+		w = num3 + num2;  // 寬度為第 N 項加上前一項
+	} 
+		
+	printf("%d:%d\n", h, w);  // 格式化輸出長寬比 (h:w)
+	return 0;  // 程式正常結束
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

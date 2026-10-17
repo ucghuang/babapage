@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#4 201903_B1-BMR - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#4</span> 201903_B1-BMR (基礎代謝率)</h1>
+                <div class="header-right">
+                    <a href="../questions/201903_B1-BMR(Q).pdf" class="file-name-meta" target="_blank">PDF: 201903_B1-BMR(Q).pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-4" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 依據美國運動醫學協會提供的公式，根據性別（男/女）、年齡、身高與體重計算個人的基礎代謝率（BMR），並將結果四捨五入至小數點後兩位。</p>
+                    <ul>
+                        <li>男性 BMR = (13.7 × 體重(kg)) + (5.0 × 身高(cm)) − (6.8 × 年齡) + 66</li>
+                        <li>女性 BMR = (9.6 × 體重(kg)) + (1.8 × 身高(cm)) − (4.7 × 年齡) + 655</li>
+                    </ul>
+                    <p><strong>輸入格式：</strong> 第一行有一個正整數 N (1 ≤ N ≤ 20) 代表人數；接下來 N 行，每行包含四個正整數 G、A、H、W（分別代表性別、年齡、身高、體重）。</p>
+                    <p><strong>輸出格式：</strong> 對每個人輸出其基礎代謝率，四捨五入至小數點後兩位，每人輸出後換行。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【數學公式直接代入與條件判斷】</h2>
+                <div class="analysis-box">
+                    <p>本題為基礎的條件分支與數學運算題。透過讀入人數 N，並在迴圈內讀入個人的性別、年齡、身高與體重。</p>
+                    <ul>
+                        <li>依據性別變數 G（1 代表男性，0 代表女性）選擇對應的 BMR 計算公式。</li>
+                        <li>使用雙精度浮點數（<code>double</code>）進行計算，並利用 <code>printf("%.2f\n", BMR)</code> 自動處理四捨五入至小數點後兩位，確保輸出格式符合規範。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+2
+1 10 100 20
+0 20 120 30</pre>
+                    <ul>
+                        <li><strong>第一筆測資：</strong> G = 1 (男), A = 10 (年齡), H = 100 (身高 cm), W = 20 (體重 kg)
+                            <ul>
+                                <li>代入男性公式：BMR = (13.7 × 20) + (5.0 × 10) − (6.8 × 10) + 66</li>
+                                <li>= 274.0 + 50.0 − 68.0 + 66 = <strong>772.00</strong></li>
+                            </ul>
+                        </li>
+                        <li><strong>第二筆測資：</strong> G = 0 (女), A = 20 (年齡), H = 120 (身高 cm), W = 30 (體重 kg)
+                            <ul>
+                                <li>代入女性公式：BMR = (9.6 × 30) + (1.8 × 120) − (4.7 × 20) + 655</li>
+                                <li>= 288.0 + 216.0 − 94.0 + 655 = <strong>1065.00</strong></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong><br>772.00<br>1065.00</p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+5
+1 55 178 89
+0 20 157 48
+1 33 162 50
+1 10 150 31
+0 29 159 51</pre>
+                    <ul>
+                        <li><strong>第一筆測資：</strong> G = 1 (男), A = 55, H = 178, W = 89
+                            <ul>
+                                <li>BMR = (13.7 × 89) + (5.0 × 178) − (6.8 × 55) + 66 = 1219.3 + 890.0 − 374.0 + 66 = <strong>1801.30</strong></li>
+                            </ul>
+                        </li>
+                        <li><strong>第二筆測資：</strong> G = 0 (女), A = 20, H = 157, W = 48
+                            <ul>
+                                <li>BMR = (9.6 × 48) + (1.8 × 157) − (4.7 × 20) + 655 = 460.8 + 282.6 − 94.0 + 655 = <strong>1304.40</strong></li>
+                            </ul>
+                        </li>
+                        <li><strong>第三筆測資：</strong> G = 1 (男), A = 33, H = 162, W = 50
+                            <ul>
+                                <li>BMR = (13.7 × 50) + (5.0 × 162) − (6.8 × 33) + 66 = 685.0 + 810.0 − 224.4 + 66 = <strong>1336.60</strong></li>
+                            </ul>
+                        </li>
+                        <li><strong>第四筆測資：</strong> G = 1 (男), A = 10, H = 150, W = 31
+                            <ul>
+                                <li>BMR = (13.7 × 31) + (5.0 × 150) − (6.8 × 10) + 66 = 424.7 + 750.0 − 68.0 + 66 = <strong>1172.70</strong></li>
+                            </ul>
+                        </li>
+                        <li><strong>第五筆測資：</strong> G = 0 (女), A = 29, H = 159, W = 51
+                            <ul>
+                                <li>BMR = (9.6 × 51) + (1.8 × 159) − (4.7 × 29) + 655 = 489.6 + 286.2 − 136.3 + 655 = <strong>1294.50</strong></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong><br>1801.30<br>1304.40<br>1336.60<br>1172.70<br>1294.50</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;stdio.h&gt; // 引入標準輸入輸出標頭檔，以便使用 scanf 與 printf
+
+int main()
+{
+    int N = 0; // 宣告變數 N 用來儲存要計算 BMR 的總人數
+    scanf("%d",&amp;N); // 讀入人數 N
+
+    for(int i=0; i&lt;N; ++i) // 使用迴圈依序處理每位受測者的資料，共執行 N 次
+    {
+       	int Gender = 0, height = 0, weight = 0, age = 0; // 宣告性別、身高、體重與年齡變數
+       	scanf("%d %d %d %d",&amp;Gender, &amp;age, &amp;height, &amp;weight); // 讀入當前受測者的性別、年齡、身高、體重
+
+        double BMR = 0; // 宣告雙精度浮點數變數 BMR，用來儲存計算後的基礎代謝率結果
+       	if(Gender == 0) // 檢查若性別代號為 0 (代表女性)
+       	{
+        	BMR = (double)(9.6*weight + 1.8*height - 4.7*age + 655); // 依據女性 BMR 公式進行計算並轉型為 double
+       	}
+      	else if(Gender == 1) // 檢查若性別代號為 1 (代表男性)
+      	{
+      		BMR = (double)(13.7*weight + 5*height - 6.8*age + 66); // 依據男性 BMR 公式進行計算並轉型為 double
+       	}
+
+        printf("%.2f\n",BMR); // 格式化輸出 BMR 數值，四捨五入至小數點後兩位並換行
+    }
+    
+    return 0; // 程式正常結束
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

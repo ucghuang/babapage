@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#8 201904_A2-Bonus - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#8</span> 201904_A2-Bonus (獎金關卡)</h1>
+                <div class="header-right">
+                    <a href="../questions/201904_A2-Bonus(Q).pdf" class="file-name-meta" target="_blank">PDF: 201904_A2-Bonus(Q).pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-8" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 遊戲桌上有排成一列的 $N$ 個按鈕，每個按鈕上有對應的積分。當按下其中一個按鈕時，可獲得等同該按鈕數字的積分，但會使其<strong>左右兩邊的相鄰按鈕失效</strong>。遊戲結束後獲得總獎金為所按按鈕的積分總和。請計算參賽者最多可以得到多少獎金（此題即為著名的<strong>「不相鄰子序列最大和 / House Robber」</strong>變形）。</p>
+                    <p><strong>輸入格式：</strong> 第一列有一個正整數 $N$ ($3 \le N \le 10^6$)，代表按鈕總數；第二列共有 $N$ 個正整數，代表每個按鈕上的積分（不超過 99），以空白隔開。</p>
+                    <p><strong>輸出格式：</strong> 輸出一列共一個數字，代表參賽者可以取得的最高獎金。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【動態規劃 (DP)】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>動態規劃 (Dynamic Programming)</strong>：</p>
+                    <ul>
+                        <li>由於按下某個按鈕會使左右兩側失效，因此我們<strong>不能選擇相鄰的按鈕</strong>。這與「不能搶劫相鄰房屋」的經典 DP 問題完全相同。</li>
+                        <li><strong>狀態轉移方程式：</strong> 設 $DP[i]$ 代表考慮前 $i$ 個按鈕且<strong>必選第 $i$ 個按鈕</strong>時能獲得的最大累計積分。則到達第 $i$ 個按鈕時，我們只能從 $i-2$ 或 $i-3$ 的狀態轉移過來（因為選了 $i$ 會使 $i-1$ 失效）：
+                            $$DP[i] = \max(DP[i-2], DP[i-3]) + arr[i]$$
+                        </li>
+                        <li>最後的答案為 $\max(DP[N-1], DP[N-2])$，代表最佳選擇可能落在倒數第一個或倒數第二個按鈕。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+6
+1 2 3 4 5 6</pre>
+                    <ul>
+                        <li><strong>按鈕陣列：</strong> $arr = [1, 2, 3, 4, 5, 6]$，$N = 6$。</li>
+                        <li><strong>逐步計算 DP 狀態：</strong>
+                            <ul>
+                                <li>$DP[0] = arr[0] = 1$</li>
+                                <li>$DP[1] = arr[1] = 2$</li>
+                                <li>$DP[2] = arr[0] + arr[2] = 1 + 3 = 4$</li>
+                                <li>$DP[3] = \max(DP[1], DP[0]) + arr[3] = \max(2, 1) + 4 = 6$</li>
+                                <li>$DP[4] = \max(DP[2], DP[1]) + arr[4] = \max(4, 2) + 5 = 9$</li>
+                                <li>$DP[5] = \max(DP[3], DP[2]) + arr[5] = \max(6, 4) + 6 = \mathbf{12}$</li>
+                            </ul>
+                        </li>
+                        <li><strong>取最大值：</strong> $\max(DP[5], DP[4]) = \max(12, 9) = 12$。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>12</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+5
+2 1 2 5 2</pre>
+                    <ul>
+                        <li><strong>按鈕陣列：</strong> $arr = [2, 1, 2, 5, 2]$，$N = 5$。</li>
+                        <li><strong>逐步計算 DP 狀態：</strong>
+                            <ul>
+                                <li>$DP[0] = 2$</li>
+                                <li>$DP[1] = 1$</li>
+                                <li>$DP[2] = arr[0] + arr[2] = 2 + 2 = 4$</li>
+                                <li>$DP[3] = \max(DP[1], DP[0]) + arr[3] = \max(1, 2) + 5 = 7$</li>
+                                <li>$DP[4] = \max(DP[2], DP[1]) + arr[4] = \max(4, 1) + 2 = 6$</li>
+                            </ul>
+                        </li>
+                        <li><strong>取最大值：</strong> $\max(DP[4], DP[3]) = \max(6, 7) = 7$。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>7</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;bits/stdc++.h&gt;  // 引入常用 C++ 標頭檔
+int arr[1000005]={};  // 宣告全域陣列 arr，用來儲存每個按鈕上的積分
+int DP[1000005]={};  // 宣告 DP 陣列，DP[i] 代表在第 i 個按鈕為結尾時能取得的最高累積積分
+using namespace std;
+int main()
+{
+    int N;  // 宣告變數 N 代表按鈕總數
+    scanf("%d",&amp;N);  // 讀入按鈕總數 N
+    for(int i=0;i&lt;N;i+=1)
+    {
+        scanf("%d",&amp;arr[i]);  // 迴圈讀入每個按鈕的積分值
+        
+        // 動態規劃基礎狀態與轉移方程式初始化
+        if(i&lt;2) DP[i]=arr[i];  // 前兩個按鈕無法被隔開，直接對應其本身積分
+        else if(i==2) DP[i]=arr[0]+arr[2];  // 第三個按鈕可以與第一個按鈕相加（中間的第二個按鈕會失效）
+        else DP[i]=max(DP[i-2]+arr[i],DP[i-3]+arr[i]);  // 超過三個按鈕時，狀態轉移自前兩格或前三格的最佳解加上當前按鈕積分
+    }
+    printf("%d\n",max(DP[N-1],DP[N-2]));  // 輸出最後一格或倒數第二格的最大累積積分作為最高獎金
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

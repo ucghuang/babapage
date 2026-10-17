@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#28 201910_A2-Roads - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#28</span> 201910_A2-Roads (道路鋪設)</h1>
+                <div class="header-right">
+                    <a href="../questions/201910_A2-Roads.pdf" class="file-name-meta" target="_blank">PDF: 201910_A2-Roads.pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-28" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 給定一條長度為 $L$ 的道路和長度為 $1, 2, 3, \dots, L$ 的磁磚各無限個，請問將道路用磁磚鋪滿共有幾種不同的鋪法？答案需對 $10^9 + 7$ 取餘數。</p>
+                    <ul>
+                        <li><strong>輸入格式：</strong> 第一列有一個正整數 $T$（$1 \le T \le 10^4$），代表有 $T$ 條路要鋪。接著 $T$ 列每列有一個正整數 $L$（$1 \le L \le 10^9$），為道路的長度。</li>
+                        <li><strong>輸出格式：</strong> 對每筆資料輸出一個正整數，為鋪法總數除以 $10^9 + 7$ 後的餘數。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【遞迴規律推導、前綴和優化與快速冪模運算】</h2>
+                <div class="analysis-box">
+                    <p>本題在教學分類上歸納為<strong>「前綴和」</strong>與<strong>「教學範例」</strong>（難度評級：2 星 ★★☆☆☆）。我們可以透過嚴謹的前綴和狀態轉移與遞迴化簡來掌握其核心思路：</p>
+                    <ul>
+                        <li><strong>從動態規劃與前綴和出發的思路：</strong> 
+                            <ul>
+                                <li>若設 $f(L)$ 為長度為 $L$ 的道路鋪法總數。當我們考慮最後一塊放的磁磚長度為 $k$（$1 \le k \le L$），則前面的長度為 $L-k$，因此可以得到遞迴式：$f(L) = \sum_{k=1}^{L} f(L-k) = f(L-1) + f(L-2) + \dots + f(0)$。</li>
+                                <li>如果利用<strong>「前綴和」</strong>的概念來優化觀看這個累加過程：不難發現 $f(L-1) = \sum_{k=1}^{L-1} f(L-1-k)$。將兩式相減或遞推展開會發現 $f(L) = 2f(L-1)$。</li>
+                                <li>透過這樣的遞迴關係，我們能迅速推導出封閉形式的數學解：$f(L) = 2^{L-1}$。</li>
+                            </ul>
+                        </li>
+                        <li><strong>超大範圍處理與快速冪：</strong> 題目給定的道路長度 $L$ 高達 $10^9$，若直接用迴圈乘 $L-1$ 次會超時。因此必須結合<strong>快速冪（Binary Exponentiation）</strong>演算法，在 $O(\log N)$ 時間內完成 $2^{L-1} \bmod (10^9+7)$ 的計算，完美兼顧時間效能與取模正確性。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+1
+3</pre>
+                    <ul>
+                        <li>道路長度 $L = 3$。</li>
+                        <li>根據推導公式 $f(L) = 2^{L-1}$，可得 $f(3) = 2^{3-1} = 2^2 = 4$。</li>
+                        <li>對 $10^9 + 7$ 取餘數後仍為 $4$。與範例說明完全吻合。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong><br>4</p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+1
+50000</pre>
+                    <ul>
+                        <li>道路長度 $L = 50000$。</li>
+                        <li>需計算 $2^{49999} \bmod (10^9 + 7)$。</li>
+                        <li>透過快速冪的分治策略，將指數折半運算，迅速得出結果。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong><br>509082729</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;bits/stdc++.h&gt; // 引入常用標準函式庫
+
+const long long MOD = 1e9 + 7; // 定義題目要求的模數 10^9 + 7，避免整數溢位
+
+// 定義遞迴加快速冪函式 mod(a)，用來計算 2^a 對 MOD 取餘數的結果 (對應前綴和化簡後的公式 2^(L-1))
+long long mod(long long a)
+{
+    if(a == 0) return 1; // 遞迴終止條件：任何數的 0 次方為 1 (即 2^0 = 1)
+    else if(a == 1) return 2; // 基本條件：2 的 1 次方為 2
+    else if(a % 2 == 0) // 若指數 a 為偶數，利用分治法：2^a = (2^(a/2)) * (2^(a/2))
+    {
+        long long x = mod(a / 2); // 遞迴計算一半指數的結果
+        return (x * x) % MOD; // 將兩半相乘並直接取模，防範數值過大
+    }
+    else return (mod(a - 1) * mod(1)) % MOD; // 若指數 a 為奇數，拆成 2^(a-1) * 2^1 再進行運算
+}
+
+int main()
+{
+    int a; // 宣告變數 a 用來儲存測資的總筆數 T
+    scanf("%d", &amp;a); // 讀入測資筆數
+    
+    while(a--) // 當還有測資時持續迴圈
+    {
+        long long x; // 宣告長整數 x 用來儲存道路長度 L（數值可達 10^9）
+        scanf("%lld", &amp;x); // 讀入道路長度 L
+        
+        // 根據前綴和遞迴化簡公式 f(L) = 2^(L-1)，呼叫 mod 函式計算 2^(x-1) % (10^9 + 7)
+        printf("%lld\n", mod(x - 1)); // 輸出最終答案並換行
+    }
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

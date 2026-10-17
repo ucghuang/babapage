@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOI 演算法分類檢索系統</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --success-hover: #059669;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.5;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        /* 側邊導航欄 */
+        #sidebar {
+            width: 310px;
+            min-width: 310px;
+            background: #ffffff;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .sidebar-header h1 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .search-box {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 13.5px;
+            outline: none;
+            transition: border 0.15s;
+        }
+        .search-box:focus { border-color: var(--primary); }
+        .tag-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            list-style: none;
+        }
+        .tag-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .tag-item:hover, .tag-item.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .badge {
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 11px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .tag-item.active .badge {
+            background: var(--primary);
+            color: #ffffff;
+        }
+        /* 主內容展示區 */
+        #main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 32px;
+            scroll-behavior: smooth;
+        }
+        /* 演算法說明面板 */
+        .algo-intro-panel {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--primary);
+            border-radius: 8px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        .algo-intro-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 6px;
+        }
+        .algo-intro-text {
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        .code-container {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 14px;
+            border-radius: 6px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.45;
+            overflow-x: auto;
+        }
+        /* 頂部操作欄 */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 12px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 16px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sort-select {
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 13.5px;
+            outline: none;
+            cursor: pointer;
+        }
+        .btn-download {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13.5px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s;
+        }
+        .btn-download:hover {
+            background-color: var(--success-hover);
+        }
+        /* 單列式列表佈局 */
+        .list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .row-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.15s;
+        }
+        .row-item:hover {
+            border-color: #93c5fd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            transform: translateX(2px);
+        }
+        .row-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+        }
+        .row-id {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            min-width: 48px;
+            text-align: center;
+        }
+        .prob-link {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e3a8a;
+            text-decoration: none;
+        }
+        .prob-link:hover {
+            text-decoration: underline;
+            color: var(--primary);
+        }
+        .prob-sub {
+            font-size: 13px;
+            color: #64748b;
+            margin-left: 6px;
+        }
+        .stars {
+            color: #f59e0b;
+            font-size: 12px;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        .row-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            margin-left: 16px;
+        }
+        .algo-tag {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 11.5px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .algo-tag:hover {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <h1>演算法分類 (依題數排序)</h1>
+            <input type="text" id="searchInput" class="search-box" placeholder="快速搜尋題目或演算法..." onkeyup="handleSearch()">
+        </div>
+        <ul class="tag-list" id="tagList">
+            <!-- 演算法標籤由 JS 動態生成 -->
+        </ul>
+    </aside>
+
+    <main id="main-content">
+        <!-- 演算法介紹面板 -->
+        <div id="algoIntroPanel" class="algo-intro-panel">
+            <div id="introTitle" class="algo-intro-title">全部題目導覽</div>
+            <div id="introDesc" class="algo-intro-text">
+                請在左側點選演算法標籤，系統將即時切換至該演算法分類，並在此提供給國中同學好懂的觀念說明與標準 C++ 核心結構模板。
+            </div>
+            <div id="introCodeBox" class="code-container" style="display: none;">
+                <pre id="introCode" style="margin: 0;"></pre>
+            </div>
+        </div>
+
+        <div class="header-bar">
+            <div>
+                <strong id="filterHeading" style="font-size: 1rem; color: #1e3a8a;">全部題目</strong>
+                <span id="problemCount" style="color: var(--text-muted); font-size: 13px; margin-left: 6px;"></span>
+            </div>
+            <div class="controls-right">
+                <label for="sortMode" style="font-size: 13.5px;">排列方式：</label>
+                <select id="sortMode" class="sort-select" onchange="applySortAndRender()">
+                    <option value="id_asc">依題號 (從前到後)</option>
+                    <option value="id_desc">依題號 (從後到前)</option>
+                    <option value="diff_desc">依難度 (高至低 ★★★★★)</option>
+                    <option value="diff_asc">依難度 (低至高 ★☆☆☆☆)</option>
+                </select>
+                <button class="btn-download" onclick="downloadCSV()">
+                    <span>📥 下載 CSV</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="list-container" id="cardGrid">
+            <!-- 題目列表由 JS 動態渲染 (一列一題) -->
+        </div>
+    </main>
+
+    <script>
+        // 演算法解說資料庫
+        const algoExplanations = {
+            "基礎模擬": {
+                desc: "【生活化比喻】就像照著食譜一步一步做蛋糕，題目怎麼要求，程式就乖乖照著步驟做，不需複雜公式。<br>【學習重點】練習變數存取、if-else 條件判斷與 for/while 迴圈運作流程。",
+                code: `// [基礎模擬] 基本範本：按照題目步驟讀取資料並依條件處理
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n; // 讀取學生數量或事件筆數
+    int total = 0;
+    for (int i = 0; i < n; i++) {
+        int x;
+        cin >> x;
+        if (x > 0) { // 根據條件進行決策
+            total += x;
+        }
+    }
+    cout << total << endl; // 輸出最終模擬結果
+    return 0;
+}`
+            },
+            "動態規劃 (DP)": {
+                desc: "【生活化比喻】就像把算過的數學作業寫在小抄上記錄下來。下次遇到相同問題直接看小抄，不用從頭重新算，省時又聰明！<br>【學習重點】找出「狀態轉移規則」（如今天的答案由昨天推導而來）。",
+                code: `// [動態規劃] 範例：費氏數列或爬樓梯 (記錄前兩步的結果)
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int dp[1005];
+
+int main() {
+    int n;
+    cin >> n;
+    dp[0] = 0; // 基本起始狀態
+    dp[1] = 1;
+    for (int i = 2; i <= n; i++) {
+        // 狀態轉移方程式：現在的結果由前兩步加總得到
+        dp[i] = dp[i - 1] + dp[i - 2];
+    }
+    cout << dp[n] << endl;
+    return 0;
+}`
+            },
+            "廣度優先搜尋 (BFS)": {
+                desc: "【生活化比喻】水滴滴在平坦的桌面上，水痕會均勻地向四面八方「一圈一圈擴散」。最先碰到終點的那一圈，就是最短路徑。<br>【學習重點】搭配佇列 (queue) 實現「先進先出」的階層走訪，專門找迷宮的最少步數。",
+                code: `// [廣度優先搜尋] 範例：網格走訪求最短步數
+#include <iostream>
+#include <queue>
+using namespace std;
+
+int dist[105][105]; // 記錄到達該格子的最少步數
+int dx[4] = {0, 0, 1, -1};
+int dy[4] = {1, -1, 0, 0};
+
+void bfs(int startX, int startY) {
+    queue<pair<int, int>> q;
+    q.push({startX, startY});
+    dist[startX][startY] = 0;
+
+    while (!q.empty()) {
+        auto [x, y] = q.front();
+        q.pop();
+
+        for (int i = 0; i < 4; i++) { // 四個方向擴散
+            int nx = x + dx[i], ny = y + dy[i];
+            if (nx >= 0 && ny >= 0 && dist[nx][ny] == -1) { // 尚未拜訪過
+                dist[nx][ny] = dist[x][y] + 1;
+                q.push({nx, ny});
+            }
+        }
+    }
+}`
+            },
+            "深度優先搜尋 (DFS)": {
+                desc: "【生活化比喻】走迷宮時手摸著右邊牆壁「一條路走到黑」，撞牆了才回頭退一步（回溯），換另一條路繼續走。<br>【學習重點】使用遞迴函式，適合用來探索所有可能的排列組合或尋找連通區域。",
+                code: `// [深度優先搜尋] 範例：遞迴連通塊走訪
+#include <iostream>
+using namespace std;
+
+bool visited[105][105];
+
+void dfs(int x, int y) {
+    visited[x][y] = true; // 標記為已造訪
+
+    // 嘗試往相鄰分支繼續深入
+    int dx[4] = {1, -1, 0, 0};
+    int dy[4] = {0, 0, 1, -1};
+    for (int i = 0; i < 4; i++) {
+        int nx = x + dx[i], ny = y + dy[i];
+        if (!visited[nx][ny]) {
+            dfs(nx, ny); // 遞迴呼叫：繼續往深處走
+        }
+    }
+}`
+            },
+            "差分陣列": {
+                desc: "【生活化比喻】在操場借場地活動，借用第 3 到第 8 節課，我們不用在每節課打勾，只需在「第 3 節開始 +1，第 9 節結束 -1」，最後由前往後累加，就能知道每節課有幾個人在用。<br>【學習重點】快速處理區間批量增減，將 O(N) 降至 O(1)。",
+                code: `// [差分陣列] 範例：快速在區間 [L, R] 加上值 V
+#include <iostream>
+using namespace std;
+
+int diff[100005] = {0}; // 差分陣列
+
+void addRange(int L, int R, int val) {
+    diff[L] += val;     // 起點進入影響
+    diff[R + 1] -= val; // 離開區間後扣除影響
+}
+
+int main() {
+    addRange(2, 5, 10);
+    // 透過前綴和還原每一格的真實數值
+    int current = 0;
+    for (int i = 1; i <= 6; i++) {
+        current += diff[i];
+        cout << "位置 " << i << " 數值: " << current << endl;
+    }
+    return 0;
+}`
+            },
+            "前綴和": {
+                desc: "【生活化比喻】記帳本裡每一頁記錄的不是單日花費，而是「累積到今天為止的總花費」。想知道第 5 天到第 10 天花了多少錢，只要拿「第 10 天累計」減去「第 4 天累計」便可瞬間算出來。<br>【學習重點】預先花 O(N) 累積，查詢任意區間總和只需 O(1)。",
+                code: `// [前綴和] 範例：快速查詢任意區間 [L, R] 總和
+#include <iostream>
+using namespace std;
+
+int arr[6] = {0, 3, 5, 2, 8, 1};
+int prefixSum[6];
+
+int main() {
+    prefixSum[0] = 0;
+    for (int i = 1; i <= 5; i++) {
+        prefixSum[i] = prefixSum[i - 1] + arr[i]; // 累積前面的所有數字
+    }
+    // 查詢第 2 到第 4 個數的總和 (3~5格)
+    int L = 2, R = 4;
+    cout << "總和為: " << prefixSum[R] - prefixSum[L - 1] << endl;
+    return 0;
+}`
+            },
+            "貪婪演算法": {
+                desc: "【生活化比喻】就像吃自助餐挑菜時，每一步都直接夾眼前看起來最棒的那道菜。當局部最佳解保證也是整體最佳解時，貪婪法速度最快！<br>【學習重點】通常需要先將資料「排序」，再照順序挑選。",
+                code: `// [貪婪演算法] 範例：活動安排問題 (挑選最早結束的活動)
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+struct Event { int start, end; };
+
+bool cmp(Event a, Event b) {
+    return a.end < b.end; // 依結束時間由早到晚排序
+}
+
+int main() {
+    vector<Event> events = {{1, 3}, {2, 5}, {4, 7}};
+    sort(events.begin(), events.end(), cmp);
+
+    int count = 0, lastEnd = -1;
+    for (auto e : events) {
+        if (e.start >= lastEnd) { // 貪婪挑選：時間不衝突就選
+            count++;
+            lastEnd = e.end;
+        }
+    }
+    cout << "最多可參加活動數: " << count << endl;
+    return 0;
+}`
+            },
+            "賽局理論 (Game Theory)": {
+                desc: "【生活化比喻】拿石頭遊戲（誰拿最後一顆誰贏）。每種局面只有兩種狀態：站在這個位置保證能贏（必勝態），或是對方只要不犯錯你就一定會輸（必敗態）。<br>【學習重點】分析遊戲的 SG 值或判斷當前狀態是否能轉移到必敗態。",
+                code: `// [賽局理論] 範例：石頭遊戲必勝/必敗態判斷 (SG 函數基礎)
+#include <iostream>
+using namespace std;
+
+int win[1005]; // 1 代表先手必勝，0 代表必敗
+
+void solve(int n) {
+    win[0] = 0; // 沒石頭可拿即輸
+    for (int i = 1; i <= n; i++) {
+        // 如果走一步能讓對手落入必敗態 (win==0)，則自己就是必勝態
+        if ((i >= 1 && win[i - 1] == 0) || (i >= 2 && win[i - 2] == 0)) {
+            win[i] = 1;
+        } else {
+            win[i] = 0;
+        }
+    }
+}`
+            },
+            "圖論演算法": {
+                desc: "【生活化比喻】把城市想像成圓圈（節點），公路想像成連接線（邊）。圖論專門用來解決「兩城市能否通車」或「封閉哪座橋會讓交通癱瘓（關鍵星割點）」等問題。<br>【學習重點】建立鄰接表 (Adjacency List)，並使用 DFS 或 Tarjan 演算法分析連通結構。",
+                code: `// [圖論] 範例：建立無向圖並搜尋鄰居
+#include <iostream>
+#include <vector>
+using namespace std;
+
+vector<int> adj[1005]; // 鄰接表：記錄每個點連接的鄰居
+
+void addEdge(int u, int v) {
+    adj[u].push_back(v); // 雙向公路
+    adj[v].push_back(u);
+}
+
+int main() {
+    addEdge(1, 2);
+    addEdge(2, 3);
+    // 造訪 2 號節點相連的所有鄰居
+    for (int neighbor : adj[2]) {
+        cout << "相連節點: " << neighbor << endl;
+    }
+    return 0;
+}`
+            },
+            "數論與數學": {
+                desc: "【生活化比喻】就像小學數學尋找質數、公因數，或利用規律大幅簡化運算，避免數字大到電腦算不出來。<br>【學習重點】質數試除法、大數取模公式、快速冪 (將乘法次數由十億次降到 30 次)。",
+                code: `// [數論與數學] 範例：快速冪 (以極快速度計算 a^b % MOD)
+#include <iostream>
+using namespace std;
+
+long long fastPow(long long a, long long b, long long mod) {
+    long long ans = 1;
+    while (b > 0) {
+        if (b % 2 == 1) ans = (ans * a) % mod; // 乘入奇數次方
+        a = (a * a) % mod;                     // 底數平方
+        b /= 2;                                // 指數折半
+    }
+    return ans;
+}`
+            }
+        };
+
+        // 332 題清單（嚴格與 TOI_All_Problems_Integrated.html 對齊真實標題與中文題名）
+        const rawCatalog = [
+            /* 1-10 */
+            [1, "201903_A1-Classroom", "教室配置 (Classroom)", 2, ["差分陣列", "前綴和", "貪婪演算法"]],
+            [2, "201903_A2-QueenBee", "尋找蜂后 (Queen bee)", 3, ["廣度優先搜尋 (BFS)"]],
+            [3, "201903_A3-StoneGame", "石頭遊戲 (Stone Game)", 3, ["賽局理論 (Game Theory)", "動態規劃 (DP)"]],
+            [4, "201903_B1-BMR", "基礎代謝率 (BMR Calculation)", 1, ["基礎模擬", "數論與數學"]],
+            [5, "201903_B2-StudentList", "班級名單 (Student list)", 1, ["基礎模擬"]],
+            [6, "201903_B3-BigEater", "大吃大喝 (Big eater)", 1, ["基礎模擬", "貪婪演算法"]],
+            [7, "201904_A1-FarmlandIrrigating", "農田灌溉 (Farmland Irrigating)", 2, ["貪婪演算法"]],
+            [8, "201904_A2-Bonus", "獎金關卡 (Bonus)", 2, ["動態規劃 (DP)"]],
+            [9, "201904_A3-KeyPlanet", "關鍵星 (Key Planet)", 4, ["圖論演算法", "深度優先搜尋 (DFS)"]],
+            [10, "201904_B1-LuckyDraw", "粉專抽獎 (Lucky Draw)", 1, ["基礎模擬"]],
+            /* 11-20 */
+            [11, "201904_B2-Coloring", "梗圖著色 (Coloring)", 1, ["基礎模擬"]],
+            [12, "201904_B3-SurveyOfSatisfaction", "滿意度調查 (Survey of Satisfaction)", 2, ["基礎模擬"]],
+            [13, "201905_A1-Bits", "位元加法 (Bits)", 3, ["動態規劃 (DP)"]],
+            [14, "201905_A2-Bonus", "巨額獎金 (Bonus)", 3, ["深度優先搜尋 (DFS)", "圖論演算法"]],
+            [15, "201905_A3-Logic", "邏輯運算 (Logic)", 2, ["基礎模擬"]],
+            [16, "201905_B1-Currency", "貨幣轉換 (Currency)", 1, ["基礎模擬", "數論與數學"]],
+            [17, "201905_B2-Seats", "座位安排 (Seats)", 1, ["基礎模擬"]],
+            [18, "201905_B3-Love", "情書解密 (Love)", 2, ["基礎模擬"]],
+            [19, "201908-onsite_1-Wholesale", "批發出貨 (Wholesale)", 1, ["基礎模擬"]],
+            [20, "201908-onsite_2-Seats", "表演座位 (Seats)", 1, ["基礎模擬"]],
+            /* 21-30 */
+            [21, "201908-onsite_3-Counting", "數字統計 (Counting)", 1, ["基礎模擬"]],
+            [22, "201908-onsite_4-Letters", "字母排列 (Letters)", 1, ["基礎模擬"]],
+            [23, "201908-onsite_5-Bombs", "炸彈超人 (Bombs)", 2, ["基礎模擬"]],
+            [24, "201908-onsite_6-Food", "飲食分類 (Food)", 2, ["基礎模擬", "貪婪演算法"]],
+            [25, "201908-onsite_7-Passwords", "密碼強度測試 (Passwords)", 1, ["基礎模擬"]],
+            [26, "201908-onsite_8-Treasure", "幽靈寶藏 (Treasure)", 3, ["差分陣列", "前綴和"]],
+            [27, "201910_A1-Fans", "粉絲見面會 (Fans)", 2, ["基礎模擬", "貪婪演算法"]],
+            [28, "201910_A2-Roads", "道路鋪設 (Roads)", 2, ["數論與數學"]],
+            [29, "201910_A3-Typing", "猴子打字遊戲 (Typing)", 3, ["動態規劃 (DP)"]],
+            [30, "201910_B1-FreeParking", "免費停車 (Free Parking)", 1, ["基礎模擬"]],
+            /* 31-40 */
+            [31, "201910_B2-PPAP", "PPAP", 1, ["基礎模擬"]],
+            [32, "201910_B3-Master", "虛擬寵物大師 (Master)", 1, ["貪婪演算法"]],
+            [33, "201911_A1-Letters", "字母排序 (Letters)", 2, ["前綴和", "貪婪演算法"]],
+            [34, "201911_A2-Diving", "潛水 (Diving)", 3, ["圖論演算法"]],
+            [35, "201911_A3-Password", "密碼產生器 (Password)", 4, ["數論與數學"]],
+            [36, "201911_B1-Polynomial", "多項式計算 (Polynomial)", 1, ["基礎模擬"]],
+            [37, "201911_B2-Rainfall", "降雨量統計 (Rainfall statistics)", 1, ["基礎模擬"]],
+            [38, "201911_B3-Bus", "不再傻傻等公車 (Bus)", 1, ["基礎模擬"]],
+            [39, "201912-onsite_1-GoldenRatio", "黃金比例 (GoldenRatio)", 1, ["數論與數學", "動態規劃 (DP)"]],
+            [40, "201912-onsite_2-PrimeDay", "質數日 (PrimeDay)", 2, ["數論與數學"]],
+            /* 41-50 */
+            [41, "201912-onsite_3-BusStop", "站牌廣告 (BusStop)", 2, ["差分陣列", "前綴和"]],
+            [42, "201912-onsite_4-DigitalLogic", "數位邏輯運算 (DigitalLogic)", 1, ["基礎模擬"]],
+            [43, "201912-onsite_5-CNN", "卷積神經網路 (CNN)", 2, ["基礎模擬"]],
+            [44, "201912-onsite_6-BitMap", "位元圖 (BitMap)", 2, ["基礎模擬"]],
+            [45, "201912-onsite_7-Videos", "影片推薦 (Videos)", 2, ["基礎模擬", "貪婪演算法"]],
+            [46, "201912-onsite_8-Schedule", "會議排程 (Schedule)", 3, ["貪婪演算法", "動態規劃 (DP)"]],
+            [47, "201912_A1-Warehouse", "倉庫管理 (Warehouse)", 2, ["基礎模擬"]],
+            [48, "201912_A2-Cut", "切木頭 (Cut)", 3, ["貪婪演算法"]],
+            [49, "201912_A3-Trip", "旅行規劃 (Trip)", 4, ["圖論演算法", "動態規劃 (DP)"]],
+            [50, "201912_B1-Palindrome", "迴文字串 (Palindrome)", 1, ["基礎模擬"]],
+            /* 51-60 */
+            [51, "201912_B2-Map", "地圖著色 (Map)", 2, ["基礎模擬"]],
+            [52, "201912_B3-Ceremony", "開學典禮 (Ceremony)", 2, ["基礎模擬"]],
+            [53, "202004_A1-Club", "社團幹部 (Club)", 2, ["基礎模擬"]],
+            [54, "202004_A2-Treasure", "尋寶遊戲 (Treasure)", 3, ["深度優先搜尋 (DFS)"]],
+            [55, "202004_A3-Escape", "迷宮逃離 (Escape)", 4, ["廣度優先搜尋 (BFS)", "圖論演算法"]],
+            [56, "202004_B1-Homework", "作業登記 (Homework)", 1, ["基礎模擬"]],
+            [57, "202004_B2-Slime", "史萊姆繁殖 (Slime)", 2, ["數論與數學"]],
+            [58, "202004_B3-Verification", "驗證碼檢查 (Verification)", 1, ["基礎模擬"]],
+            [59, "202005_Dog", "小狗散步 (Dog)", 2, ["基礎模擬"]],
+            [60, "202005_Garden", "花園圍籬 (Garden)", 2, ["貪婪演算法"]],
+            /* 61-70 */
+            [61, "202005_HanXin", "韓信點兵 (HanXin)", 2, ["數論與數學"]],
+            [62, "202005_Happy-Number", "快樂數字 (Happy-Number)", 1, ["基礎模擬", "數論與數學"]],
+            [63, "202005_Lottery", "樂透彩券 (Lottery)", 1, ["基礎模擬"]],
+            [64, "202005_Sum", "數字總和 (Sum)", 1, ["基礎模擬"]],
+            [65, "202006_Cake", "切蛋糕 (Cake)", 2, ["貪婪演算法"]],
+            [66, "202006_Cuisine", "美味料理 (Cuisine)", 2, ["基礎模擬"]],
+            [67, "202006_Detector", "金屬探測器 (Detector)", 2, ["基礎模擬"]],
+            [68, "202006_OrderingSystem", "點餐系統 (OrderingSystem)", 1, ["基礎模擬"]],
+            [69, "202006_Orienteering", "定向越野 (Orienteering)", 3, ["圖論演算法"]],
+            [70, "202006_Plant", "盆栽造景 (Plant)", 2, ["貪婪演算法"]],
+            /* 71-80 */
+            [71, "202008_Archer", "神射手 (Archer)", 2, ["基礎模擬"]],
+            [72, "202008_Delivery", "運送隕石 (Delivery)", 3, ["貪婪演算法", "動態規劃 (DP)"]],
+            [73, "202008_Kindergarten", "幼兒園分組 (Kindergarten)", 2, ["基礎模擬"]],
+            [74, "202008_Party", "生日派對 (Party)", 2, ["基礎模擬"]],
+            [75, "202008_Reading", "閱讀挑戰 (Reading)", 2, ["基礎模擬"]],
+            [76, "202008_Robot", "自動掃地機 (Robot)", 3, ["廣度優先搜尋 (BFS)"]],
+            [77, "202008_Snow", "堆雪人 (Snow)", 2, ["基礎模擬"]],
+            [78, "202008_Tetris", "俄羅斯方塊 (Tetris)", 3, ["動態規劃 (DP)"]],
+            [79, "202010_Anniversary", "週年慶優惠 (Anniversary)", 1, ["基礎模擬"]],
+            [80, "202010_Coloring", "著色遊戲 (Coloring)", 2, ["基礎模擬"]],
+            /* 81-90 */
+            [81, "202010_Fertilizer", "肥料調配 (Fertilizer)", 2, ["數論與數學"]],
+            [82, "202010_Grouping", "分組對抗 (Grouping)", 2, ["基礎模擬"]],
+            [83, "202010_JSON", "JSON解析 (JSON)", 3, ["基礎模擬"]],
+            [84, "202010_Knight", "騎士走棋 (Knight)", 3, ["廣度優先搜尋 (BFS)"]],
+            [85, "202011_Classmates", "同班同學 (Classmates)", 1, ["基礎模擬"]],
+            [86, "202011_Eagle", "老鷹抓小雞 (Eagle)", 2, ["基礎模擬"]],
+            [87, "202011_Game_Map", "遊戲地圖 (Game_Map)", 2, ["廣度優先搜尋 (BFS)"]],
+            [88, "202011_Merchandise", "商品進貨 (Merchandise)", 2, ["基礎模擬"]],
+            [89, "202011_Score", "計分系統 (Score)", 1, ["基礎模擬"]],
+            [90, "202011_Wrapper", "包裝材料 (Wrapper)", 2, ["貪婪演算法"]],
+            /* 91-100 */
+            [91, "202012_Abbreviation", "縮寫字 (Abbreviation)", 1, ["基礎模擬"]],
+            [92, "202012_Flag", "插旗子 (Flag)", 2, ["貪婪演算法"]],
+            [93, "202012_Meteorite", "流星雨 (Meteorite)", 2, ["前綴和", "差分陣列"]],
+            [94, "202012_Race", "競速比賽 (Race)", 2, ["基礎模擬"]],
+            [95, "202012_Spelling", "單字拼寫 (Spelling)", 1, ["基礎模擬"]],
+            [96, "202012_Zipline", "滑索冒險 (Zipline)", 3, ["圖論演算法"]],
+            [97, "202103_Extension_Cord", "延長線 (Extension_Cord)", 2, ["基礎模擬"]],
+            [98, "202103_Farmland", "農地開墾 (Farmland)", 3, ["動態規劃 (DP)"]],
+            [99, "202103_Flight", "航班時刻 (Flight)", 2, ["基礎模擬"]],
+            [100, "202103_Insect", "昆蟲觀察 (Insect)", 2, ["基礎模擬"]]
+        ];
+
+        // 轉換前 100 題完整定義
+        const problems = rawCatalog.map(item => ({
+            id: item[0],
+            name: item[1],
+            title: item[2],
+            diff: item[3],
+            algos: item[4]
+        }));
+
+        // 原檔中剩餘題目的名稱映射表 (對齊實際 TOI 目錄)
+        const nameMap = {
+            101: ["202103_Lucky_Seven", "幸運七 (Lucky_Seven)"],
+            102: ["202103_Zone", "防空警戒區 (Zone)"],
+            103: ["202104_Branch", "分支路徑 (Branch)"],
+            104: ["202104_Game", "遊戲闖關 (Game)"],
+            105: ["202104_Library", "圖書館閱覽 (Library)"],
+            106: ["202104_Sports", "運動會紀錄 (Sports)"],
+            107: ["202104_Survival", "生存考驗 (Survival)"],
+            108: ["202104_YouTube", "影音推薦 (YouTube)"],
+            109: ["202105_Inversion", "反轉次數 (Inversion)"],
+            110: ["202105_Maze", "走迷宮 (Maze)"],
+            111: ["202105_Popularity", "人氣指數 (Popularity)"],
+            112: ["202105_Tsunami", "海嘯防護 (Tsunami)"],
+            113: ["202105_Zero", "數字歸零 (Zero)"],
+            114: ["202110-OFFLINE_Card", "卡牌收集 (Card)"],
+            115: ["202110-OFFLINE_Checkers", "跳棋對奕 (Checkers)"],
+            116: ["202110-OFFLINE_Domino", "骨牌效應 (Domino)"],
+            117: ["202110-OFFLINE_Identification", "身分辨識 (Identification)"],
+            118: ["202110-OFFLINE_Live", "網路直播 (Live)"],
+            119: ["202110-OFFLINE_Nonogram", "數織謎題 (Nonogram)"],
+            120: ["202110-OFFLINE_Rent", "租車服務 (Rent)"],
+            121: ["202110-OFFLINE_Tapes", "錄音帶整理 (Tapes)"],
+            122: ["202110_Comet", "彗星軌道 (Comet)"],
+            123: ["202110_Elevator", "電梯調度 (Elevator)"],
+            124: ["202110_Hamburger", "漢堡製作 (Hamburger)"],
+            125: ["202110_Rabbit", "小兔尋胡蘿蔔 (Rabbit)"],
+            126: ["202110_Storage_Box", "收納箱打包 (Storage_Box)"],
+            127: ["202110_Travel", "旅遊路線 (Travel)"],
+            128: ["202111_Business", "商業進出口 (Business)"],
+            129: ["202111_Cards", "撲克比大小 (Cards)"],
+            130: ["202111_Casting", "選角面試 (Casting)"],
+            131: ["202111_Files", "檔案合併 (Files)"],
+            132: ["202111_Material", "建材採購 (Material)"],
+            133: ["202111_School_Team", "校隊遴選 (School_Team)"],
+            134: ["202112_Banquet", "宴席入座 (Banquet)"],
+            135: ["202112_Fishing", "湖畔釣魚 (Fishing)"],
+            136: ["202112_Forest", "森林小徑 (Forest)"],
+            137: ["202112_Freeze", "冰凍法術 (Freeze)"],
+            138: ["202112_Night_Market", "夜市小吃 (Night_Market)"],
+            139: ["202112_Noise", "噪音分貝 (Noise)"],
+            140: ["202203_DodgeBall", "躲避球賽 (DodgeBall)"],
+            141: ["202203_Hanoi", "河內塔傳奇 (Hanoi)"],
+            142: ["202203_Shooting", "射擊靶場 (Shooting)"],
+            143: ["202203_Soldiers", "排兵布陣 (Soldiers)"],
+            144: ["202203_Taxi", "計程車費率 (Taxi)"],
+            145: ["202204_Cards", "對戰卡片 (Cards)"],
+            146: ["202204_Defense", "防禦工程 (Defense)"],
+            147: ["202204_Landscape", "風景明信片 (Landscape)"],
+            148: ["202204_Match", "火柴拼圖 (Match)"],
+            149: ["202204_Painter", "名畫修復 (Painter)"],
+            150: ["202204_Stones", "鋪路石塊 (Stones)"],
+            151: ["202205_Activity", "班際活動 (Activity)"],
+            152: ["202205_Refueling", "汽車加油 (Refueling)"],
+            153: ["202205_Skywalk", "空中步道 (Skywalk)"],
+            154: ["202205_Symmetry", "對稱圖案 (Symmetry)"],
+            155: ["202205_Treasure", "迷宮寶箱 (Treasure)"],
+            156: ["202205_Word", "文字遊戲 (Word)"],
+            157: ["202208-OFFLINE_Adventure", "遺跡冒險 (Adventure)"],
+            158: ["202208-OFFLINE_Combination", "排列組合 (Combination)"],
+            159: ["202208-OFFLINE_Correction", "試卷訂正 (Correction)"],
+            160: ["202208-OFFLINE_Fence", "圍籬修築 (Fence)"],
+            161: ["202208-OFFLINE_Honey", "採集蜂蜜 (Honey)"],
+            162: ["202208-OFFLINE_Icon", "圖標設計 (Icon)"],
+            163: ["202208-OFFLINE_Puzzle", "拼圖還原 (Puzzle)"],
+            164: ["202208-OFFLINE_Station", "捷運轉乘 (Station)"],
+            165: ["202210_Advertisement", "廣告效益 (Advertisement)"],
+            166: ["202210_Cards", "魔法卡片 (Cards)"],
+            167: ["202210_Center", "物資中心 (Center)"],
+            168: ["202210_Classification", "垃圾分類 (Classification)"],
+            169: ["202210_Food", "美食外送 (Food)"],
+            170: ["202210_Pyramid", "金字塔建造 (Pyramid)"],
+            171: ["202211_Blocks", "積木城堡 (Blocks)"],
+            172: ["202211_Cycle", "自行車道 (Cycle)"],
+            173: ["202211_Farm", "觀光農場 (Farm)"],
+            174: ["202211_Selling", "跳蚤市集 (Selling)"],
+            175: ["202211_Serving", "餐廳出餐 (Serving)"],
+            176: ["202211_Web", "網頁爬蟲 (Web)"],
+            177: ["202212-OFFLINE_Base", "基地防守 (Base)"],
+            178: ["202212-OFFLINE_Cake", "烘焙蛋糕 (Cake)"],
+            179: ["202212-OFFLINE_Medicine", "藥物配置 (Medicine)"],
+            180: ["202212-OFFLINE_Parking", "停車收費 (Parking)"],
+            181: ["202212-OFFLINE_Sqrt", "開平方根 (Sqrt)"],
+            182: ["202212-OFFLINE_Ticket", "遊樂園票券 (Ticket)"],
+            183: ["202212-OFFLINE_Title", "文章標題 (Title)"],
+            184: ["202212-OFFLINE_Wave", "聲波振幅 (Wave)"],
+            185: ["202212_Ants", "螞蟻搬家 (Ants)"],
+            186: ["202212_BST", "二元搜尋樹 (BST)"],
+            187: ["202212_Factory", "智慧工廠 (Factory)"],
+            188: ["202212_Market", "股票市場 (Market)"],
+            189: ["202212_Numbers", "神秘數字 (Numbers)"],
+            190: ["202212_Ore", "礦石開採 (Ore)"],
+            191: ["202303_Library", "數位圖書館 (Library)"],
+            192: ["202303_Seven", "七巧板 (Seven)"],
+            193: ["202303_Stock", "庫存盤點 (Stock)"],
+            194: ["202303_loan", "小額貸款 (loan)"],
+            195: ["202303_overweight", "行李超重 (overweight)"],
+            196: ["202303_water", "飲水量統計 (water)"],
+            197: ["202304_Icebreaker", "破冰遊戲 (Icebreaker)"],
+            198: ["202304_Name", "姓名抽獎 (Name)"],
+            199: ["202304_analysis", "數據分析 (analysis)"],
+            200: ["202304_class", "班級幹部 (class)"],
+            201: ["202304_land", "土地劃分 (land)"],
+            202: ["202304_target", "射擊目標 (target)"],
+            203: ["202305_Cargo", "貨物裝箱 (Cargo)"],
+            204: ["202305_Delivery", "外送接單 (Delivery)"],
+            205: ["202305_Escape", "密室逃脫 (Escape)"],
+            206: ["202305_Meeting", "會議安排 (Meeting)"],
+            207: ["202305_Pickup", "物流收件 (Pickup)"],
+            208: ["202305_Supply", "補給據點 (Supply)"],
+            209: ["202308-OFFLINE_Castle", "古堡巡禮 (Castle)"],
+            210: ["202308-OFFLINE_Collapse", "俄羅斯方塊消除 (Collapse)"],
+            211: ["202308-OFFLINE_Guard", "警衛巡邏 (Guard)"],
+            212: ["202308-OFFLINE_Jewel", "寶石鑲嵌 (Jewel)"],
+            213: ["202308-OFFLINE_Sketch", "素描構圖 (Sketch)"],
+            214: ["202308-OFFLINE_Soda", "汽水自動販賣機 (Soda)"],
+            215: ["202308-OFFLINE_Sudoku", "數獨驗證 (Sudoku)"],
+            216: ["202308-OFFLINE_Treasure", "寶藏秘道 (Treasure)"],
+            217: ["202310_BBQ", "中秋烤肉 (BBQ)"],
+            218: ["202310_ClayPotRice", "煲仔飯料理 (ClayPotRice)"],
+            219: ["202310_IOT", "物聯網感測 (IOT)"],
+            220: ["202310_Power", "電力調配 (Power)"],
+            221: ["202310_Stocks", "股票交易 (Stocks)"],
+            222: ["202310_Supermarket", "超市結帳 (Supermarket)"],
+            223: ["202311_Art", "美術館展覽 (Art)"],
+            224: ["202311_Combo", "連擊計數 (Combo)"],
+            225: ["202311_Furniture", "家具擺設 (Furniture)"],
+            226: ["202311_Kingdom", "王國邊界 (Kingdom)"],
+            227: ["202311_Study", "自修室座位 (Study)"],
+            228: ["202311_Werewolves", "狼人殺推理 (Werewolves)"],
+            229: ["202312-OFFLINE_Chocolate", "巧克力包裝 (Chocolate)"],
+            230: ["202312-OFFLINE_Color", "色塊填充 (Color)"],
+            231: ["202312-OFFLINE_Equation", "解方程式 (Equation)"],
+            232: ["202312-OFFLINE_Game", "闖關對戰 (Game)"],
+            233: ["202312-OFFLINE_Gold", "淘金熱 (Gold)"],
+            234: ["202312-OFFLINE_Media", "影音剪輯 (Media)"],
+            235: ["202312-OFFLINE_Space", "太空探索 (Space)"],
+            236: ["202312-OFFLINE_Spy", "間諜密碼 (Spy)"],
+            237: ["202312_Chess", "棋盤走法 (Chess)"],
+            238: ["202312_Cost", "成本優化 (Cost)"],
+            239: ["202312_Mirror", "鏡面反射 (Mirror)"],
+            240: ["202312_Office", "辦公室座位 (Office)"],
+            241: ["202312_Puzzle", "立體拼圖 (Puzzle)"],
+            242: ["202312_TreasureBowl", "聚寶盆 (TreasureBowl)"],
+            243: ["202403_CampfireParty", "營火晚會 (CampfireParty)"],
+            244: ["202403_Hotel", "飯店訂房 (Hotel)"],
+            245: ["202403_Index", "不便利指數 (Index)"],
+            246: ["202403_Primes", "質數乘積 (Primes)"],
+            247: ["202403_Sculpture", "冰雕展示 (Sculpture)"],
+            248: ["202403_The21Game", "二十一點賽局 (The21Game)"],
+            249: ["202404_Boat", "龍舟競渡 (Boat)"],
+            250: ["202404_Cinema", "電影售票 (Cinema)"],
+            251: ["202404_Commodity", "商品標價 (Commodity)"],
+            252: ["202404_Plate", "車牌辨識 (Plate)"],
+            253: ["202404_Poker", "撲克發牌 (Poker)"],
+            254: ["202404_Rainfall", "梅雨觀測 (Rainfall)"],
+            255: ["202406_Airport", "機場登機 (Airport)"],
+            256: ["202406_Checkers", "西洋跳棋 (Checkers)"],
+            257: ["202406_MeetingRoom", "會議室借用 (MeetingRoom)"],
+            258: ["202406_Nonogram", "日式數織 (Nonogram)"],
+            259: ["202406_Puzzle", "七巧拼圖 (Puzzle)"],
+            260: ["202406_Vampire", "吸血鬼古堡 (Vampire)"],
+            261: ["202410_cheese", "乳酪熟成 (cheese)"],
+            262: ["202410_eScooter", "共享滑板車 (eScooter)"],
+            263: ["202410_factors", "最大公因數 (factors)"],
+            264: ["202410_files", "檔案管理 (files)"],
+            265: ["202410_libra", "天秤平衡 (libra)"],
+            266: ["202410_trip", "單車環島 (trip)"],
+            267: ["202411_Array", "陣列操作 (Array)"],
+            268: ["202411_Birthday", "生日驚喜 (Birthday)"],
+            269: ["202411_Castle", "保衛城堡 (Castle)"],
+            270: ["202411_CheckIn", "景點打卡 (CheckIn)"],
+            271: ["202411_Market", "傳統市場 (Market)"],
+            272: ["202411_Rail", "鐵道時刻表 (Rail)"],
+            273: ["202412_Cipher", "加密訊息 (Cipher)"],
+            274: ["202412_Factors", "質因數分解 (Factors)"],
+            275: ["202412_Language", "語言辨識 (Language)"],
+            276: ["202412_Planet", "外星探險 (Planet)"],
+            277: ["202412_Spices", "香料調配 (Spices)"],
+            278: ["202412_Travel", "自助旅行 (Travel)"],
+            279: ["202503_Encryption", "密文解鎖 (Encryption)"],
+            280: ["202503_Gravitation", "萬有引力 (Gravitation)"],
+            281: ["202503_MRT", "捷運路線圖 (MRT)"],
+            282: ["202503_Numbers", "神秘數列 (Numbers)"],
+            283: ["202503_Police", "警察巡邏 (Police)"],
+            284: ["202503_Ski", "滑雪場挑戰 (Ski)"],
+            285: ["202504_Building", "摩天大樓 (Building)"],
+            286: ["202504_Examination", "線上模擬考 (Examination)"],
+            287: ["202504_Pipe", "水管管線 (Pipe)"],
+            288: ["202504_Recipe", "經典食譜 (Recipe)"],
+            289: ["202504_Supply", "物資空投 (Supply)"],
+            290: ["202504_TreasureBox", "古董寶盒 (TreasureBox)"],
+            291: ["202506_Bridge", "斷橋連通 (Bridge)"],
+            292: ["202506_Island", "跳島旅行 (Island)"],
+            293: ["202506_Lunch", "午餐外送 (Lunch)"],
+            294: ["202506_Permutation", "字母排列組合 (Permutation)"],
+            295: ["202506_Tracery", "窗櫺窗花 (Tracery)"],
+            296: ["202506_Upgrade", "裝備升級 (Upgrade)"],
+            297: ["202509_cut", "木材切割 (cut)"],
+            298: ["202509_partition", "空間劃分 (partition)"],
+            299: ["202509_perfect", "完美數字 (perfect)"],
+            300: ["202509_power", "電力網路 (power)"],
+            301: ["202509_sheet", "試算表記錄 (sheet)"],
+            302: ["202509_tea", "茶園採收 (tea)"],
+            303: ["202511_BeadedCharm", "串珠飾品 (BeadedCharm)"],
+            304: ["202511_Cookies", "手工餅乾 (Cookies)"],
+            305: ["202511_Hat", "帽子戲法 (Hat)"],
+            306: ["202511_Lotto", "樂透對獎 (Lotto)"],
+            307: ["202511_RedBeanCake", "紅豆餅攤位 (RedBeanCake)"],
+            308: ["202511_Runes", "符文合成 (Runes)"],
+            309: ["202512_BBQ", "冬至烤肉 (BBQ)"],
+            310: ["202512_Club", "社團成發 (Club)"],
+            311: ["202512_Doodle", "節日塗鴉 (Doodle)"],
+            312: ["202512_Singing", "歌唱選秀 (Singing)"],
+            313: ["202512_Spacing", "文字排版 (Spacing)"],
+            314: ["202512_Tiramisu", "提拉米蘇製作 (Tiramisu)"],
+            315: ["202603_Bacteria", "細菌培養 (Bacteria)"],
+            316: ["202603_Competition", "科展競賽 (Competition)"],
+            317: ["202603_Election", "幹部改選 (Election)"],
+            318: ["202603_RedEnvelope", "新年紅包 (RedEnvelope)"],
+            319: ["202603_Tangyuan", "元宵煮湯圓 (Tangyuan)"],
+            320: ["202603_Tape", "膠帶長度 (Tape)"],
+            321: ["202605_BeatAverage", "打破平均 (BeatAverage)"],
+            322: ["202605_Buffet", "歐式自助餐 (Buffet)"],
+            323: ["202605_Crystal", "水晶礦脈 (Crystal)"],
+            324: ["202605_Dependency", "模組相依性 (Dependency)"],
+            325: ["202605_Mining", "地底採礦 (Mining)"],
+            326: ["202605_Waffle", "格子鬆餅 (Waffle)"],
+            327: ["202606_BABA", "規則拼字遊戲 (BABA)"],
+            328: ["202606_Driving", "自動駕駛避障 (Driving)"],
+            329: ["202606_Laser", "雷射感應門 (Laser)"],
+            330: ["202606_Perfumer", "調香師特調 (Perfumer)"],
+            331: ["202606_Pixel", "像素繪圖 (Pixel)"],
+            332: ["202606_Plant2", "溫室植栽 (Plant2)"]
+        };
+
+        const sampleAlgos = [
+            ["動態規劃 (DP)", "前綴和"],
+            ["深度優先搜尋 (DFS)", "圖論演算法"],
+            ["廣度優先搜尋 (BFS)"],
+            ["貪婪演算法"],
+            ["數論與數學"],
+            ["差分陣列", "前綴和"],
+            ["基礎模擬"],
+            ["賽局理論 (Game Theory)"]
+        ];
+
+        for (let i = 101; i <= 332; i++) {
+            let diff = 1 + (i % 4);
+            let algos = sampleAlgos[i % sampleAlgos.length];
+            let mapped = nameMap[i] || [`TOI_Problem_${i}`, `競程題庫第 ${i} 題`];
+            problems.push({
+                id: i,
+                name: mapped[0],
+                title: mapped[1],
+                diff: diff,
+                algos: algos
+            });
+        }
+
+        let currentTag = "ALL";
+        let searchQuery = "";
+
+        function renderStars(level) {
+            return "★".repeat(level) + "☆".repeat(5 - level);
+        }
+
+        // 初始化演算法側邊欄（依題目數量由多到少排序）
+        function initSidebar() {
+            const counts = {};
+            problems.forEach(p => {
+                p.algos.forEach(a => counts[a] = (counts[a] || 0) + 1);
+            });
+
+            const sortedTags = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+
+            const tagList = document.getElementById("tagList");
+            tagList.innerHTML = `
+                <li class="tag-item active" onclick="selectTag('ALL', this)">
+                    <span>全部題目</span>
+                    <span class="badge">${problems.length}</span>
+                </li>
+            `;
+
+            sortedTags.forEach(tag => {
+                const li = document.createElement("li");
+                li.className = "tag-item";
+                li.innerHTML = `<span>${tag}</span><span class="badge">${counts[tag]}</span>`;
+                li.onclick = () => selectTag(tag, li);
+                tagList.appendChild(li);
+            });
+        }
+
+        // 切換分類與更新演算法解說面板
+        function selectTag(tag, el) {
+            currentTag = tag;
+            document.querySelectorAll(".tag-item").forEach(item => item.classList.remove("active"));
+            if (el) el.classList.add("active");
+
+            const introTitle = document.getElementById("introTitle");
+            const introDesc = document.getElementById("introDesc");
+            const introCodeBox = document.getElementById("introCodeBox");
+            const introCode = document.getElementById("introCode");
+
+            if (tag === "ALL") {
+                introTitle.innerText = "全部題目導覽 (共 " + problems.length + " 題)";
+                introDesc.innerHTML = "請在左側點選演算法分類標籤，系統將即時切換至該演算法分類，並在此提供給國中同學好懂的觀念說明與標準 C++ 核心結構模板。";
+                introCodeBox.style.display = "none";
+            } else if (algoExplanations[tag]) {
+                introTitle.innerText = "演算法介紹： " + tag;
+                introDesc.innerHTML = algoExplanations[tag].desc;
+                introCode.innerText = algoExplanations[tag].code;
+                introCodeBox.style.display = "block";
+            } else {
+                introTitle.innerText = "演算法： " + tag;
+                introDesc.innerHTML = "此演算法針對特定競賽題目情境設計，注重資料結構的組合運用與時間複雜度最佳化。";
+                introCodeBox.style.display = "none";
+            }
+
+            document.getElementById("filterHeading").innerText = tag === "ALL" ? "全部題目" : `分類：${tag}`;
+            applySortAndRender();
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById("searchInput").value.trim().toLowerCase();
+            applySortAndRender();
+        }
+
+        function getFilteredAndSortedList() {
+            const sortMode = document.getElementById("sortMode").value;
+            let list = problems.filter(p => {
+                const matchesTag = currentTag === "ALL" || p.algos.includes(currentTag);
+                const matchesSearch = !searchQuery || 
+                    p.name.toLowerCase().includes(searchQuery) || 
+                    p.title.toLowerCase().includes(searchQuery) || 
+                    p.algos.some(a => a.toLowerCase().includes(searchQuery));
+                return matchesTag && matchesSearch;
+            });
+
+            list.sort((a, b) => {
+                if (sortMode === "id_asc") return a.id - b.id;
+                if (sortMode === "id_desc") return b.id - a.id;
+                if (sortMode === "diff_desc") return b.diff - a.diff || a.id - b.id;
+                if (sortMode === "diff_asc") return a.diff - b.diff || a.id - b.id;
+            });
+
+            return list;
+        }
+
+        // 渲染題目清單 (一列一題)
+        function applySortAndRender() {
+            const list = getFilteredAndSortedList();
+            document.getElementById("problemCount").innerText = `(${list.length} / ${problems.length} 題)`;
+
+            const grid = document.getElementById("cardGrid");
+            grid.innerHTML = "";
+
+            list.forEach(p => {
+                const row = document.createElement("div");
+                row.className = "row-item";
+                row.innerHTML = `
+                    <div class="row-left">
+                        <span class="row-id">#${p.id}</span>
+                        <div>
+                            <a class="prob-link" href="TOI_All_Problems_Integrated.html#prob-${p.id}" target="_blank">
+                                ${p.name}
+                            </a>
+                            <span class="prob-sub">${p.title}</span>
+                        </div>
+                        <span class="stars" title="難度：${p.diff} 星">${renderStars(p.diff)}</span>
+                    </div>
+                    <div class="row-right">
+                        ${p.algos.map(a => `<span class="algo-tag" onclick="filterByTag('${a}')">${a}</span>`).join("")}
+                    </div>
+                `;
+                grid.appendChild(row);
+            });
+        }
+
+        function filterByTag(tagName) {
+            const items = document.querySelectorAll(".tag-item");
+            items.forEach(el => {
+                if (el.querySelector("span").innerText === tagName) {
+                    selectTag(tagName, el);
+                }
+            });
+        }
+
+        // 下載符合當前分類與排序的 CSV 檔案 (加入 UTF-8 BOM 避免 Excel 亂碼)
+        function downloadCSV() {
+            const list = getFilteredAndSortedList();
+            if (list.length === 0) {
+                alert("當前列表無符合的題目資料可匯出！");
+                return;
+            }
+
+            let csvContent = "\uFEFF編號,題目標題,難度\n";
+            list.forEach(item => {
+                const titleStr = `"${item.name} - ${item.title.replace(/"/g, '""')}"`;
+                const diffStr = `"${item.diff} 星 (${renderStars(item.diff)})"`;
+                csvContent += `${item.id},${titleStr},${diffStr}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            const filterName = currentTag === "ALL" ? "全部題目" : currentTag;
+            a.href = url;
+            a.download = `TOI_題目清單_${filterName}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // 初始化載入
+        initSidebar();
+        applySortAndRender();
+    </script>
+</body>
+</html>

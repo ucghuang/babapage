@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#2 201903_A2-QueenBee - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#2</span> 201903_A2-QueenBee (尋找蜂后)</h1>
+                <div class="header-right">
+                    <a href="../questions/201903_A2-QueenBee(Q).pdf" class="file-name-meta" target="_blank">PDF: 201903_A2-QueenBee(Q).pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-2" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 科學家發現一種新型蜜蜂，其蜂巢結構為立方體，長、寬、高分別為 $L$、$W$、$H$。蜂巢被蜂巢壁分割為好幾個小空間（0 代表空間，1 代表蜂巢壁），蜂后住在蜂巢內體積最大（空格數最多）的連通空間中。請寫一個程式計算蜂巢中的最大空間包含多少格。</p>
+                    <p><strong>輸入格式：</strong> 第一列有三個正整數 $L, W, H$ ($1 \le L, W, H \le 135$)；第二列共有 $L \times W \times H$ 個字元，字元為 '0' 或 '1'，依序代表各層的蜂巢結構。</p>
+                    <p><strong>輸出格式：</strong> 輸出一列整數，代表蜂巢中的最大空間大小。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【廣度優先搜尋 (BFS) / 三維空間連通塊大小計算】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>廣度優先搜尋 (BFS) 與三維網格走訪策略</strong>：</p>
+                    <ul>
+                        <li>三維空間走訪：每個點 $(x, y, z)$ 在三維空間中最多有 6 個相鄰方向（上、下、左、右、前、後）。</li>
+                        <li>連通塊計算：我們使用二維/三維陣列記錄拜訪狀態（<code>visit</code>）與佇列（<code>queue</code>）。當遇到尚未造訪的空白格 ('0') 時，即以其為起點發動 BFS，向 6 個方向擴散，將所有相連的空白格全部走訪過一次，並計算該連通區塊的大小。</li>
+                        <li>透過全域變數記錄並隨時更新最大空間（<code>big = max(big, now)</code>），最終即可找到蜂后所在的 最大空間。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 詳細拆解與三維空間推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+3 3 3
+010101010001001111111101111</pre>
+                    <ul>
+                        <li><strong>尺寸大小與結構：</strong> 長 $L = 3$，寬 $W = 3$，高 $H = 3$（總計 $3 \times 3 \times 3 = 27$ 個格子）。將一維字串依照高度分成 3 層來看：
+                            <ul>
+                                <li><strong>第 0 層 ($H=0$)：</strong> <code>0 1 0 / 1 0 1 / 0 1 0</code></li>
+                                <li><strong>第 1 層 ($H=1$)：</strong> <code>0 0 0 / 1 0 0 / 1 1 1</code></li>
+                                <li><strong>第 2 層 ($H=2$)：</strong> <code>1 1 1 / 1 1 0 / 1 1 1</code></li>
+                            </ul>
+                        </li>
+                        <li><strong>BFS 擴散過程：</strong> 從任意未拜訪的空間 <code>'0'</code> 出發，透過 6 個方向（上下、左右、前後）在三維空間中向外擴散，走訪所有相連通的空白格。經過計算，此蜂巢中最大的連通空間總共包含 7 個格子的空間。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>7</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 詳細拆解與三維空間推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+1 2 4
+10000100</pre>
+                    <ul>
+                        <li><strong>尺寸大小與結構：</strong> 長 $L = 1$，寬 $W = 2$，高 $H = 4$（總計 $1 \times 2 \times 4 = 8$ 個格子）。
+                            <ul>
+                                <li><strong>第 0 層 ($H=0$)：</strong> <code>1 0</code></li>
+                                <li><strong>第 1 層 ($H=1$)：</strong> <code>0 0</code></li>
+                                <li><strong>第 2 層 ($H=2$)：</strong> <code>0 1</code></li>
+                                <li><strong>第 3 層 ($H=3$)：</strong> <code>0 0</code></li>
+                            </ul>
+                        </li>
+                        <li><strong>BFS 擴散過程：</strong> 排除蜂巢壁 <code>'1'</code> 後，其餘的 <code>'0'</code> 透過三維相鄰關係彼此連通，經過 BFS 計算，最大的連通空間大小為 6 格。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>6</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;bits/stdc++.h&gt;  // 引入常用 C++ 標頭檔
+using namespace std;
+
+char arr[305][305][305]= {};  // 三維字元陣列，儲存蜂巢結構 ('0' 代表空間，'1' 代表蜂巢壁)
+int visit[305][305][305]= {};  // 記錄三維空間中每個座標是否已經被 BFS 造訪過
+int enqueue[305][305][305]= {};  // 記錄每個座標是否已經被加入過佇列中，避免重複進隊
+int now=0;  // 記錄當前正在計算的連通空間大小
+int big=0;  // 記錄所有連通空間中的最大空間大小 (即蜂后所在區域)
+
+// 定義結構體儲存三維空間中的座標 (L, W, H)
+struct st
+{
+    int L,W,H;
+};
+
+// BFS 函式：以廣度優先搜尋走訪並計算三維空間中連通的空白格數量
+void BFS(st temp,int L,int W,int H)
+{
+    queue&lt;st&gt; next;  // 宣告儲存座標的標準函式庫佇列
+    next.push(temp);  // 將起始點放入佇列中
+    
+    while(!next.empty())  // 當佇列不為空時持續擴散
+    {
+        st pos=next.front();  // 取出佇列最前端的座標
+        now++;  // 當前連通空間大小加 1
+        big=max(big,now);  // 更新全域最大空間紀錄
+        next.pop();  // 將該點移出佇列
+        
+        int x=pos.H, y=pos.L, z=pos.W;  // 取得當前點的高(x)、長(y)、寬(z)座標
+        enqueue[x][y][z]=0;  // 清除進隊標記
+        visit[x][y][z]=1;  // 標記該點為已造訪
+        
+        // 定義三維空間中的 6 個移動方向（上下、左右、前後）
+        int movex[6]={1,-1,0,0,0,0};
+        int movey[6]={0,0,1,-1,0,0};
+        int movez[6]={0,0,0,0,1,-1};
+        
+        // 迴圈檢查 6 個相鄰方向
+        for(int i=0;i&lt;6;i+=1)
+        {
+            int nx=x+movex[i];
+            int ny=y+movey[i];
+            int nz=z+movez[i];
+            
+            // 檢查新座標是否在蜂巢的合法範圍內
+            if(nx&gt;=0 &amp;&amp; ny&gt;=0 &amp;&amp; nz&gt;=0 &amp;&amp; nx&lt;H &amp;&amp; ny&lt;L &amp;&amp; nz&lt;W)
+            {
+                // 若該相鄰點未被造訪過、不是蜂巢壁('1')且不在佇列中
+                if(!visit[nx][ny][nz] &amp;&amp; arr[nx][ny][nz]!='1' &amp;&amp; !enqueue[nx][ny][nz])
+                {
+                    next.push({ny,nz,nx});  // 將新座標推入佇列
+                    enqueue[nx][ny][nz]=1;  // 標記已加入佇列
+                }
+            }
+        }
+    }
+}
+
+int main()
+{
+    int L,W,H;
+    scanf("%d%d%d",&amp;L,&amp;W,&amp;H);  // 讀入蜂巢的長 L、寬 W、高 H
+    
+    // 依序讀入三維蜂巢的每個字元狀態
+    for(int i=0; i&lt;H; i+=1)
+    {
+        for(int j=0; j&lt;L; j+=1)
+        {
+            for(int k=0; k&lt;W; k+=1)
+            {
+                scanf(" %c",&amp;arr[i][j][k]);  // 讀入字元 ('0' 或 '1')
+            }
+        }
+    }
+    
+    // 走訪三維蜂巢中的每一個格子，尋找未被造訪的空間起點
+    for(int i=0; i&lt;H; i+=1)
+    {
+        for(int j=0; j&lt;L; j+=1)
+        {
+            for(int k=0; k&lt;W; k+=1)
+            {
+                // 若該格是空間 ('0') 且尚未被造訪過
+                if(arr[i][j][k]=='0' &amp;&amp; !visit[i][j][k])
+                {
+                    now=0;  // 重置當前連通塊計數器
+                    BFS({j,k,i},L,W,H);  // 發動 BFS 計算該連通空間大小
+                }
+            }
+        }
+    }
+    
+    printf("%d\n",big);  // 輸出整座蜂巢中的最大空間大小
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

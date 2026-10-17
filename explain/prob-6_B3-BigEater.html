@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#6 201903_B3-BigEater - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#6</span> 201903_B3-BigEater (大吃大喝)</h1>
+                <div class="header-right">
+                    <a href="../questions/201903_B3-BigEater(Q).pdf" class="file-name-meta" target="_blank">PDF: 201903_B3-BigEater(Q).pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-6" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> Wayne 想要將身上所有的錢拿來買 32 元的蘋果派和 55 元的大杯玉米濃湯。他的堅持是必須「蘋果派與玉米濃湯交替著吃」，若無法形成交替則停止進食。請寫一個程式列印出他大吃大喝的過程。</p>
+                    <ul>
+                        <li><strong>輸入格式：</strong> 三個整數 $N$、$M$、$K$，以空白隔開。
+                            <ul>
+                                <li>$N$：總共帶了多少錢（$0 \le N \le 500$）</li>
+                                <li>$M$：每隔幾分鐘進食一次（$0 < M \le 60$）</li>
+                                <li>$K$：起始食物種類（$K=0$ 代表從蘋果派開始吃，$K=1$ 代表從玉米濃湯開始）</li>
+                            </ul>
+                        </li>
+                        <li><strong>輸出格式：</strong> 依序輸出經過的時間、吃的食物與剩餘金額，或是在一開始無法進食時輸出特定訊息。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【迴圈模擬與條件分支邏輯】</h2>
+                <div class="analysis-box">
+                    <p>本題屬於經典的<strong>模擬題（Simulation）</strong>。程式核心邏輯包含：</p>
+                    <ul>
+                        <li><strong>初始條件檢查：</strong> 若初始金額小於 32 元，或選擇從玉米濃湯開始 ($K=1$) 但金額小於 55 元，則無法進行任何消費，直接輸出 <code>Wayne can't eat and drink.</code>。</li>
+                        <li><strong>交替進食迴圈：</strong> 利用 <code>while</code> 迴圈模擬時間推進與金錢扣除。透過變數 $K$ 的值（0 或 1）來決定當前該買蘋果派還是玉米濃湯。</li>
+                        <li><strong>狀態切換：</strong> 每次成功購買後，金額扣除對應品項價格（32 或 55），印出對應的時間點、食物名稱與剩餘金額文字（注意零錢單複數的英文文法細節：<code>dollar</code> vs <code>dollars</code> vs <code>doesn't have money</code>），並將 $K$ 的值在 0 與 1 之間切換以達到交替效果，同時將時間累加 $M$ 分鐘。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+65 5 0</pre>
+                    <ul>
+                        <li><strong>初始狀態：</strong> $N = 65$（元）, $M = 5$（分鐘）, $K = 0$（從蘋果派開始）, <code>time = 0</code>。</li>
+                        <li><strong>迴圈第 1 次：</strong>
+                            <ul>
+                                <li>$K = 0$，檢查 $N \ge 32$（$65 \ge 32$ 成立）。</li>
+                                <li>$N$ 扣除 32：$65 - 32 = 33$。</li>
+                                <li>輸出時間 0：<code>0: Wayne eats an Apple pie, </code></li>
+                                <li>切換 $K = 1$。</li>
+                                <li>檢查剩餘金額 $N = 33$，印出：<code>and now he has 33 dollars.</code></li>
+                                <li>時間推進：<code>time = 0 + 5 = 5</code>。</li>
+                            </ul>
+                        </li>
+                        <li><strong>迴圈第 2 次：</strong>
+                            <ul>
+                                <li>$K = 1$，檢查 $N \ge 55$（$33 \ge 55$ 不成立！無法買玉米濃湯）。</li>
+                                <li>觸發 <code>break</code> 跳出迴圈。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong><br>0: Wayne eats an Apple pie, and now he has 33 dollars.</p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+143 18 1</pre>
+                    <ul>
+                        <li><strong>初始狀態：</strong> $N = 143, M = 18, K = 1, \text{time} = 0$。</li>
+                        <li><strong>迴圈第 1 次 ($K = 1$)：</strong> $143 \ge 55$ 成立 $\rightarrow$ 買玉米濃湯，花費 55 $\rightarrow$ 剩餘 $143 - 55 = 88$ $\rightarrow$ 切換 $K = 0$。<br>輸出：<code>0: Wayne drinks a Corn soup, and now he has 88 dollars.</code><br>$\text{time} = 0 + 18 = 18$。</li>
+                        <li><strong>迴圈第 2 次 ($K = 0$)：</strong> $88 \ge 32$ 成立 $\rightarrow$ 買蘋果派，花費 32 $\rightarrow$ 剩餘 $88 - 32 = 56$ $\rightarrow$ 切換 $K = 1$。<br>輸出：<code>18: Wayne eats an Apple pie, and now he has 56 dollars.</code><br>$\text{time} = 18 + 18 = 36$。</li>
+                        <li><strong>迴圈第 3 次 ($K = 1$)：</strong> $56 \ge 55$ 成立 $\rightarrow$ 買玉米濃湯，花費 55 $\rightarrow$ 剩餘 $56 - 55 = 1$ $\rightarrow$ 切換 $K = 0$。<br>輸出：<code>36: Wayne drinks a Corn soup, and now he has 1 dollar.</code><br>$\text{time} = 36 + 18 = 54$。</li>
+                        <li><strong>迴圈第 4 次 ($K = 0$)：</strong> $1 \ge 32$ 不成立 $\rightarrow$ <code>break</code> 結束。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong><br>0: Wayne drinks a Corn soup, and now he has 88 dollars.<br>18: Wayne eats an Apple pie, and now he has 56 dollars.<br>36: Wayne drinks a Corn soup, and now he has 1 dollar.</p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 3 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+55 1 1</pre>
+                    <ul>
+                        <li>初始金額 $N = 55, K = 1$。購買玉米濃湯剛好花完 55 元，剩餘金額為 0。</li>
+                        <li>輸出金額時特別處理 <code>and now he doesn’t have money.</code>。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 3 結果：</strong><br>0: Wayne drinks a Corn soup, and now he doesn’t have money.</p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 4 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+31 10 0</pre>
+                    <ul>
+                        <li>初始金額 $N = 31$ 小於蘋果派價格 32，直接進入初始條件檢查，判定無法進食。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 4 結果：</strong><br>Wayne can’t eat and drink.</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;iostream&gt; // 引入標準輸入輸出標頭檔，以便使用 cin 與 cout
+
+using namespace std;
+
+int main()
+{
+    int n, m, k; // 宣告三個整數變數：n 代表總金額，m 代表間隔分鐘數，k 代表起始食物種類
+    cin &gt;&gt; n &gt;&gt; m &gt;&gt; k; // 依序讀入總金額、間隔時間與起始狀態
+
+    int time = 0, check = 0; // 宣告時間變數 time 初始化為 0，以及檢查旗標 check 初始化為 0
+    
+    // 檢查初始條件：若總金額小於 32（買不起蘋果派），或者選擇從玉米濃湯開始 (k==1) 但金額小於 55（買不起玉米濃湯）
+    if((n &lt; 32) || (k == 1 &amp;&amp; n &lt; 55))
+    {
+        cout &lt;&lt; "Wayne can't eat and drink." &lt;&lt; endl; // 輸出無法進食的提示訊息
+        check = 1; // 將檢查旗標設為 1，代表不需要進入後續的購買迴圈
+    }
+    
+    // 當金額大於等於 0 且 check 等於 0（代表符合進食條件）時，持續進行迴圈模擬
+    while(n &gt;= 0 &amp;&amp; check == 0)
+    {
+        if(k == 0) // 若當前輪到吃蘋果派 (k == 0)
+        {
+            if(n &gt;= 32) // 檢查剩餘金額是否足以支付蘋果派的 32 元
+            {
+                n -= 32; // 總金額扣除蘋果派價格 32 元
+                cout &lt;&lt; time &lt;&lt; ": Wayne eats an Apple pie, "; // 輸出當前時間與吃了蘋果派的前半句訊息
+                k = 1; // 將下一次的食物種類切換為玉米濃湯 (k = 1)
+            }
+            else break; // 若錢不夠買蘋果派，則跳出迴圈
+        }
+        else if(k == 1) // 若當前輪到喝玉米濃湯 (k == 1)
+        {
+            if(n &gt;= 55) // 檢查剩餘金額是否足以支付玉米濃湯的 55 元
+            {
+                n -= 55; // 總金額扣除玉米濃湯價格 55 元
+                cout &lt;&lt; time &lt;&lt; ": Wayne drinks a Corn soup, "; // 輸出當前時間與喝了玉米濃湯的前半句訊息
+                k = 0; // 將下一次的食物種類切換為蘋果派 (k = 0)
+            }
+            else break; // 若錢不夠買玉米濃湯，則跳出迴圈
+        }
+        
+        // 根據剩餘金額 n 的不同數值，輸出對應的英文單複數剩餘金額描述
+        if(n &gt; 1) cout &lt;&lt; "and now he has " &lt;&lt; n &lt;&lt; " dollars." &lt;&lt; endl; // 若剩餘金額大於 1 元，使用複數 dollars
+        else if(n == 1) cout &lt;&lt; "and now he has 1 dollar." &lt;&lt; endl; // 若剩餘金額剛好為 1 元，使用單數 dollar
+        else if(n == 0) cout &lt;&lt; "and now he doesn't have money." &lt;&lt; endl; // 若剛好花完沒有錢，輸出特定無錢訊息
+        
+        time += m; // 每次進食完成後，時間推進 m 分鐘
+    }
+    return 0; // 程式正常結束
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

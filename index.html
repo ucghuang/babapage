@@ -1,17 +1,145 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dinosaur Game</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>TOI 資訊奧林匹亞學習資源整合平台</title>
+    <!-- 引入 Tailwind CSS 進行現代化排版與設計 -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="game">
-        <div class="dinosaur" id="dinosaur"></div>
-        <div class="obstacle" id="obstacle"></div>
-    </div>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
 
-    <script src="script.js"></script>
+    <!-- 頂部導覽列 / 標題區 -->
+    <header class="bg-indigo-700 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <h1 class="text-3xl font-bold tracking-wide">TOI 資訊奧林匹亞學習資源整合平台</h1>
+            <p class="mt-2 text-indigo-200 text-sm md:text-base">
+                提供歷屆試題管理、多維度導覽、演算法分類教學及豐富的解題與程式碼資源。
+            </p>
+        </div>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main class="max-w-7xl mx-auto px-6 py-10 flex-grow w-full">
+        
+        <!-- 核心功能模組區 -->
+        <section class="mb-12">
+            <h2 class="text-xl font-bold text-slate-700 mb-6 border-l-4 border-indigo-600 pl-3">
+                核心功能與導覽系統
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 卡片 1 -->
+                <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <div class="text-indigo-600 text-2xl font-bold mb-2">📁 01</div>
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">本機管理平台</h3>
+                        <p class="text-sm text-slate-600 mb-4">TOI 歷屆試題本機管理平台，方便進行本地端資料維護與檢索。</p>
+                    </div>
+                    <a href="TOI_raw_data.html" class="inline-block text-center bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-700 font-medium py-2 px-4 rounded-lg transition text-sm">
+                        進入平台
+                    </a>
+                </div>
+
+                <!-- 卡片 2 -->
+                <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <div class="text-indigo-600 text-2xl font-bold mb-2">🧭 02</div>
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">題目總覽導覽</h3>
+                        <p class="text-sm text-slate-600 mb-4">TOI 全面題目導覽，整合所有歷屆題目的完整列表與檢索。</p>
+                    </div>
+                    <a href="TOI_All_Problems_Integrated.html" class="inline-block text-center bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-700 font-medium py-2 px-4 rounded-lg transition text-sm">
+                        進入導覽
+                    </a>
+                </div>
+
+                <!-- 卡片 3 -->
+                <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <div class="text-indigo-600 text-2xl font-bold mb-2">📊 03</div>
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">演算法分類</h3>
+                        <p class="text-sm text-slate-600 mb-4">依題數排序的 TOI 演算法分類統計，掌握常考重點與題型分佈。</p>
+                    </div>
+                    <a href="TOI_Algorithm_Classification.html" class="inline-block text-center bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-700 font-medium py-2 px-4 rounded-lg transition text-sm">
+                        檢視分類
+                    </a>
+                </div>
+
+                <!-- 卡片 4 -->
+                <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <div class="text-indigo-600 text-2xl font-bold mb-2">📚 04</div>
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">演算法教學導覽</h3>
+                        <p class="text-sm text-slate-600 mb-4">系統化的演算法教學導覽，提供循序漸進的觀念指引與學習路徑。</p>
+                    </div>
+                    <a href="TOI_Algorithm_guide.html" class="inline-block text-center bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-700 font-medium py-2 px-4 rounded-lg transition text-sm">
+                        開始學習
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 學習資源子資料夾快速存取 -->
+        <section>
+            <h2 class="text-xl font-bold text-slate-700 mb-6 border-l-4 border-emerald-600 pl-3">
+                輔助學習與解析資源庫
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 資源 1 -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <span class="text-2xl">💡</span>
+                        <h3 class="font-bold text-base text-slate-800">單題解說頁面 (explain)</h3>
+                    </div>
+                    <p class="text-xs text-slate-600 mb-4">收錄詳細的單題解說網頁（例如：<code>prob-4_B1-BMR.html</code>），拆解解題邏輯與盲點。</p>
+                    <div class="text-xs bg-slate-100 text-slate-600 p-2 rounded">
+                        路徑：<code>/explain/</code>
+                    </div>
+                </div>
+
+                <!-- 資源 2 -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <span class="text-2xl">📄</span>
+                        <h3 class="font-bold text-base text-slate-800">原始題目 PDF (questions)</h3>
+                    </div>
+                    <p class="text-xs text-slate-600 mb-4">提供官方原始題目檔（例如：<code>201903_B1-BMR(Q).pdf</code>），供學生下載練習。</p>
+                    <div class="text-xs bg-slate-100 text-slate-600 p-2 rounded">
+                        路徑：<code>/questions/</code>
+                    </div>
+                </div>
+
+                <!-- 資源 3 -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <span class="text-2xl">📊</span>
+                        <h3 class="font-bold text-base text-slate-800">解說投影片 (slides)</h3>
+                    </div>
+                    <p class="text-xs text-slate-600 mb-4">課堂教學與重點複習所使用的精美解說投影片檔案。</p>
+                    <div class="text-xs bg-slate-100 text-slate-600 p-2 rounded">
+                        路徑：<code>/slides/</code>
+                    </div>
+                </div>
+
+                <!-- 資源 4 -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <span class="text-2xl">💻</span>
+                        <h3 class="font-bold text-base text-slate-800">C++ 原始解答 (solutions)</h3>
+                    </div>
+                    <p class="text-xs text-slate-600 mb-4">模組化解答資料夾（例如：<code>solutions/201903_B1-BMR/B1-BMR.cpp</code>），供參考對照。</p>
+                    <div class="text-xs bg-slate-100 text-slate-600 p-2 rounded">
+                        路徑：<code>/solutions/</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="bg-slate-800 text-slate-400 py-6 mt-12 text-center text-sm">
+        <p>TOI 學習資源整合平台 &copy; 2026 | 重視模組化與可延展性，培育具備邏輯拆解與運算思維的行動者。</p>
+    </footer>
+
 </body>
 </html>

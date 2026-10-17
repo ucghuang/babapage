@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#7 201904_A1-FarmlandIrrigating - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#7</span> 201904_A1-FarmlandIrrigating (農田灌溉)</h1>
+                <div class="header-right">
+                    <a href="../questions/201904_A1-FarmlandIrrigating(Q).pdf" class="file-name-meta" target="_blank">PDF: 201904_A1-FarmlandIrrigating(Q).pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-7" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 農夫引進新型灌溉裝置，電力分為五個等級 ($N = 1 \sim 5$)。若電力強度為 $N$，則可灌溉以自身為中心向左右延伸 $(N - 1)$ 單位的範圍。灌溉裝置可放在道路上任何地方，且所有裝置電力強度必須統一。給定道路長度 $L$ 以及種植作物與否的狀態（0 代表種植作物，1 代表無種植作物），每台灌溉裝置電費公式為：$1.32 \times N + 1.07$，請幫農夫計算灌溉所有農田的最低成本電費以及對應的電力強度（若成本相同，輸出電力強度較大者）。</p>
+                    <p><strong>輸入格式：</strong> 第一列有一個正整數 $L$ ($1 \le L \le 5,000,000$) 代表道路總長度；第二列共有 $L$ 個字元（0 代表種植作物，1 代表無種植作物）。</p>
+                    <p><strong>輸出格式：</strong> 輸出一列共兩個數字，分別為最低電費（至小數點後兩位）與對應的電力強度 $N$，中間以空白隔開。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【貪心法 (Greedy) 與窮舉搜尋】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>貪心策略與迴圈窮舉</strong>：</p>
+                    <ul>
+                        <li>由於電力強度 $N$ 的範圍非常固定且很小（僅有 1 到 5 種等級），我們可以將每一種電力強度分別進行模擬計算。</li>
+                        <li>對每一個固定的電力強度 $N$，其有效覆蓋範圍（range）固定為 $2N - 1$。我們從左到右掃描道路，遇到需要灌溉的作物（字元 '0'）時，就放置一台灌溉裝置，並直接將指針向右跳過該裝置的最大灌溉距離，藉此計算出最少需要幾台裝置。</li>
+                        <li>最後計算出總電費，並在所有電力等級中挑選出花費最低的方案（若金額相同則選電力強度較大者）。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+8
+00011110</pre>
+                    <ul>
+                        <li><strong>道路總長度：</strong> $L = 8$，農田狀態為 <code>00011110</code>（索引 0~2 及 7 需要灌溉，3~6 無需灌溉）。</li>
+                        <li><strong>分別測試 5 種電力強度 $N$：</strong>
+                            <ul>
+                                <li><strong>$N = 1$ (範圍 = 1)：</strong> 需要 5 台裝置，總成本高。</li>
+                                <li><strong>$N = 2$ (範圍 = $2 \times 2 - 1 = 3$)：</strong> 
+                                    <ul>
+                                        <li>從左掃描，在索引 0 放置第一台（涵蓋 0~2），接著跳到索引 3，遇到 '1' 略過，直到索引 7 放置第二台。總共需要 2 台裝置。</li>
+                                        <li>單台成本：$1.32 \times 2 + 1.07 = 3.71$。總成本：$3.71 \times 2 = \mathbf{7.42}$。</li>
+                                    </ul>
+                                </li>
+                                <li><strong>$N = 3, 4, 5$：</strong> 分別計算出對應的裝置數量與總電費。</li>
+                            </ul>
+                        </li>
+                        <li>經比較後，最小電費為 $7.42$，對應的電力強度為 $2$。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>7.42 2</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+9
+001011100</pre>
+                    <ul>
+                        <li><strong>道路總長度：</strong> $L = 9$，農田狀態為 <code>001011100</code>。</li>
+                        <li>依序測試 $N = 1 \sim 5$，計算各電力強度下的最少裝置數與總電費。</li>
+                        <li>當 $N = 5$ 時，計算出的總電費最低為 $7.67$。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>7.67 5</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;bits/stdc++.h&gt;  // 引入常用 C++ 標頭檔
+const int sizes=10000005;  // 定義陣列最大容量常數
+char farm[sizes]={};  // 宣告全域字元陣列 farm，用來儲存農田道路的作物狀態 ('0' 或 '1')
+int main()
+{
+    int L;  // 宣告變數 L 代表道路總長度
+    scanf("%d",&amp;L);  // 讀入道路長度 L
+    for(int i=0;i&lt;L;i+=1)
+    {
+        scanf(" %c",&amp;farm[i]);  // 迴圈依序讀入每個位置的農田狀態（前面加空格以略過換行字元）
+    }
+    double large=99999999;  // 初始化最低總電費為一個極大值，以便後續尋找最小值
+    int ind=-1;  // 初始化記錄最佳電力強度的變數
+    
+    // 題目規定電力分五個等級，從 1 到 5 逐一窮舉測試
+    for(int i=1;i&lt;=5;i+=1)
+    {
+        int range=i*2-1;  // 當電力強度為 i 時，可灌溉的總範圍大小為 (2 * i - 1)
+        int num=0;  // 記錄在當前電力強度下，總共需要幾台灌溉裝置
+        
+        // 從頭到尾掃描整條道路
+        for(int j=0;j&lt;L;j+=range)
+        {
+            // 當遇到不需要灌溉的土地 ('1') 且尚未超出道路範圍時，指針往右移動跳過
+            while(farm[j]=='1' &amp;&amp; j&lt;L)
+            {
+                j++;
+            }
+            num+=(j&lt;L);  // 若尚未超過邊界且遇到需要灌溉的農田 ('0')，則代表需要放置一台裝置，裝置數 +1
+        }
+        
+        double money=(1.32*i+1.07)*num;  // 根據題目公式計算當前電力強度的總電費 = 單台電費 * 裝置總數
+        
+        // 若當前計算出的電費小於或等於目前記錄的最低電費（題目要求金額相同時輸出電力強度較大者，故使用 &gt;=）
+        if(large&gt;=money)
+        {
+            large=money;  // 更新最低電費
+            ind=i;  // 更新最佳電力強度
+        }
+    }
+    
+    printf("%.2f %d\n",large,ind);  // 輸出最低電費（四捨五入至小數點後兩位）與對應的電力強度
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

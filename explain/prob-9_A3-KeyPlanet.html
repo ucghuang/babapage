@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#9 201904_A3-KeyPlanet - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            fn-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#9</span> 201904_A3-KeyPlanet (關鍵星)</h1>
+                <div class="header-right">
+                    <a href="../questions/201904_A3-KeyPlanet(Q).pdf" class="file-name-meta" target="_blank">PDF: 201904_A3-KeyPlanet(Q).pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-9" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 宇宙中有一群星球與安全路線，若拔除某一顆星球後，會導致剩餘某些星球之間無法互相抵達，該星球就被稱為「關鍵星」（即圖論中的<strong>割點 / 關節點 (Articulation Point)</strong>）。給定 $V$ 個星球與 $E$ 條安全路線，請找出所有的關鍵星，並將它們依編號由大到小排序輸出；若無關鍵星則輸出 <code>FAIL</code>。</p>
+                    <p><strong>輸入格式：</strong> 第一列有兩個整數 $V$ 和 $E$ ($1 \le V \le 10^4$)，代表星球數與路線數；接下來 $E$ 列每列有兩個數字 $V_1$ 與 $V_2$，表示兩星球間的安全路線。</p>
+                    <p><strong>輸出格式：</strong> 將所有關鍵星依編號由大到小列印出來，以空格間隔；若無關鍵星則輸出 <code>FAIL</code>。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【圖論演算法 / Tarjan 演算法求割點】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>圖論中的 Tarjan 演算法尋找割點 (Articulation Point)</strong>：</p>
+                    <ul>
+                        <li>我們利用深度優先搜尋 (DFS) 走訪圖形，並維護兩個核心陣列：`visit[cur]`（記錄節點被拜訪的順序/時間戳記）與 `low[cur]`（記錄透過back-edge能回溯到的最早祖先節點時間）。</li>
+                        <li><strong>割點判定條件：</strong>
+                            <ul>
+                                <li><strong>根節點：</strong> 若 DFS 樹的根節點擁有超過一個子樹（Child），則該根節點為割點。</li>
+                                <li><strong>非根節點：</strong> 若某個非根節點 $cur$ 存在一個子節點 $dest$，其 <code>low[dest] &gt;= visit[cur]</code>，代表 $dest$ 及其子孫無法透過其他路徑回到 $cur$ 的祖先，一旦移除 $cur$ 就會導致圖形斷開，因此 $cur$ 是割點。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+6 5
+0 1
+1 2
+2 3
+3 4
+4 5</pre>
+                    <ul>
+                        <li><strong>圖形結構：</strong> 這是一條長條狀的鍊狀圖：$0 - 1 - 2 - 3 - 4 - 5$。</li>
+                        <li><strong>分析割點：</strong>
+                            <ul>
+                                <li>如果拔除節點 1，節點 0 會與其餘節點斷開。</li>
+                                <li>如果拔除節點 2、3、4，整個圖形會斷開成兩半。</li>
+                                <li>因此關鍵星（割點）包含 1, 2, 3, 4。</li>
+                            </ul>
+                        </li>
+                        <li><strong>輸出排序：</strong> 題目要求由大到小排序輸出：<code>4 3 2 1</code>。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>4 3 2 1</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 3 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+4 4
+0 1
+1 2
+2 3
+3 0</pre>
+                    <ul>
+                        <li><strong>圖形結構：</strong> 這是一個環形圖（$0 - 1 - 2 - 3 - 0$）。</li>
+                        <li><strong>分析割點：</strong> 在環形結構中，任拔除一個星球，其餘星球仍然可以透過環的另一側互相繞道抵達，因此<strong>不存在任何關鍵星</strong>。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 3 結果：</strong> <code>FAIL</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;bits/stdc++.h&gt;  // 引入常用 C++ 標頭檔
+
+// DFS 函式：利用 Tarjan 演算法核心邏輯尋找圖中的割點 (Articulation Point)
+void DFS(int pre, int cur, std::vector&lt;int&gt; adj[], int low[], int visit[], int &amp;t, std::vector&lt;int&gt; &amp;ans)
+{
+    t+=1;  // 時間戳記遞增
+    visit[cur] = low[cur] = t;  // 初始化當前節點的拜訪時間與 low 值
+    int Num_child = 0;  // 記錄當前節點在 DFS 樹中的子節點數量
+    bool ap = false;  // 記錄當前節點是否符合割點條件的旗標
+    int Num = adj[cur].size();  // 取得與當前節點相連的鄰居數量
+    
+    // 走訪所有相鄰的星球
+    for (int i=0; i&lt;Num; i+=1)
+    {
+        int dest = adj[cur][i];  // 目標鄰居星球編號
+        if (dest==pre)
+            continue;  // 若目標是父節點則跳過
+            
+        if (visit[dest]!=0)  // 若目標鄰居已經被拜訪過（代表遇到 Back-edge）
+        {
+            low[cur] = std::min(low[cur], visit[dest]);  // 更新當前節點的 low 值
+        }
+        else  // 若目標鄰居尚未被拜訪
+        {
+            Num_child+=1;  // 子樹分支數 +1
+            DFS(cur, dest, adj, low, visit, t, ans);  // 遞迴深入搜尋子樹
+            low[cur] = std::min(low[cur], low[dest]);  // 回溯時更新當前節點的 low 值
+            
+            // 割點條件：若子節點的 low 值大於或等於當前節點的 visit 值，代表子樹無法繞回祖先
+            if(low[dest]&gt;=visit[cur]) ap=true;
+        }
+    }
+    
+    // 判斷是否為割點：1. 若為根節點且子樹大於 1； 2. 若不為根節點且符合 ap 條件
+    if ((pre==cur&amp;&amp;Num_child&gt;1)||(cur != pre &amp;&amp; ap))
+        ans.push_back(cur);  // 將該關鍵星加入答案陣列中
+}
+
+int main()
+{
+    std::vector&lt;int&gt; adj[20005];  // 宣告鄰接表儲存圖形結構
+    std::vector&lt;int&gt; ans;  // 宣告動態陣列儲存找到的關鍵星
+    int visit[20005]= {};  // 記錄每個節點的拜訪時間戳記
+    int low[20005]= {};  // 記錄每個節點的 low 追溯值
+    int t = 0;  // 拜訪時間計數器
+
+    int V,E;
+    scanf("%d%d", &amp;V, &amp;E);  // 讀入星球數 V 與安全路線數 E
+    for(int i=0; i&lt;E; i+=1)
+    {
+        int v1,v2;
+        scanf("%d%d",&amp;v1, &amp;v2);  // 讀入雙向安全路線的兩端星球編號
+        adj[v1].push_back(v2);
+        adj[v2].push_back(v1);
+    }
+    
+    DFS(0,0, adj, low, visit, t, ans);  // 從編號 0 開始進行 DFS 尋找割點
+    
+    int n=ans.size();
+    std::sort(ans.begin(),ans.end());  // 將找到的關鍵星由小到大排序
+    
+    // 題目要求由大到小輸出，故從尾端往前印出
+    for(int i=n-1; i&gt;=0; i-=1)
+    {
+        if(i!=n-1)
+            printf(" ");
+        printf("%d", ans[i]);
+    }
+    
+    if (n==0)
+        printf("FAIL");  // 若沒有任何關鍵星則輸出 FAIL
+    printf("\n");
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#40 201912-onsite_2-PrimeDay - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#40</span> 201912-onsite_2-PrimeDay (質數日)</h1>
+                <div class="header-right">
+                    <a href="../questions/201912-onsite_2-PrimeDay.pdf" class="file-name-meta" target="_blank">PDF: 201912-onsite_2-PrimeDay.pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-40" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 某些日期（如 20190823）除了本身是質數之外，把最左邊的數字依序去掉後剩下的數字（如 190823、90823、823、23、3）也全都是質數，這樣的日子被稱為「質數日」。給定多個 21~30 世紀中的日期，請撰寫程式判斷這些日期是否為質數日。</p>
+                    <p><strong>輸入格式：</strong> 第一行輸入一個正整數 $D$ ($1 \le D \le 10$) 代表有幾個日期；接下來 $D$ 行，每行一個正整數 $N$ ($20000101 \le N \le 29991231$) 表示日期。</p>
+                    <p><strong>輸出格式：</strong> 對於每個日期輸出一行文字：若是質數日輸出 <code>N is a Prime Day!</code>，否則輸出 <code>N isn't a Prime Day!</code>。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【數論與數學 / 質數判定與位數剝離】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>質數試除法與模運算 (Modulo Operation)</strong>：</p>
+                    <ul>
+                        <li>質數定義：在大於 1 的自然數中，除了 1 和該數自身外，無法被其他自然數整除的數（最小的質數是 2，且 1 既不是質數也不是合數）。</li>
+                        <li>質數判定：對於任意數 $M$，我們利用迴圈從 2 測試到 $\sqrt{M}$，若能被整除則代表不是質數。</li>
+                        <li>位數剝離：透過連續對 $10^7, 10^6, \dots$ 取餘數（<code>% Digit</code>），每次去掉最左邊的一個數字，並依序檢查每一個截斷後的數是否皆為質數。若在剝離過程中剩下了 1，因 1 不是質數（最小的質數是 2），故不符合質數日定義。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+1
+20190823</pre>
+                    <ul>
+                        <li><strong>檢查完整數字：</strong> $20190823$ 經試除法判定是<strong>質數</strong>。</li>
+                        <li><strong>剝離最左邊數字：</strong>
+                            <ul>
+                                <li>去掉 '2' $\to 190823$（經試除法判定是<strong>質數</strong>）</li>
+                                <li>去掉 '1' $\to 90823$（經試除法判定是<strong>質數</strong>）</li>
+                                <li>去掉 '9' $\to 823$（經試除法判定是<strong>質數</strong>）</li>
+                                <li>去掉 '0' $\to 23$（經試除法判定是<strong>質數</strong>）</li>
+                                <li>去掉 '2' $\to 3$（經試除法判定是<strong>質數</strong>）</li>
+                            </ul>
+                        </li>
+                        <li>每一層截斷數字皆大於 1 且通過質數檢驗。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>20190823 is a Prime Day!</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+4
+29331013
+20400823
+20191102
+20000101</pre>
+                    <ul>
+                        <li><strong>第一筆測資：</strong> <code>29331013</code>
+                            <ul>
+                                <li>依序檢查完整數以及剝離後的 <code>9331013</code>、<code>331013</code>、<code>31013</code>、<code>1013</code>、<code>13</code>、<code>3</code>。每一層截斷後的數經過試除法全部都是大於 1 的質數。</li>
+                            </ul>
+                            <p>👉 結果：<code>29331013 is a Prime Day!</code></p>
+                        </li>
+                        <li><strong>第二筆測資：</strong> <code>20400823</code>
+                            <ul>
+                                <li>依序檢查完整數以及剝離後的 <code>400823</code>、<code>823</code>、<code>23</code>、<code>3</code> 等。所有過程中的截斷數皆通過質數檢驗。</li>
+                            </ul>
+                            <p>👉 結果：<code>20400823 is a Prime Day!</code></p>
+                        </li>
+                        <li><strong>第三筆測資：</strong> <code>20191102</code>
+                            <ul>
+                                <li>完整數 <code>20191102</code> 末尾是 2 且大於 2（偶數），明顯可被 2 整除，因此它不是質數（合數）。</li>
+                            </ul>
+                            <p>👉 結果：<code>20191102 isn't a Prime Day!</code></p>
+                        </li>
+                        <li><strong>第四筆測資：</strong> <code>20000101</code>
+                            <ul>
+                                <li>當數字在剝離過程中最後剩下 <code>1</code> 時，因為 1 不是質數（根據定義，最小的質數是 2），所以不符合質數日的條件，故判定為否。</li>
+                            </ul>
+                            <p>👉 結果：<code>20000101 isn't a Prime Day!</code></p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;stdio.h&gt;  // 引入標準輸入輸出標頭檔
+#include &lt;math.h&gt;   // 引入數學函式庫，以便使用 sqrt 根號計算
+
+int main()
+{
+    int D = 0;  // 宣告變數 D 代表測資中的日期總數
+    int N = 0, M = 0;  // N 儲存原始日期，M 儲存剝離過程中的數字
+    scanf("%d", &amp;D);  // 讀入測試日期個數 D
+    
+    for(int i = 0; i &lt; D; i += 1)
+    {
+        scanf("%d", &amp;N);  // 讀入當前要檢查的日期 N
+        M = N;  // 將日期複製給 M 進行後續的剝離與檢查
+        int Digit = 10000000;  // 初始化位數遮罩，用來協助去掉最左邊的數字
+        bool Check = true;  // 旗標變數，記錄目前為止是否全都是質數（預設為 true）
+        
+        while(M &gt; 0)
+        {
+            // 質數試除法：檢查當前數字 M 是否為質數
+            for(int j = 2; j &lt;= sqrt(M); j += 1)
+            {
+                if(M % j == 0)  // 若 M 可被 j 整除
+                {
+                    Check = false;  // 代表不是質數，標記 Check 為 false
+                    break;  // 跳出內層迴圈
+                }
+            }
+            if(Check == false) break;  // 若已經確定不是質數，直接終止檢查
+            
+            M %= Digit;  // 對 Digit 取餘數，藉此去掉最左邊的第一個數字
+            Digit /= 10;  // 將位數遮罩除以 10，準備檢查下一個更短的數字
+        }
+        
+        // 根據檢查結果輸出是否為質數日
+        if(Check == true) printf("%d is a Prime Day!\n", N);
+        else printf("%d isn't a Prime Day!\n", N);
+    }
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

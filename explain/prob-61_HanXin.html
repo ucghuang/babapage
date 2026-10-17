@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#61 202005_HanXin - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#61</span> 202005_HanXin (韓信點兵)</h1>
+                <div class="header-right">
+                    <a href="../questions/202005_HanXin.pdf" class="file-name-meta" target="_blank">PDF: 202005_HanXin.pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-61" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 著名的歷史典故「韓信點兵」：三三數之剩二，五五數之剩三，七七數之剩二。給定三行輸入，每行包含兩個整數 $a_i$ 與 $b_i$（$1 < a_i, b_i < 300$，且保證任兩個 $a_i$ 互質），代表軍隊人數 $m$ 每 $a_i$ 個一數會剩下 $b_i$ 個人。請寫一個程式找出符合所有條件的最小軍隊人數 $m$ ($1 \le m < 2 \cdot 10^6$)。</p>
+                    <p><strong>輸入格式：</strong> 輸入有三行，每行含兩個整數 $a_i$ 與 $b_i$，以空白隔開。</p>
+                    <p><strong>輸出格式：</strong> 請輸出一個最小的正整數 $m$，代表軍隊人數。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【數論與數學 / 同餘方程式與窮舉搜尋】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>同餘性質與迴圈窮舉策略</strong>：</p>
+                    <ul>
+                        <li>此題為中國剩餘定理（Chinese Remainder Theorem）的基礎應用。</li>
+                        <li>由於題目給定的 $m$ 上限範圍不大（$m < 2 \cdot 10^6$），我們可以直接利用 <code>while(true)</code> 從 $m = 1$ 開始由小到大進行迴圈檢查。</li>
+                        <li>當某個數字 $m$ 同時滿足 $m \pmod{a_1} == b_1$、$m \pmod{a_2} == b_2$ 且 $m \pmod{a_3} == b_3$ 時，該數字即為所求的最小軍隊人數，直接輸出並結束程式。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+3 2
+5 3
+7 2</pre>
+                    <ul>
+                        <li><strong>條件方程式：</strong>
+                            <ul>
+                                <li>$m \pmod 3 = 2$</li>
+                                <li>$m \pmod 5 = 3$</li>
+                                <li>$m \pmod 7 = 2$</li>
+                            </ul>
+                        </li>
+                        <li><strong>逐一測試 $m$ 從 1 開始：</strong>
+                            <ul>
+                                <li>$m = 1 \implies 1\%3=1 \neq 2$（不符）</li>
+                                <li>$\dots$</li>
+                                <li>$m = 23 \implies 23\%3=2$（符合）、$23\%5=3$（符合）、$23\%7=2$（符合）！</li>
+                            </ul>
+                        </li>
+                        <li>找到符合的第一個最小數字為 23。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>23</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+7 2
+9 5
+13 7</pre>
+                    <ul>
+                        <li><strong>條件方程式：</strong> $m \pmod 7 = 2$, $m \pmod 9 = 5$, $m \pmod{13} = 7$。</li>
+                        <li>由小到大進行迴圈搜尋，第一個同時滿足三個同餘條件的最小正整數為 527。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>527</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 3 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+251 69
+191 58
+241 81</pre>
+                    <ul>
+                        <li><strong>條件方程式：</strong> $m \pmod{251} = 69$, $m \pmod{191} = 58$, $m \pmod{241} = 81$。</li>
+                        <li>透過程式迴圈檢查，找到符合條件的最小人數為 48763。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 3 結果：</strong> <code>48763</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;iostream&gt;  // 引入標準輸入輸出標頭檔，以便使用 cin 與 cout
+using namespace std;
+
+int main()  
+{  
+    int a1, a2, a3;  // 宣告三個除數變數 a1, a2, a3
+    int b1, b2, b3;  // 宣告三個對應的餘數變數 b1, b2, b3
+    
+    cin &gt;&gt; a1 &gt;&gt; b1;  // 讀入第一組除數與餘數
+    cin &gt;&gt; a2 &gt;&gt; b2;  // 讀入第二組除數與餘數
+    cin &gt;&gt; a3 &gt;&gt; b3;  // 讀入第三組除數與餘數
+  
+    int ans = 1;  // 初始化士兵人數猜測值 ans 從 1 開始
+    while(true)  // 使用無限迴圈由小到大尋找符合條件的數字
+    {  
+        // 檢查當前 ans 是否同時滿足除以 a1 餘 b1、除以 a2 餘 b2、除以 a3 餘 b3
+        if(ans % a1 == b1 &amp;&amp; ans % a2 == b2 &amp;&amp; ans % a3 == b3)
+        {  
+            cout &lt;&lt; ans;  // 若完全符合，輸出這個最小的軍隊人數
+            break;  // 找到答案後跳出迴圈
+        }  
+        ans += 1;  // 若尚未符合，將人數猜測值加 1 繼續測試
+    }  
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

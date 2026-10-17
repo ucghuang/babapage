@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#29 201910_A3-Typing - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#29</span> 201910_A3-Typing (猴子打字遊戲)</h1>
+                <div class="header-right">
+                    <a href="../questions/201910_A3-Typing.pdf" class="file-name-meta" target="_blank">PDF: 201910_A3-Typing.pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-29" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 三隻猴子在打字機上各自輸入了一段字串。給定一段目標字串，以及三隻猴子輸入的字串，請計算並找出哪隻猴子的字串與目標字若要透過「編輯距離 (Edit Distance)」轉換成目標字串時成本最小。編輯距離規則如下：新增一個字元成本為 2、刪除一個字元成本為 2、取代一個字元成本為 3（若字元相同則成本為 0）。</p>
+                    <p><strong>輸入格式：</strong> 共四列，每列包含一個不含空格的字串。第一列為目標字串，後三列分別為第一、二、三隻猴子所輸入的字串。</p>
+                    <p><strong>輸出格式：</strong> 輸出兩個數字 $N$ 與 $K$，中間以空白隔開。$N$ 為三隻猴子當中編輯距離最小的猴子編號（1、2 或 3，若編輯距離相同則輸出編號最大者），$K$ 為其最小編輯距離。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【動態規劃 (DP) / 編輯距離 (Levenshtein Distance) 變形】</h2>
+                <div class="analysis-box">
+                    <p>本題採用經典的<strong>動態規劃編輯距離演算法</strong>：</p>
+                    <ul>
+                        <li>這是著名的字串相似度與最小編輯距離問題（類似 Levenshtein Distance）。我們針對每一隻猴子的字串與目標字串建立二維 DP 表格， $DP[i][j]$ 代表將猴子字串的前 $i$ 個字元變成目標字串前 $j$ 個字元的最小編輯成本。</li>
+                        <li><strong>狀態轉移方程式：</strong>
+                            <ul>
+                                <li>若字元相同 ($s[0][i-1] == s[t][j-1]$)：$DP[i][j] = \min(\text{斜上方}, \text{上方}+2, \text{左方}+2)$。</li>
+                                <li>若字元不同：$DP[i][j] = \min(\text{斜上方}+3, \text{上方}+2, \text{左方}+2)$（其中 3 代表取代成本，2 代表新增或刪除成本）。</li>
+                            </ul>
+                        </li>
+                        <li>對三隻猴子分別計算出最佳編輯距離，並利用貪心比較選出距離最小的優勝者。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+abc
+bcd
+cde
+efg</pre>
+                    <ul>
+                        <li><strong>目標字串：</strong> <code>abc</code> ($L_1 = 3$)</li>
+                        <li><strong>猴子 1 字串：</strong> <code>bcd</code> ($L_2 = 3$)
+                            <ul>
+                                <li>計算將 <code>bcd</code> 變成 <code>abc</code> 的最小編輯距離：</li>
+                                <li>可以將 <code>b</code> 取代為 <code>a</code> (成本 3)，保留 <code>c</code> (成本 0)，並刪除 <code>d</code> 或藉由其他對應操作，總編輯距離計算結果為 4。</li>
+                            </ul>
+                        </li>
+                        <li><strong>猴子 2 與猴子 3：</strong> 分別計算出對應的編輯距離。</li>
+                        <li>三者比較後，猴子 1 的編輯距離最小（為 4）。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>1 4</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+abcd
+abcde
+abc
+bcd</pre>
+                    <ul>
+                        <li><strong>目標字串：</strong> <code>abcd</code></li>
+                        <li>分別計算三隻猴子字串與目標字串的編輯距離，猴子 3 的編輯距離為最小的 2。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>3 2</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;bits/stdc++.h&gt;  // 引入常用 C++ 標頭檔
+#define infinity 999999  // 定義一個無限大常數，用來初始化最小值比較
+
+int DP[10005][10005];  // 宣告二維全域 DP 陣列，DP[i][j] 代表字串轉換的最小編輯距離
+
+int main()
+{
+    char s[4][10001];  // 宣告字元陣列儲存 4 個字串（s[0] 為目標字串，s[1]~s[3] 為三隻猴子輸入的字串）
+    for(int i=0; i&lt;4; i++)
+        scanf("%s", s[i]);  // 依序讀入目標字串與三隻猴子的字串
+        
+    int L1 = strlen(s[0]);  // 取得目標字串的長度
+    int win = 1;  // 記錄最佳猴子的編號，預設為第 1 隻
+    int min_d = infinity;  // 記錄最小的編輯距離，初始設為無限大
+    
+    // 依序對三隻猴子（索引 1 到 3）進行編輯距離 DP 計算
+    for(int t=1; t&lt;=3; t++)
+    {
+        int L2 = strlen(s[t]);  // 取得當前第 t 隻猴子字串的長度
+        
+        // 初始化 DP 表格的邊界條件（新增或刪除字元的成本每字元為 2）
+        for(int i=0; i&lt;=L1||i&lt;=L2; i++)
+            DP[i][0] = DP[0][i] = i * 2;
+            
+        // 填滿二維 DP 表格
+        for(int i=1; i&lt;=L1; i++)
+        {
+            for(int j=1; j&lt;=L2; j++)
+            {
+                // 若當前字元相同，不需取代，成本取斜上方(皆匹配)、或上方/左方 (+2) 的最小值
+                if(s[0][i-1] == s[t][j-1])
+                    DP[i][j] = std::min(DP[i-1][j-1], std::min(DP[i][j-1]+2, DP[i-1][j]+2));
+                else
+                    // 若字元不同，取代成本為 3 (斜上方+3)，或者新增/刪除成本為 2 (上方/左方+2)
+                    DP[i][j] = std::min(DP[i-1][j-1]+3, std::min(DP[i][j-1]+2, DP[i-1][j]+2));
+            }
+        }
+        
+        // 比較並找出編輯距離最小的猴子（題目要求若距離相同則輸出編號最大者，故使用 &lt;=）
+        if (DP[L1][L2] &lt;= min_d)
+        {
+            min_d = DP[L1][L2];  // 更新最小編輯距離
+            win = t;  // 更新贏家猴子編號
+        }
+    }
+    
+    printf("%d %d\n", win, min_d);  // 輸出表現最佳的猴子編號與其最小編輯距離
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

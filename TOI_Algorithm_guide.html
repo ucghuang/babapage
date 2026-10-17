@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOI 演算法教學導覽</title>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-light: #eff6ff;
+            --accent: #0284c7;
+            --bg-base: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --code-bg: #0f172a;
+            --pedagogy-bg: #fefce8;
+            --pedagogy-border: #fef08a;
+            --pedagogy-text: #854d0e;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-base);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 24px;
+        }
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+        }
+        header {
+            background: var(--card-bg);
+            padding: 24px 32px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);
+        }
+        header h1 {
+            color: var(--primary);
+            font-size: 1.75rem;
+            margin-bottom: 6px;
+        }
+        header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* 演算法按鈕區塊 */
+        .controls-panel {
+            background: var(--card-bg);
+            padding: 20px 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .tab-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .tab-btn {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 8px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #334155;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: #bfdbfe;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 2px 4px rgba(30, 64, 175, 0.25);
+        }
+
+        /* 演算法架構解說卡片 */
+        .algo-concept-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            border-left: 5px solid var(--primary);
+            padding: 24px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .algo-concept-card h3 {
+            color: var(--primary);
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+        }
+        .concept-item {
+            margin-bottom: 12px;
+            font-size: 14.5px;
+        }
+        .concept-item strong {
+            color: #1e3a8a;
+        }
+        .scenario-box {
+            background: var(--primary-light);
+            border: 1px solid #bfdbfe;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #1e3a8a;
+            margin-top: 6px;
+        }
+
+        /* 練習題列表區塊 */
+        .practice-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 24px;
+            margin-top: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .practice-section h3 {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 8px;
+        }
+        .practice-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .practice-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            padding: 14px 18px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .practice-item:hover {
+            background: var(--primary-light);
+            border-color: #bfdbfe;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .practice-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .practice-badge {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+        .badge-teaching {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+        .badge-practice {
+            background: #f1f5f9;
+            color: #475569;
+        }
+        .practice-title {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14.5px;
+        }
+        .practice-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .practice-difficulty {
+            font-size: 13px;
+            color: #d97706;
+            font-weight: 500;
+        }
+        .practice-link {
+            display: inline-flex;
+            align-items: center;
+            background: var(--primary);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .practice-link:hover {
+            background: #1d4ed8;
+        }
+
+        /* 總論國小生教學專用抽屜樣式 */
+        .pedagogy-box {
+            display: none;
+            background: var(--pedagogy-bg);
+            border: 1px solid var(--pedagogy-border);
+            border-radius: 8px;
+            padding: 18px 20px;
+            margin-top: 14px;
+            font-size: 14px;
+            color: #713f12;
+            line-height: 1.65;
+        }
+        .pedagogy-summary {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #854d0e;
+            background: #fef08a;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        .pedagogy-section-title {
+            font-weight: 700;
+            color: #854d0e;
+            margin: 12px 0 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pedagogy-box table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            background: #ffffff;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .pedagogy-box th, .pedagogy-box td {
+            border: 1px solid #fde047;
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 13.5px;
+        }
+        .pedagogy-box th {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        /* 黑板板書預設樣式 */
+        .pedagogy-board {
+            background: #1e293b;
+            color: #f1f5f9;
+            padding: 14px 18px;
+            border-radius: 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13.5px;
+            line-height: 1.6;
+            margin: 8px 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* 程式碼樣式 */
+        pre {
+            background: var(--code-bg);
+            color: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 13.5px;
+            line-height: 1.55;
+            margin: 10px 0;
+        }
+
+        .toggle-pedagogy-btn {
+            background: #fef08a;
+            border: 1px solid #fde047;
+            color: #854d0e;
+            padding: 7px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+        .toggle-pedagogy-btn:hover { background: #fde047; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>TOI 演算法教學導覽</h1>
+        <p>提供演算法架構、國小生白話教學比喻，與各核心類別解題剖析與練習題庫。</p>
+    </header>
+
+    <!-- 分類按鈕區 -->
+    <div class="controls-panel">
+        <div class="tab-group" id="filterTabs">
+            <!-- 由 JS 渲染分類標籤按鈕 -->
+        </div>
+    </div>
+
+    <!-- 當前演算法特點與結構解說卡 -->
+    <div id="algoConceptContainer" class="algo-concept-card">
+        <!-- 由 JS 動態注入特點、情境、通用 C++ 模板與國小教學按鈕 -->
+    </div>
+
+    <!-- 對應類別的練習題與範例列表 -->
+    <div class="practice-section">
+        <h3>📝 相關教學範例與練習題庫</h3>
+        <div class="practice-grid" id="practiceListContainer">
+            <!-- 由 JS 動態注入練習題 -->
+        </div>
+    </div>
+</div>
+
+<script>
+// 完整練習題資料庫 (對應 practice_list.csv)
+const PRACTICE_DATA = [
+    { cat: "基礎模擬", type: "教學範例", id: 4, title: "201903_B1-BMR - 基礎代謝率 (BMR Calculation)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-4_B1-BMR.html" },
+    { cat: "基礎模擬", type: "教學範例", id: 5, title: "201903_B2-StudentList - 班級名單 (Student list)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-5_B2-StudentList.html" },
+    { cat: "基礎模擬", type: "教學範例", id: 6, title: "201903_B3-BigEater - 大吃大喝 (Big eater)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-6_B3-BigEater.html" },
+    { cat: "基礎模擬", type: "課後練習", id: 10, title: "201904_B1-LuckyDraw - 粉專抽獎 (Lucky Draw)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-10_B1-LuckyDraw.html" },
+    { cat: "基礎模擬", type: "課後練習", id: 16, title: "201905_B1-Currency - 貨幣轉換 (Currency)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-16_B1-Currency.html" },
+
+    { cat: "前綴和", type: "教學範例", id: 28, title: "201910_A2-Roads - 道路鋪設 (Roads)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-28_A2-Roads.html" },
+    { cat: "前綴和", type: "教學範例", id: 41, title: "201912-onsite_3-BusStop - 站牌廣告 (BusStop)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-41_onsite_3-BusStop.html" },
+    { cat: "前綴和", type: "教學範例", id: 93, title: "202012_Meteorite - 流星雨 (Meteorite)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-93_Meteorite.html" },
+    { cat: "前綴和", type: "課後練習", id: 271, title: "202411_Market - 傳統市場 (Market)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-271_Market.html" },
+    { cat: "前綴和", type: "課後練習", id: 301, title: "202509_sheet - 試算表記錄 (sheet)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-301_sheet.html" },
+
+    { cat: "貪婪演算法", type: "教學範例", id: 7, title: "201904_A1-FarmlandIrrigating - 農田灌溉 (Farmland Irrigating)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-7_A1-FarmlandIrrigating.html" },
+    { cat: "貪婪演算法", type: "教學範例", id: 24, title: "201908-onsite_6-Food - 飲食分類 (Food)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-24_onsite_6-Food.html" },
+    { cat: "貪婪演算法", type: "教學範例", id: 32, title: "201910_B3-Master - 虛擬寵物大師 (Master)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-32_B3-Master.html" },
+    { cat: "貪婪演算法", type: "課後練習", id: 65, title: "202006_Cake - 切蛋糕 (Cake)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-65_Cake.html" },
+    { cat: "貪婪演算法", type: "課後練習", id: 90, title: "202011_Wrapper - 包裝材料 (Wrapper)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-90_Wrapper.html" },
+
+    { cat: "動態規劃 (DP)", type: "教學範例", id: 8, title: "201904_A2-Bonus - 獎金關卡 (Bonus)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-8_A2-Bonus.html" },
+    { cat: "動態規劃 (DP)", type: "教學範例", id: 13, title: "201905_A1-Bits - 位元加法 (Bits)", diff: "3 星 (★★★☆☆)", file: "explain/prob-13_A1-Bits.html" },
+    { cat: "動態規劃 (DP)", type: "教學範例", id: 29, title: "201910_A3-Typing - 猴子打字遊戲 (Typing)", diff: "3 星 (★★★☆☆)", file: "explain/prob-29_A3-Typing.html" },
+    { cat: "動態規劃 (DP)", type: "課後練習", id: 78, title: "202008_Tetris - 俄羅斯方塊 (Tetris)", diff: "3 星 (★★★☆☆)", file: "explain/prob-78_Tetris.html" },
+    { cat: "動態規劃 (DP)", type: "課後練習", id: 98, title: "202103_Farmland - 農地開墾 (Farmland)", diff: "3 星 (★★★☆☆)", file: "explain/prob-98_Farmland.html" },
+
+    { cat: "數論與數學", type: "教學範例", id: 39, title: "201912-onsite_1-GoldenRatio - 黃金比例 (GoldenRatio)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-39_onsite_1-GoldenRatio.html" },
+    { cat: "數論與數學", type: "教學範例", id: 40, title: "201912-onsite_2-PrimeDay - 質數日 (PrimeDay)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-40_onsite_2-PrimeDay.html" },
+    { cat: "數論與數學", type: "教學範例", id: 61, title: "202005_HanXin - 韓信點兵 (HanXin)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-61_HanXin.html" },
+    { cat: "數論與數學", type: "課後練習", id: 181, title: "202212-OFFLINE_Sqrt - 開平方根 (Sqrt)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-181_OFFLINE_Sqrt.html" },
+    { cat: "數論與數學", type: "課後練習", id: 246, title: "202403_Primes - 質數乘積 (Primes)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-246_Primes.html" },
+
+    { cat: "圖論演算法", type: "教學範例", id: 9, title: "201904_A3-KeyPlanet - 關鍵星 (Key Planet)", diff: "4 星 (★★★★☆)", file: "explain/prob-9_A3-KeyPlanet.html" },
+    { cat: "圖論演算法", type: "教學範例", id: 14, title: "201905_A2-Bonus - 巨額獎金 (Bonus)", diff: "3 星 (★★★☆☆)", file: "explain/prob-14_A2-Bonus.html" },
+    { cat: "圖論演算法", type: "教學範例", id: 34, title: "201911_A2-Diving - 潛水 (Diving)", diff: "3 星 (★★★☆☆)", file: "explain/prob-34_A2-Diving.html" },
+    { cat: "圖論演算法", type: "課後練習", id: 96, title: "202012_Zipline - 滑索冒險 (Zipline)", diff: "3 星 (★★★☆☆)", file: "explain/prob-96_Zipline.html" },
+    { cat: "圖論演算法", type: "課後練習", id: 281, title: "202503_MRT - 捷運路線圖 (MRT)", diff: "3 星 (★★★☆☆)", file: "explain/prob-281_MRT.html" },
+
+    { cat: "廣度優先搜尋 (BFS)", type: "教學範例", id: 2, title: "201903_A2-QueenBee - 尋找蜂后 (Queen bee)", diff: "3 星 (★★★☆☆)", file: "explain/prob-2_A2-QueenBee.html" },
+    { cat: "廣度優先搜尋 (BFS)", type: "教學範例", id: 55, title: "202004_A3-Escape - 迷宮逃離 (Escape)", diff: "4 星 (★★★★☆)", file: "explain/prob-55_A3-Escape.html" },
+    { cat: "廣度優先搜尋 (BFS)", type: "教學範例", id: 84, title: "202010_Knight - 騎士走棋 (Knight)", diff: "3 星 (★★★☆☆)", file: "explain/prob-84_Knight.html" },
+    { cat: "廣度優先搜尋 (BFS)", type: "課後練習", id: 87, title: "202011_Game_Map - 遊戲地圖 (Game_Map)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-87_Game_Map.html" },
+    { cat: "廣度優先搜尋 (BFS)", type: "課後練習", id: 110, title: "202105_Maze - 走迷宮 (Maze)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-110_Maze.html" },
+
+    { cat: "差分陣列", type: "教學範例", id: 1, title: "201903_A1-Classroom - 教室配置 (Classroom)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-1_A1-Classroom.html" },
+    { cat: "差分陣列", type: "教學範例", id: 26, title: "201908-onsite_8-Treasure - 幽靈寶藏 (Treasure)", diff: "3 星 (★★★☆☆)", file: "explain/prob-26_onsite_8-Treasure.html" },
+    { cat: "差分陣列", type: "教學範例", id: 42, title: "201912-onsite_4-DigitalLogic - 數位邏輯運算 (DigitalLogic)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-42_onsite_4-DigitalLogic.html" },
+    { cat: "差分陣列", type: "課後練習", id: 120, title: "202110-OFFLINE_Rent - 租車服務 (Rent)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-120_OFFLINE_Rent.html" },
+    { cat: "差分陣列", type: "課後練習", id: 177, title: "202212-OFFLINE_Base - 基地防守 (Base)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-177_OFFLINE_Base.html" },
+
+    { cat: "深度優先搜尋 (DFS)", type: "教學範例", id: 54, title: "202004_A2-Treasure - 尋寶遊戲 (Treasure)", diff: "3 星 (★★★☆☆)", file: "explain/prob-54_A2-Treasure.html" },
+    { cat: "深度優先搜尋 (DFS)", type: "教學範例", id: 155, title: "202205_Treasure - 迷宮寶箱 (Treasure)", diff: "3 星 (★★★☆☆)", file: "explain/prob-155_Treasure.html" },
+    { cat: "深度優先搜尋 (DFS)", type: "教學範例", id: 294, title: "202506_Permutation - 字母排列組合 (Permutation)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-294_Permutation.html" },
+    { cat: "深度優先搜尋 (DFS)", type: "課後練習", id: 216, title: "202308-OFFLINE_Treasure - 寶藏秘道 (Treasure)", diff: "3 星 (★★★☆☆)", file: "explain/prob-216_OFFLINE_Treasure.html" },
+    { cat: "深度優先搜尋 (DFS)", type: "課後練習", id: 324, title: "202605_Dependency - 模組相依性 (Dependency)", diff: "3 星 (★★★☆☆)", file: "explain/prob-324_Dependency.html" },
+
+    { cat: "賽局理論 (Game Theory)", type: "教學範例", id: 3, title: "201903_A3-StoneGame - 石頭遊戲 (Stone Game)", diff: "3 星 (★★★☆☆)", file: "explain/prob-3_A3-StoneGame.html" },
+    { cat: "賽局理論 (Game Theory)", type: "教學範例", id: 232, title: "202312-OFFLINE_Game - 闖關對戰 (Game)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-232_OFFLINE_Game.html" },
+    { cat: "賽局理論 (Game Theory)", type: "教學範例", id: 248, title: "202403_The21Game - 二十一點賽局 (The21Game)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-248_The21Game.html" },
+    { cat: "賽局理論 (Game Theory)", type: "課後練習", id: 104, title: "202104_Game - 遊戲闖關 (Game)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-104_Game.html" },
+    { cat: "賽局理論 (Game Theory)", type: "課後練習", id: 157, title: "202208-OFFLINE_Adventure - 遺跡冒險 (Adventure)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-157_OFFLINE_Adventure.html" }
+];
+
+// 演算法元資料
+const ALGO_METADATA = {
+    "基礎模擬": {
+        name: "基礎模擬",
+        feature: "嚴格落實題意規則，重視邊界判斷、迴圈交替旗標、一維與二維矩陣坐標對應轉換、或字元 ASCII 碼位移運算。",
+        scenario: "程式設計基礎題型，驗證條件分支、迴圈終止、字元處理與陣列維度變換技巧。",
+        template: `// 二維矩陣坐標映射 (由一維編號轉二維)
+int row = N / cols;
+int col = N % cols;
+
+// 凱撒密碼環狀位移
+char shifted = (ch - 'a' + k) % 26 + 'a';`,
+        pedagogy: {
+            summary: "「看懂題目規矩，一步一步照著做；就像照著樂高說明書拼積木，該拐彎就拐彎，不能粗心漏掉步驟！」",
+            analogy: "【聽指令走迷宮與暗號輪盤】：大吃大喝交替吃蘋果派和濃湯，就像玩紅綠燈遊戲，輪到誰就扣誰的錢。密碼轉盤就像英文字母排成一個大圓圈，轉到底會自動繞回前面。",
+            table: [
+                { term: "流程模擬 (Simulation)", kid: "「照食譜做蛋糕」：題目怎麼規定，程式就一五一十按步驟照辦。" },
+                { term: "坐標映射 (row/col)", kid: "「電影院排隊劃位」：總共 50 個人排隊，每排坐 10 個人，第 25 個人就知道自己坐第 2 排第 5 位。" },
+                { term: "邊界防禦 (Boundary check)", kid: "「不要走出棋盤外」：走路前先看前面有沒有牆壁，防止摔下去。" }
+            ],
+            board: `示範：凱撒密碼輪盤 (字母往後移 3 格)
+明文： A   B   C   D ... X   Y   Z
+密文： D   E   F   G ... A   B   C
+(圓圈轉動，走到最後自動繞回前面，這就是「求餘數 %」的魔力！)`
+        }
+    },
+    "前綴和": {
+        name: "前綴和",
+        feature: "預先計算並儲存陣列從起點到當前位置的累加總和（Prefix Sum），將原本每次查詢區間總和需要 O(N) 的耗時，瞬間降至 O(1)。",
+        scenario: "需要頻繁且大量查詢不同區間（Range）數字總和、平均值或區間統計的靜態陣列問題。",
+        template: `// 前綴和陣列建構與區間查詢
+int prefix[MAX_SIZE] = {0};
+
+// 1. 預先建構前綴和 (O(N))
+for (int i = 1; i <= N; i++) {
+    prefix[i] = prefix[i - 1] + arr[i];
+}
+
+// 2.  O(1) 快速查詢區間 [L, R] 總和
+int query_sum(int L, int R) {
+    return prefix[R] - prefix[L - 1];
+}`,
+        pedagogy: {
+            summary: "「先把前面所有人的存款總額一次算好寫在黑板上；以後不管誰問第 3 個到第 7 個人的總存款，只要拿第 7 個人的總帳本減掉第 2 個人的總帳本，答案就出來了！」",
+            analogy: "【便利商店總帳本】：老闆不用每次客人問「第 3 天到第 8 天賣了多少」就重新把 6 天的帳單加一次。只要每天打卡時順便把「從第一天到今天的累計總金額」寫好，一秒就能算出答案！",
+            table: [
+                { term: "前綴和 (Prefix Sum)", kid: "「一路加到底的累計總帳本」：每到一站就把之前的錢全部加總起來。" },
+                { term: "O(1) 區間查詢", kid: "「神奇減法術」：大帳本減掉小帳本，中間段落直接瞬間算好。" }
+            ],
+            board: `示範：陣列 [ 2, 4, 1, 5, 3 ] 的前綴和帳本
+原始數字：    2     4     1     5     3
+累計總和：    2     6     7    12    15
+如果要查第 2 個到第 4 個總和 (4+1+5 = 10)：
+直接拿 prefix[4] (12) - prefix[1] (2) = 10，秒殺！`
+        }
+    },
+    "貪婪演算法": {
+        name: "貪婪演算法",
+        feature: "在每一步選擇中都採取當前狀態下最好或最佳（即最有利）的選擇，希望導致結果是全域最佳或近似最佳。",
+        scenario: "找零錢問題（硬幣面額有倍數關係）、活動安排排程、最優裝載問題、或無後效性的局部最佳策略組合。",
+        template: `// 貪婪策略：先排序再依序挑選局部最優
+sort(items.begin(), items.end(), cmp);
+
+int ans = 0;
+for (int i = 0; i < N; i++) {
+    if (can_take(items[i])) {
+        take(items[i]);
+        ans++;
+    }
+}`,
+        pedagogy: {
+            summary: "「每次都挑眼前最大塊、最划算的拿就對了！只要規矩對了，一路貪心下去最後就會拿到最多寶貝。」",
+            analogy: "【逛夜市夾娃娃 / 拿糖果】：眼前有 10 顆糖果，規定你只能拿 3 顆。你每次都挑最大顆的拿，拿完第一大、再拿第二大，最後總重量一定最重！",
+            table: [
+                { term: "貪婪選擇性質 (Greedy Choice)", kid: "「眼前看得到的好處先搶」：每一步都選最划算的。" },
+                { term: "排序 (Sorting)", kid: "「先排隊比大小」：把寶物從大到小排好，方便我們挑選。" }
+            ],
+            board: `示範：貪婪拿零錢 (目標湊出最多張鈔票/最少硬幣)
+硬幣面額： [ 50元, 10元, 5元, 1元 ]
+策略：看到最大的先拿！
+* 想要湊 66 元：先拿 1 張 50（剩 16） -> 再拿 1 張 10（剩 6） -> 再拿 1 張 5（剩 1） -> 再拿 1 個 1 元。
+* 總共用了 4 枚硬幣，又快又準！`
+        }
+    },
+    "動態規劃 (DP)": {
+        name: "動態規劃 (DP)",
+        feature: "將大問題拆解為重疊子問題，透過狀態定義與表格轉移消除後效性，避免重複計算，尋求全域最佳解。",
+        scenario: "求極值（最大獎金、最小編輯距離）、背包問題、相鄰項互斥選取、或子集合累加可行性。",
+        template: `// 一維狀態轉移 (如背包或爬樓梯)
+for (int i = 1; i <= N; i++) {
+    for (int j = W; j >= weight[i]; j--) {
+        dp[j] = max(dp[j], dp[j - weight[i]] + value[i]);
+    }
+}`,
+        pedagogy: {
+            summary: "「算過的題目拿小抄記下來，不要從頭算第二遍；踩在前一步的肩膀上，一步一步推出最終答案！」",
+            analogy: "【存錢桶小抄】：問你 1+1+1 是多少？你回答 3。如果後面再加一個 1，你不用重新算，直接看小抄回答 4，這就是「動態規劃」！",
+            table: [
+                { term: "狀態轉移 (State Transition)", kid: "「踩在前一步的肩膀上」：利用昨天的成果算出今天的答案。" },
+                { term: "記憶化 (Memoization)", kid: "「抄在手心的小抄」：算過一次答案就記下來，絕不重複浪費腦力。" }
+            ],
+            board: `示範：費氏數列 (兔子生寶寶)
+第 1 個月：1
+第 2 個月：1
+第 3 個月：1 + 1 = 2
+第 4 個月：1 + 2 = 3
+(把前面算好的答案寫在紙上，後面直接相加，不用每次都從頭畫樹狀圖！)`
+        }
+    },
+    "數論與數學": {
+        name: "數論與數學",
+        feature: "涵蓋最大公因數（GCD）、質數篩法（Sieve of Eratosthenes）、模運算性質與二進位拆分，處理大數與整數性質運算。",
+        scenario: "要求公因數、判斷質數、組合數學、模運算取餘數、或高效率數論轉換。",
+        template: `// 1. 輾轉相除法求 GCD
+long long gcd(long long a, long long b) {
+    return b == 0 ? a : gcd(b, a % b);
+}
+
+// 2. 埃氏篩法求質數
+bool is_prime[MAX_SIZE];
+void sieve() {
+    memset(is_prime, true, sizeof(is_prime));
+    is_prime[0] = is_prime[1] = false;
+    for (int p = 2; p * p < MAX_SIZE; p++) {
+        if (is_prime[p])
+            for (int i = p * p; i < MAX_SIZE; i += p)
+                is_prime[i] = false;
+    }
+}`,
+        pedagogy: {
+            summary: "「利用數字的特殊規律和小法寶，不用辛苦慢慢數，就能看出數字是不是質數或公家倍數！」",
+            analogy: "【篩子篩豆子】：把 1 到 100 的數字全部排好，把 2 的倍數、3 的倍數統統用篩子篩掉，留下來活到最後的就是神祕的「質數」！",
+            table: [
+                { term: "最大公因數 (GCD)", kid: "「大家都能分的最大公平組別」。" },
+                { term: "質數篩法 (Sieve)", kid: "「用篩子把合數濾掉，留下孤單的質數」。" },
+                { term: "模運算 (Modulo)", kid: "「時鐘轉圈圈」：數字超過上限就繞回頭，永遠不會爆掉。" }
+            ],
+            board: `示範：輾轉相除法求 GCD(24, 18)
+24 % 18 = 6
+18 % 6  = 0  (餘數為 0 時，當前的除數 6 就是最大公因數！)`
+        }
+    },
+    "圖論演算法": {
+        name: "圖論演算法",
+        feature: "以頂點（Vertex）與邊（Edge）構成的圖結構，進行最短路徑、最小生成樹（Kruskal/Prim）與連通性維護（並查集 DSU）。",
+        scenario: "網路連線、交通路線規劃、小島造橋鋪路、瓶頸容量計算與群體幫派歸屬判定。",
+        template: `// 並查集 (DSU) 基本結構
+int parent[MAX_SIZE];
+void init(int n) { for(int i=0; i<n; i++) parent[i] = i; }
+
+int find_root(int x) {
+    return parent[x] == x ? x : (parent[x] = find_root(parent[x]));
+}
+void union_set(int x, int y) {
+    parent[find_root(x)] = find_root(y);
+}`,
+        pedagogy: {
+            summary: "「把城市當作地標點，道路當作連線；大家認同同一個幫派老大（並查集），就能知道哪些地方互相連通！」",
+            analogy: "【認乾哥哥幫派網】：小明跟小華是好朋友，小華跟小黑是好朋友，透過幫派串連，大家都是同一家人（連通塊）。",
+            table: [
+                { term: "頂點與邊 (Vertex & Edge)", kid: "「城市與地圖上的高速公路」。" },
+                { term: "並查集 (DSU)", kid: "「認族長幫派歸屬」：快速判斷兩個人是不是同一個幫派。" },
+                { term: "最小生成樹 (MST)", kid: "「用最省錢的總長度把所有小島連起來」。" }
+            ],
+            board: `示範：並查集找幫派老大
+[小明] ──> 老大是 [小王]
+[小華] ──> 老大是 [小王]
+兩個人老大相同，代表他們已經在同一個王國裡了！`
+        }
+    },
+    "廣度優先搜尋 (BFS)": {
+        name: "廣度優先搜尋 (BFS)",
+        feature: "利用佇列（Queue）先進先出特性，從起點開始一層一層、一圈一圈向外擴散搜尋，保證在非加權圖中最快找到最短路徑。",
+        scenario: "迷宮最短步數、立體蜂巢最大連通塊、網格擴散、或層級遍歷。",
+        template: `// 廣度優先搜尋 (BFS) 模板
+queue<int> q;
+q.push(start);
+visited[start] = true;
+
+while (!q.empty()) {
+    int cur = q.front();
+    q.pop();
+    for (int nxt : adj[cur]) {
+        if (!visited[nxt]) {
+            visited[nxt] = true;
+            q.push(nxt);
+        }
+    }
+}`,
+        pedagogy: {
+            summary: "「水波紋擴散法：由近到遠，一圈一圈地找，走最少步的一定最早被找到，絕對不走冤枉路！」",
+            analogy: "【水管注水遊戲】：打開水龍頭，水會一層一層往四周蔓延，第一圈流到的地方花 1 步，第二圈花 2 步，像雷達波一樣均勻掃描整座迷宮。",
+            table: [
+                { term: "佇列 (Queue)", kid: "「排隊買票隊伍」：先排的人先出去，排在後面後補。" },
+                { term: "擴散造訪 (Visited)", kid: "「蓋印章做記號」：走過的地方立刻蓋章，防止重複排隊。" }
+            ],
+            board: `示範：水流灌注迷宮 (BFS)
+[起點 0步] 
+   └──> [第 1 圈 (上下左右)] 
+           └──> [第 2 圈 (外圍擴散)]
+像波浪一樣展開，找到出口保證步數最少！`
+        }
+    },
+    "差分陣列": {
+        name: "差分陣列",
+        feature: "利用區間端點 O(1) 增減打標記（diff[L] += val, diff[R+1] -= val），最後以前綴和一次線性掃描 O(N) 還原數值，免除大量區間重複操作造成的 O(N·M) 耗時。",
+        scenario: "多個區間重複覆蓋統計、求特定時刻的最大教室使用量/在線人數、或大量連續加權異動。",
+        template: `// 差分陣列基本結構
+int diff[MAX_SIZE] = {0};
+
+// 1. 區間 [L, R] 加上 val (O(1))
+void range_add(int L, int R, int val) {
+    diff[L] += val;
+    diff[R + 1] -= val;
+}
+
+// 2. 一次線性前綴和還原即時量 (O(N))
+int now = 0;
+for (int i = 0; i < MAX_SIZE; i++) {
+    now += diff[i];
+    // now 即為該位置真實數值
+}`,
+        pedagogy: {
+            summary: "「不要每個人都跑去一間間教室敲門；只要在『開始的教室門口貼 +1』、『結束的下一間門口貼 -1』，最後從頭走一次算總數，就能瞬間知道每間教室有幾個人！」",
+            analogy: "【公車司機上下車記帳】：司機不要每過一站就把整車的人重新數一次。只要在第 2 站筆記「上車 +10」，第 9 站筆記「下車 -10」，最後順著加減算一次，每一站的人數就全部算出來了！",
+            table: [
+                { term: "區間端點打標記", kid: "「只在頭貼加號、尾巴貼減號」：進門領號碼牌，出門交回。" },
+                { term: "線性前綴還原", kid: "「像開火車一樣順著加過去」：只排隊結帳一次就全算好。" }
+            ],
+            board: `示範：小明從第 2 站坐到第 4 站
+車站編號：   [ 1 ]   [ 2 ]   [ 3 ]   [ 4 ]   [ 5 ]
+上下車記號：          +1                      -1   (第 4 站下車，故第 5 站少 1 人)
+--------------------------------------------------
+一路加過去：   0       1       1       1       0   (每站車上有幾人一清二楚！)`
+        }
+    },
+    "深度優先搜尋 (DFS)": {
+        name: "深度優先搜尋 (DFS)",
+        feature: "利用遞迴（Recursion）或堆疊（Stack）一路往前衝到底，撞牆無路可走時再退回（Backtracking）探索其他岔路。",
+        scenario: "走迷宮探路、窮舉所有排列組合、連通塊分區、或圖的拓樸排序與環偵測。",
+        template: `// 深度優先搜尋 (DFS) 遞迴模板
+void DFS(int cur) {
+    visited[cur] = true;
+    for (int nxt : adj[cur]) {
+        if (!visited[nxt]) {
+            DFS(nxt); // 一路衝到底
+        }
+    }
+    // backtrack 可在此處理
+}`,
+        pedagogy: {
+            summary: "「不撞南牆不回頭！拿著一條線一直往深處走，走到死路就退回上一格改走另一條岔路。」",
+            analogy: "【右手壁法走迷宮】：右手永遠貼著牆壁一直走，遇到死胡同就倒退嚕，直到把整座迷宮的所有角落全部走遍為止。",
+            table: [
+                { term: "遞迴堆疊 (Recursion / Stack)", kid: "「記憶麵包與回頭路」：記得自己從哪裡來，才能安全退回。" },
+                { term: "回溯法 (Backtracking)", kid: "「倒退嚕重選」：此路不通立刻回上一動。" }
+            ],
+            board: `示範：走迷宮探路 (DFS)
+岔路口 A ──> 岔路 B ──> 岔路 C (死路！)
+                           │ (倒退回 B)
+                           └──> 改走另一條路 D (成功通關！)`
+        }
+    },
+    "賽局理論 (Game Theory)": {
+        name: "賽局理論 (Game Theory)",
+        feature: "分析雙人完全資訊對局的最佳策略。博弈論（如 SG 函數）基於狀態圖：能一步到達必敗態（P-state）者即為必勝態（N-state）。",
+        scenario: "雙人輪流拿石頭、Nim 遊戲、取銅板勝負判定、或博弈對局最優決策。",
+        template: `// 博弈論必敗/必勝態推導 (SG 函數 DP)
+for (int i = 1; i <= N; i++) {
+    for (int step : moves) {
+        if (i >= step && SG[i - step] == 0) { // 能逼對手陷入必敗態
+            SG[i] = 1; // 則自己必勝
+            break;
+        }
+    }
+}`,
+        pedagogy: {
+            summary: "「玩遊戲時，只要能把『爛攤子』丟給對方，讓對方不管怎麼走都輸定，你就贏定啦！」",
+            analogy: "【拿巧克力遊戲】：輪流拿巧克力，只要你每次都精算步數，讓輪到對方時剛好陷入絕境（沒得選或穩輸），勝利就是你的了！",
+            table: [
+                { term: "必勝態 (N-state / SG=1)", kid: "「掌握勝券」：怎麼走都能贏。" },
+                { term: "必敗態 (P-state / SG=0)", kid: "「大爛攤子」：輪到這狀態的人不管怎麼走都輸定。" }
+            ],
+            board: `示範：輪流拿 1 或 2 顆石頭，拿最後一顆的人贏
+盤面剩餘：   [ 0顆 ]    [ 1顆 ]    [ 2顆 ]    [ 3顆 ]
+勝負狀態：    必敗(0)    必勝(1)    必勝(1)    必敗(0)
+(只要把剩 3 顆的爛攤子留給對手，對手就輸穩了！)`
+        }
+    }
+};
+
+let activeCategory = "基礎模擬";
+
+function init() {
+    renderTabs();
+    updateUI();
+}
+
+function renderTabs() {
+    const container = document.getElementById("filterTabs");
+    container.innerHTML = "";
+
+    for (const key of Object.keys(ALGO_METADATA)) {
+        const btn = document.createElement("button");
+        btn.className = `tab-btn ${key === activeCategory ? "active" : ""}`;
+        btn.textContent = key;
+        btn.onclick = () => {
+            activeCategory = key;
+            updateTabs();
+            updateUI();
+        };
+        container.appendChild(btn);
+    }
+}
+
+function updateTabs() {
+    const btns = document.querySelectorAll(".tab-btn");
+    let i = 0;
+    for (const key of Object.keys(ALGO_METADATA)) {
+        if (key === activeCategory) btns[i].classList.add("active");
+        else btns[i].classList.remove("active");
+        i++;
+    }
+}
+
+function updateUI() {
+    const meta = ALGO_METADATA[activeCategory];
+    const conceptBox = document.getElementById("algoConceptContainer");
+    
+    let tableRows = meta.pedagogy.table.map(row => 
+        `<tr><td><strong>${escapeHtml(row.term)}</strong></td><td>${escapeHtml(row.kid)}</td></tr>`
+    ).join("");
+
+    conceptBox.innerHTML = `
+        <h3>【${meta.name}】演算法核心架構剖析</h3>
+        <div class="concept-item"><strong>演算法特點：</strong>${meta.feature}</div>
+        <div class="concept-item">
+            <strong>適用情境與判斷特徵：</strong>
+            <div class="scenario-box">${meta.scenario}</div>
+        </div>
+        <div class="concept-item">
+            <strong>基本結構及用法（C++ 範本）：</strong>
+            <pre><code>${escapeHtml(meta.template)}</code></pre>
+        </div>
+        <div>
+            <button class="toggle-pedagogy-btn" onclick="toggleDrawer('pedagogy-drawer')">
+                🌱 查看本大類通論教學設計（比喻與轉譯表）
+            </button>
+        </div>
+        <div id="pedagogy-drawer" class="pedagogy-box">
+            <div class="pedagogy-summary">
+                💡 一句話白話總結：${meta.pedagogy.summary}
+            </div>
+            <div class="pedagogy-section-title">🎒 生活情境比喻：</div>
+            <p>${meta.pedagogy.analogy}</p>
+            
+            <div class="pedagogy-section-title">📖 術語概念白話轉譯表：</div>
+            <table>
+                <thead>
+                    <tr><th>原本的高中/競賽術語</th><th>換成國小學生聽得懂的話</th></tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
+                </tbody>
+            </table>
+
+            <div class="pedagogy-section-title">🖍️ 課堂黑板板書示範：</div>
+            <div class="pedagogy-board">${escapeHtml(meta.pedagogy.board)}</div>
+        </div>
+    `;
+
+    // 渲染當前類別的練習題與範例
+    const practiceContainer = document.getElementById("practiceListContainer");
+    practiceContainer.innerHTML = "";
+
+    const matchedPractices = PRACTICE_DATA.filter(p => p.cat === activeCategory);
+
+    if (matchedPractices.length === 0) {
+        practiceContainer.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px;">目前此類別尚無練習題。</div>`;
+        return;
+    }
+
+    matchedPractices.forEach(p => {
+        const badgeClass = (p.type === "教學範例") ? "badge-teaching" : "badge-practice";
+        const item = document.createElement("div");
+        item.className = "practice-item";
+        item.innerHTML = `
+            <div class="practice-info">
+                <span class="practice-badge ${badgeClass}">${p.type}</span>
+                <span class="practice-title">#${p.id} ${p.title}</span>
+            </div>
+            <div class="practice-meta">
+                <span class="practice-difficulty">${p.diff}</span>
+                <a href="${p.file}" target="_blank" class="practice-link">進入解題詳解 ↗</a>
+            </div>
+        `;
+        practiceContainer.appendChild(item);
+    });
+}
+
+function toggleDrawer(id) {
+    const el = document.getElementById(id);
+    el.style.display = (el.style.display === "block") ? "none" : "block";
+}
+
+function escapeHtml(str) {
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+
+</body>
+</html>

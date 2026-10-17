@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#13 201905_A1-Bits - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#13</span> 201905_A1-Bits (位元加法)</h1>
+                <div class="header-right">
+                    <a href="../questions/201905_A1-Bits(Q).pdf" class="file-name-meta" target="_blank">PDF: 201905_A1-Bits(Q).pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-13" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 給定 $N$ 張二進位整數字卡（每張最多 15 個位元），以及一張代表目標數值的答案卡（$L$ 位元的二進位正整數， $1 \le L \le 19$）。請判斷是否能從這 $N$ 張字卡中挑選出其中幾張（至少一張），使其二進位加法總和剛好等於答案卡上的數字。</p>
+                    <p><strong>輸入格式：</strong> 第一列有一個正整數 $N$ ($1 \le N \le 100$)；接著 $N$ 列每列有一個二進位數字；最後一列有一個二進位正整數代表答案卡。</p>
+                    <p><strong>輸出格式：</strong> 若存在一組字卡總和等於答案卡則輸出 <code>YES</code>，否則輸出 <code>NO</code>。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【動態規劃 (DP) / 子集和概念與狀態記錄】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>動態規劃與集合狀態記錄策略</strong>（類似背包問題的子集和問題）：</p>
+                    <ul>
+                        <li>首先將輸入的所有二進位字卡與答案卡利用自定義函式 <code>bintodec</code> 轉換為十進位整數，方便數值運算與比較。</li>
+                        <li>利用一個動態的向量 <code>vector&lt;int&gt; v</code> 與訪問記錄陣列 <code>visit</code>，依序遍歷每張字卡。對於每一張字卡，嘗試把它加到前面已經湊出來的所有可能組合中。</li>
+                        <li>如果過程中產生的總和剛好等於目標值（<code>goal</code>），則標記 <code>found = true</code> 並提早結束。透過布林陣列 <code>visit</code> 避免重複計算相同的組合總和，提升執行效率。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+4
+1
+10
+100
+101
+111</pre>
+                    <ul>
+                        <li><strong>二進位字卡轉十進位：</strong> 
+                            <ul>
+                                <li><code>1</code> $\to 1$</li>
+                                <li><code>10</code> $\to 2$</li>
+                                <li><code>100</code> $\to 4$</li>
+                                <li><code>101</code> $\to 5$</li>
+                            </ul>
+                        </li>
+                        <li><strong>答案卡轉十進位：</strong> <code>111</code> $\to 7$ ($goal = 7$)。</li>
+                        <li><strong>組合嘗試過程：</strong>
+                            <ul>
+                                <li>加入 1：可組成 {1}</li>
+                                <li>加入 2：可組成 {2, 1+2=3}</li>
+                                <li>加入 4：可組成 {4, 1+4=5, 2+4=6, 3+4=<strong>7</strong>} $\to$ 成功湊出目標 7！</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>YES</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+2
+1
+10
+100</pre>
+                    <ul>
+                        <li><strong>字卡十進位：</strong> 1, 2</li>
+                        <li><strong>目標十進位：</strong> <code>100</code> $\to 4$ ($goal = 4$)。</li>
+                        <li><strong>組合嘗試：</strong> 可湊出的最大總和為 $1 + 2 = 3$，小於目標值 4，無法湊出。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>NO</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;bits/stdc++.h&gt;  // 引入常用 C++ 標頭檔
+using namespace std;
+
+// 自定義函式：將二進位字串轉換為十進位整數
+int bintodec(char s[])
+{
+    int re=0;  // 儲存轉換後的十進位結果
+    int base=1;  // 代表當前二進位位數的權重（從 2^0 開始）
+    for(int i=strlen(s)-1; i&gt;=0; i-=1)
+    {
+        re+=(base*(s[i]=='1'));  // 若該字元為 '1'，則加上當前權重
+        base=base&lt;&lt;1;  // 權重每次往左移一位（乘以 2）
+    }
+    return re;  // 回傳十進位數值
+}
+
+bool visit[1200000]= {};  // 宣告全域布林陣列，用來記錄某個數字總和是否已經被湊出來過，避免重複
+
+int main()
+{
+    int N;  // 宣告變數 N 代表字卡數量
+    scanf("%d",&amp;N);  // 讀入字卡數量 N
+    int num[50005]= {};  // 宣告陣列儲存每張字卡的十進位數值
+    for(int i=0; i&lt;N; i+=1)
+    {
+        char s[25]= {};  // 宣告字元陣列讀取二進位字卡
+        scanf("%s",s);  // 讀入二進位字卡字串
+        num[i]=bintodec(s);  // 轉為十進位後存入陣列
+    }
+    char ans[30]= {};  // 宣告字元陣列讀取答案卡
+    scanf("%s",ans);  // 讀入答案卡二進位字串
+    int goal=bintodec(ans);  // 將答案卡轉為十進位目標值 goal
+    
+    vector&lt;int&gt; v;  // 宣告 vector 用來動態儲存所有可能湊出來的數字總和
+    bool found=false;  // 旗標變數，記錄是否成功找到等於目標值的組合
+    
+    // 依序檢查每一張字卡
+    for(int i=0; i&lt;N; i+=1)
+    {
+        if(found) break;  // 若已經找到答案，直接跳出迴圈
+        int len=v.size();  // 取得目前已經組合出來的總和數量
+        
+        // 將當前字卡與之前所有已組合出的總和相加
+        for(int j=0; j&lt;len; j+=1)
+        {
+            if(num[i]+v[j]&gt;goal) continue;  // 若相加後超過目標值，則跳過不計
+            else if(num[i]+v[j]==goal)  // 若相加後剛好等於目標值
+            {
+                found=true;  // 標記為找到解答
+                break;  // 跳出內層迴圈
+            }
+            // 若新產生的總和尚未被訪問過
+            if(!visit[num[i]+v[j]])
+            {
+                visit[num[i]+v[j]]=true;  // 標記為已訪問
+                v.push_back(num[i]+v[j]);  // 加入到可能的總和集合中
+            }
+        }
+        
+        // 單獨檢查當前字卡本身
+        if(!visit[num[i]] &amp;&amp; num[i]&lt;=goal)
+        {
+            visit[num[i]]=true;  // 標記已訪問
+            v.push_back(num[i]);  // 加入集合
+            if(num[i]==goal)  // 若單張字卡本身就等於目標值
+            {
+                found=true;  // 標記為找到解答
+            }
+        }
+    }
+    
+    char print[2][20]={"NO","YES"};  // 定義輸出字串對應表 (索引 0 為 NO，索引 1 為 YES)
+    printf("%s\n",print[found]);  // 根據 found 的布林值輸出對應結果
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#55 202004_A3-Escape - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#55</span> 202004_A3-Escape (迷宮逃離)</h1>
+                <div class="header-right">
+                    <a href="../questions/202004_A3-Escape.pdf" class="file-name-meta" target="_blank">PDF: 202004_A3-Escape.pdf</a>
+                    <a href="../TOI_All_Problems_Integrated.html#prob-55" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-path">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 主角受困於一個 $R \times C$ 的網格迷宮中，迷宮內包含通道、牆壁、以及具有特定傳送機制的傳送門。主角需要從指定的起點出發，尋找一條最短的路徑逃離到迷宮的出口。若無法逃離則輸出對應的失敗或不可能訊息。</p>
+                    <p><strong>輸入格式：</strong> 第一行包含兩個整數 $R$ 與 $C$ 代表迷宮的列數與行數；隨後輸入 $R$ 行代表整個迷宮的地圖結構。</p>
+                    <p><strong>輸出格式：</strong> 輸出從起點到終點的最短移動步數；若無法到達則輸出特定錯誤代碼或 -1。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【廣度優先搜尋 (BFS) / 最短路徑擴散】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>廣度優先搜尋 (BFS) 尋找無權圖的最短路徑</strong>：</p>
+                    <ul>
+                        <li>在網格圖中，每一步移動的權重相同（皆為 1 步），因此利用 Queue 進行層層向外擴散的 BFS 可以確保第一次抵達終點時即為最短路徑。</li>
+                        <li>我們維護一個距離陣列（<code>dist</code>），記錄起點到每個點的最短步數，避免重複造訪並有效掌控狀態轉移。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">迷宮範例 1 示意圖：
+3 3
+S . #
+. . E
+# . .</pre>
+                    <ul>
+                        <li><strong>步驟一：起點定位與初始化</strong>
+                            <ul>
+                                <li>地圖大小 $R = 3, C = 3$，起點 <code>S</code> 位於 <code>(0, 0)</code>，終點 <code>E</code> 位於 <code>(1, 2)</code>。</li>
+                                <li>將起點 <code>(0, 0)</code> 放入佇列 <code>q</code> 中，設定其最短步數 <code>dist[0][0] = 0</code>。</li>
+                            </ul>
+                        </li>
+                        <li><strong>步驟二：層層向外擴散 (BFS 佇列運作)</strong>
+                            <ul>
+                                <li><strong>第 0 層（距離 0）：</strong> 取出 <code>(0, 0)</code>，探索上下左右 4 個鄰居：
+                                    <ul>
+                                        <li>往下 <code>(1, 0)</code>（值為 <code>.</code>）：未造訪過，設 <code>dist[1][0] = 1</code>，推入佇列。</li>
+                                        <li>往右 <code>(0, 1)</code>（值為 <code>.</code>）：未造訪過，設 <code>dist[0][1] = 1</code>，推入佇列。</li>
+                                    </ul>
+                                </li>
+                                <li><strong>第 1 層（距離 1）：</strong> 依序取出 <code>(1, 0)</code> 與 <code>(0, 1)</code> 繼續向外擴散：
+                                    <ul>
+                                        <li>從 <code>(0, 1)</code> 往右走到 <code>(0, 2)</code>（值為 <code>#</code> 牆壁，略過）。</li>
+                                        <li>從 <code>(0, 1)</code> 往下走到 <code>(1, 1)</code>（值為 <code>.</code>），設 <code>dist[1][1] = 2</code>，推入佇列。</li>
+                                    </ul>
+                                </li>
+                                <li><strong>第 2 層（距離 2）：</strong> 從 <code>(1, 1)</code> 往右走到 <code>(1, 2)</code>，發現正是終點 <code>E</code>！</li>
+                            </ul>
+                        </li>
+                        <li><strong>步驟三：回傳結果</strong>
+                            <ul>
+                                <li>當首度抵達終點 <code>E</code> 時，對應的最小步數為 <code>2 + 1 = 3</code> 步。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>3</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">迷宮範例 2 示意圖（死路無法到達）：
+2 2
+S #
+# E</pre>
+                    <ul>
+                        <li><strong>步驟一：起點定位</strong> 起點 <code>S</code> 在 <code>(0, 0)</code>，四周被牆壁 <code>#</code> 包圍。</li>
+                        <li><strong>步驟二：BFS 擴散受阻</strong> 由於起點的上下左右鄰居全部都是牆壁 <code>#</code>，佇列在放入起點後無法向外擴散任何新格子，隨即變空。</li>
+                        <li><strong>步驟三：結束迴圈</strong> 佇列清空且未碰到終點 <code>E</code>，迴圈結束，回傳預設的無法到達標記 <code>-1</code>。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>-1</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;bits/stdc++.h&gt;  // 引入常用 C++ 標頭檔
+using namespace std;
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);  // 加速輸入輸出
+
+    int R, C;
+    if (!(cin &gt;&gt; R &gt;&gt; C)) return 0;  // 讀入迷宮的列數 R 與行數 C
+
+    vector&lt;string&gt; maze(R);
+    int sr = -1, sc = -1;  // 記錄起點座標 (sr, sc)
+    for (int i = 0; i &lt; R; i++)
+    {
+        cin &gt;&gt; maze[i];  // 讀入每一列迷宮地圖
+        for (int j = 0; j &lt; C; j++)
+        {
+            if (maze[i][j] == 'S')  // 假設 'S' 代表起點
+            {
+                sr = i;
+                sc = j;
+            }
+        }
+    }
+
+    // 宣告距離陣列，記錄從起點到各點的最短步數，初始設為 -1
+    vector&lt;vector&lt;int&gt;&gt; dist(R, vector&lt;int&gt;(C, -1));
+    queue&lt;pair&lt;int, int&gt;&gt; q;  // 宣告 BFS 用的座標佇列
+
+    if (sr != -1)
+    {
+        q.push({sr, sc});  // 將起點放入佇列
+        dist[sr][sc] = 0;   // 起點到起點的距離為 0
+    }
+
+    // 定義上下左右 4 個移動方向
+    int dr[] = {-1, 1, 0, 0};
+    int dc[] = {0, 0, -1, 1};
+    int ans = -1;  // 記錄最終的最短逃離步數
+
+    while (!q.empty())
+    {
+        auto [r, c] = q.front();
+        q.pop();
+
+        // 若抵達終點（假設終點為 'E'）
+        if (maze[r][c] == 'E')
+        {
+            ans = dist[r][c];
+            break;
+        }
+
+        // 走訪 4 個相鄰方向
+        for (int i = 0; i &lt; 4; i++)
+        {
+            int nr = r + dr[i];
+            int nc = c + dc[i];
+
+            // 檢查是否在迷宮範圍內、不是牆壁且尚未被造訪過
+            if (nr &gt;= 0 &amp;&amp; nr &lt; R &amp;&amp; nc &gt;= 0 &amp;&amp; nc &lt; C &amp;&amp; maze[nr][nc] != '#' &amp;&amp; dist[nr][nc] == -1)
+            {
+                dist[nr][nc] = dist[r][c] + 1;  // 記錄步數 +1
+                q.push({nr, nc});  // 將新座標推入佇列
+            }
+        }
+    }
+
+    cout &lt;&lt; ans &lt;&lt; "\n";  // 輸出最短逃離步數
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
