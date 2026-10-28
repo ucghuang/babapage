@@ -329,29 +329,37 @@
 </div>
 
 <script>
-// 完整練習題資料庫 (對應 practice_list.csv)
 const PRACTICE_DATA = [
     { cat: "基礎模擬", type: "教學範例", id: 4, title: "201903_B1-BMR - 基礎代謝率 (BMR Calculation)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-4_B1-BMR.html" },
     { cat: "基礎模擬", type: "教學範例", id: 5, title: "201903_B2-StudentList - 班級名單 (Student list)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-5_B2-StudentList.html" },
     { cat: "基礎模擬", type: "教學範例", id: 6, title: "201903_B3-BigEater - 大吃大喝 (Big eater)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-6_B3-BigEater.html" },
     { cat: "基礎模擬", type: "課後練習", id: 10, title: "201904_B1-LuckyDraw - 粉專抽獎 (Lucky Draw)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-10_B1-LuckyDraw.html" },
     { cat: "基礎模擬", type: "課後練習", id: 16, title: "201905_B1-Currency - 貨幣轉換 (Currency)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-16_B1-Currency.html" },
+    { cat: "基礎模擬", type: "課後練習", id: 281, title: "202503_MRT - 捷運路線圖 (MRT)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-281_MRT.html" },
 
-    { cat: "前綴和", type: "教學範例", id: 1, title: "201903_A1-Classroom - 教室配置 (Classroom)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-1_A1-Classroom.html" },
-    { cat: "前綴和", type: "教學範例", id: 41, title: "201912-onsite_3-BusStop - 站牌廣告 (BusStop)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-41_onsite_3-BusStop.html" },
-    { cat: "前綴和", type: "教學範例", id: 93, title: "202012_Meteorite - 流星雨 (Meteorite)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-93_Meteorite.html" },
-    { cat: "前綴和", type: "課後練習", id: 271, title: "202411_Market - 傳統市場 (Market)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-271_Market.html" },
-    { cat: "前綴和", type: "課後練習", id: 301, title: "202509_sheet - 試算表記錄 (sheet)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-301_sheet.html" },
+    { cat: "前綴和/差分陣列", type: "教學範例", id: 1, title: "201903_A1-Classroom - 教室配置 (Classroom)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-1_A1-Classroom.html" },
+    { cat: "前綴和/差分陣列", type: "教學範例", id: 41, title: "201912-onsite_3-BusStop - 站牌廣告 (BusStop)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-41_onsite_3-BusStop.html" },
+    { cat: "前綴和/差分陣列", type: "教學範例", id: 93, title: "202012_Meteorite - 流星雨 (Meteorite)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-93_Meteorite.html" },
+    { cat: "前綴和/差分陣列", type: "課後練習", id: 26, title: "201908-onsite_8-Treasure - 幽靈寶藏 (Treasure)", diff: "3 星 (★★★☆☆)", file: "explain/prob-26_onsite_8-Treasure.html" },
+    { cat: "前綴和/差分陣列", type: "課後練習", id: 28, title: "201910_A2-Roads - 道路鋪設 (Roads)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-28_A2-Roads.html" },
+    { cat: "前綴和/差分陣列", type: "課後練習", id: 65, title: "202006_Cake - 切蛋糕 (Cake)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-65_Cake.html" },
+//    { cat: "前綴和/差分陣列", type: "教學範例", id: 42, title: "201912-onsite_4-DigitalLogic - 數位邏輯運算 (DigitalLogic)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-42_onsite_4-DigitalLogic.html" },
+//    { cat: "前綴和/差分陣列", type: "課後練習", id: 120, title: "202110-OFFLINE_Rent - 租車服務 (Rent)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-120_OFFLINE_Rent.html" },
+//    { cat: "前綴和/差分陣列", type: "課後練習", id: 177, title: "202212-OFFLINE_Base - 基地防守 (Base)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-177_OFFLINE_Base.html" },
+//    { cat: "前綴和/差分陣列", type: "課後練習", id: 271, title: "202411_Market - 傳統市場 (Market)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-271_Market.html" },
+//    { cat: "前綴和/差分陣列", type: "課後練習", id: 301, title: "202509_sheet - 試算表記錄 (sheet)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-301_sheet.html" },
 
     { cat: "貪婪演算法", type: "教學範例", id: 7, title: "201904_A1-FarmlandIrrigating - 農田灌溉 (Farmland Irrigating)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-7_A1-FarmlandIrrigating.html" },
-    { cat: "貪婪演算法", type: "教學範例", id: 24, title: "201908-onsite_6-Food - 飲食分類 (Food)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-24_onsite_6-Food.html" },
+    { cat: "貪婪演算法", type: "教學範例", id: 107, title: "202104_Survival - 物競天擇 (Survival)", diff: "4 星 (★★★★☆)", file: "explain/prob-107_Survival.html" },
     { cat: "貪婪演算法", type: "教學範例", id: 32, title: "201910_B3-Master - 虛擬寵物大師 (Master)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-32_B3-Master.html" },
-    { cat: "貪婪演算法", type: "課後練習", id: 65, title: "202006_Cake - 切蛋糕 (Cake)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-65_Cake.html" },
     { cat: "貪婪演算法", type: "課後練習", id: 90, title: "202011_Wrapper - 包裝材料 (Wrapper)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-90_Wrapper.html" },
+    { cat: "貪婪演算法", type: "課後練習", id: 170, title: "202210_Pyramid - 金字塔 (Pyramid)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-170_Pyramid.html" },
+//    { cat: "貪婪演算法", type: "教學範例", id: 24, title: "201908-onsite_6-Food - 飲食分類 (Food)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-24_onsite_6-Food.html" },
 
     { cat: "動態規劃 (DP)", type: "教學範例", id: 8, title: "201904_A2-Bonus - 獎金關卡 (Bonus)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-8_A2-Bonus.html" },
     { cat: "動態規劃 (DP)", type: "教學範例", id: 13, title: "201905_A1-Bits - 位元加法 (Bits)", diff: "3 星 (★★★☆☆)", file: "explain/prob-13_A1-Bits.html" },
     { cat: "動態規劃 (DP)", type: "教學範例", id: 29, title: "201910_A3-Typing - 猴子打字遊戲 (Typing)", diff: "3 星 (★★★☆☆)", file: "explain/prob-29_A3-Typing.html" },
+    { cat: "動態規劃 (DP)", type: "教學範例", id: 48, title: "201912_A2-Cut - 空間切割 (Cut) ", diff: "1星(★☆☆☆☆) ", file: "explain/prob-48_A2-Cut.html" },
     { cat: "動態規劃 (DP)", type: "課後練習", id: 78, title: "202008_Tetris - 俄羅斯方塊 (Tetris)", diff: "3 星 (★★★☆☆)", file: "explain/prob-78_Tetris.html" },
     { cat: "動態規劃 (DP)", type: "課後練習", id: 98, title: "202103_Farmland - 農地開墾 (Farmland)", diff: "3 星 (★★★☆☆)", file: "explain/prob-98_Farmland.html" },
 
@@ -365,7 +373,7 @@ const PRACTICE_DATA = [
     { cat: "圖論演算法", type: "教學範例", id: 14, title: "201905_A2-Bonus - 巨額獎金 (Bonus)", diff: "3 星 (★★★☆☆)", file: "explain/prob-14_A2-Bonus.html" },
     { cat: "圖論演算法", type: "教學範例", id: 34, title: "201911_A2-Diving - 潛水 (Diving)", diff: "3 星 (★★★☆☆)", file: "explain/prob-34_A2-Diving.html" },
     { cat: "圖論演算法", type: "課後練習", id: 96, title: "202012_Zipline - 滑索冒險 (Zipline)", diff: "3 星 (★★★☆☆)", file: "explain/prob-96_Zipline.html" },
-    { cat: "圖論演算法", type: "課後練習", id: 281, title: "202503_MRT - 捷運路線圖 (MRT)", diff: "3 星 (★★★☆☆)", file: "explain/prob-281_MRT.html" },
+    { cat: "圖論演算法", type: "課後練習", id: 266, title: "202410_trip - 校外教學分組 (trip)", diff: "3 星 (★★★☆☆)", file: "explain/prob-266_trip.html" },
 
     { cat: "廣度優先搜尋 (BFS)", type: "教學範例", id: 2, title: "201903_A2-QueenBee - 尋找蜂后 (Queen bee)", diff: "3 星 (★★★☆☆)", file: "explain/prob-2_A2-QueenBee.html" },
     { cat: "廣度優先搜尋 (BFS)", type: "教學範例", id: 55, title: "202004_A3-Escape - 迷宮逃離 (Escape)", diff: "4 星 (★★★★☆)", file: "explain/prob-55_A3-Escape.html" },
@@ -373,11 +381,6 @@ const PRACTICE_DATA = [
     { cat: "廣度優先搜尋 (BFS)", type: "課後練習", id: 87, title: "202011_Game_Map - 遊戲地圖 (Game_Map)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-87_Game_Map.html" },
     { cat: "廣度優先搜尋 (BFS)", type: "課後練習", id: 110, title: "202105_Maze - 走迷宮 (Maze)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-110_Maze.html" },
 
-    { cat: "差分陣列", type: "教學範例", id: 28, title: "201910_A2-Roads - 道路鋪設 (Roads)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-28_A2-Roads.html" },
-    { cat: "差分陣列", type: "教學範例", id: 26, title: "201908-onsite_8-Treasure - 幽靈寶藏 (Treasure)", diff: "3 星 (★★★☆☆)", file: "explain/prob-26_onsite_8-Treasure.html" },
-    { cat: "差分陣列", type: "教學範例", id: 42, title: "201912-onsite_4-DigitalLogic - 數位邏輯運算 (DigitalLogic)", diff: "1 星 (★☆☆☆☆)", file: "explain/prob-42_onsite_4-DigitalLogic.html" },
-    { cat: "差分陣列", type: "課後練習", id: 120, title: "202110-OFFLINE_Rent - 租車服務 (Rent)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-120_OFFLINE_Rent.html" },
-    { cat: "差分陣列", type: "課後練習", id: 177, title: "202212-OFFLINE_Base - 基地防守 (Base)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-177_OFFLINE_Base.html" },
 
     { cat: "深度優先搜尋 (DFS)", type: "教學範例", id: 54, title: "202004_A2-Treasure - 尋寶遊戲 (Treasure)", diff: "3 星 (★★★☆☆)", file: "explain/prob-54_A2-Treasure.html" },
     { cat: "深度優先搜尋 (DFS)", type: "教學範例", id: 155, title: "202205_Treasure - 迷宮寶箱 (Treasure)", diff: "3 星 (★★★☆☆)", file: "explain/prob-155_Treasure.html" },
@@ -389,7 +392,10 @@ const PRACTICE_DATA = [
     { cat: "賽局理論 (Game Theory)", type: "教學範例", id: 232, title: "202312-OFFLINE_Game - 闖關對戰 (Game)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-232_OFFLINE_Game.html" },
     { cat: "賽局理論 (Game Theory)", type: "教學範例", id: 248, title: "202403_The21Game - 二十一點賽局 (The21Game)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-248_The21Game.html" },
     { cat: "賽局理論 (Game Theory)", type: "課後練習", id: 104, title: "202104_Game - 遊戲闖關 (Game)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-104_Game.html" },
-    { cat: "賽局理論 (Game Theory)", type: "課後練習", id: 157, title: "202208-OFFLINE_Adventure - 遺跡冒險 (Adventure)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-157_OFFLINE_Adventure.html" }
+    { cat: "賽局理論 (Game Theory)", type: "課後練習", id: 157, title: "202208-OFFLINE_Adventure - 遺跡冒險 (Adventure)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-157_OFFLINE_Adventure.html" },
+
+    { cat: "綜合練習", type: "課後練習", id: 203, title: "202305_Cargo - 載運貨物 (Cargo)", diff: "2 星 (★★☆☆☆)", file: "explain/prob-203_Cargo.html" },
+
 ];
 
 // 演算法元資料
@@ -418,14 +424,14 @@ char shifted = (ch - 'a' + k) % 26 + 'a';`,
 (圓圈轉動，走到最後自動繞回前面，這就是「求餘數 %」的魔力！)`
         }
     },
-    "前綴和": {
-        name: "前綴和",
+    "前綴和/差分陣列": {
+        name: "前綴和/差分陣列",
         feature: "預先計算並儲存陣列從起點到當前位置的累加總和（Prefix Sum），將原本每次查詢區間總和需要 O(N) 的耗時，瞬間降至 O(1)。",
         scenario: "需要頻繁且大量查詢不同區間（Range）數字總和、平均值或區間統計的靜態陣列問題。",
-        template: `// 前綴和陣列建構與區間查詢
+        template: `// 前綴和/差分陣列 陣列建構與區間查詢
 int prefix[MAX_SIZE] = {0};
 
-// 1. 預先建構前綴和 (O(N))
+// 1. 預先建構前綴和/差分陣列  (O(N))
 for (int i = 1; i <= N; i++) {
     prefix[i] = prefix[i - 1] + arr[i];
 }
@@ -433,20 +439,46 @@ for (int i = 1; i <= N; i++) {
 // 2.  O(1) 快速查詢區間 [L, R] 總和
 int query_sum(int L, int R) {
     return prefix[R] - prefix[L - 1];
-}`,
+}
+
+// 差分陣列基本結構
+int diff[MAX_SIZE] = {0};
+
+// 1. 區間 [L, R] 加上 val (O(1))
+void range_add(int L, int R, int val) {
+    diff[L] += val;
+    diff[R + 1] -= val;
+}
+
+// 2. 一次線性前綴和/差分陣列 還原即時量 (O(N))
+int now = 0;
+for (int i = 0; i < MAX_SIZE; i++) {
+    now += diff[i];
+    // now 即為該位置真實數值
+}
+`,
         pedagogy: {
-            summary: "「先把前面所有人的存款總額一次算好寫在黑板上；以後不管誰問第 3 個到第 7 個人的總存款，只要拿第 7 個人的總帳本減掉第 2 個人的總帳本，答案就出來了！」",
-            analogy: "【便利商店總帳本】：老闆不用每次客人問「第 3 天到第 8 天賣了多少」就重新把 6 天的帳單加一次。只要每天打卡時順便把「從第一天到今天的累計總金額」寫好，一秒就能算出答案！",
+            summary: "「先把前面所有人的存款總額一次算好寫在黑板上；以後不管誰問第 3 個到第 7 個人的總存款，只要拿第 7 個人的總帳本減掉第 2 個人的總帳本，答案就出來了！」或是「不要每個人都跑去一間間教室敲門；只要在『開始的教室門口貼 +1』、『結束的下一間門口貼 -1』，最後從頭走一次算總數，就能瞬間知道每間教室有幾個人！」",
+            analogy: "【便利商店總帳本】：老闆不用每次客人問「第 3 天到第 8 天賣了多少」就重新把 6 天的帳單加一次。只要每天打卡時順便把「從第一天到今天的累計總金額」寫好，一秒就能算出答案！或是【公車司機上下車記帳】：司機不要每過一站就把整車的人重新數一次。只要在第 2 站筆記「上車 +10」，第 9 站筆記「下車 -10」，最後順著加減算一次，每一站的人數就全部算出來了！",
             table: [
-                { term: "前綴和 (Prefix Sum)", kid: "「一路加到底的累計總帳本」：每到一站就把之前的錢全部加總起來。" },
-                { term: "O(1) 區間查詢", kid: "「神奇減法術」：大帳本減掉小帳本，中間段落直接瞬間算好。" }
+                { term: "前綴和/差分陣列  (Prefix Sum)", kid: "「一路加到底的累計總帳本」：每到一站就把之前的錢全部加總起來。" },
+                { term: "O(1) 區間查詢", kid: "「神奇減法術」：大帳本減掉小帳本，中間段落直接瞬間算好。" },
+                { term: "區間端點打標記", kid: "「只在頭貼加號、尾巴貼減號」：進門領號碼牌，出門交回。" },
+                { term: "線性前綴還原", kid: "「像開火車一樣順著加過去」：只排隊結帳一次就全算好。" }
             ],
-            board: `示範：陣列 [ 2, 4, 1, 5, 3 ] 的前綴和帳本
+            board: `示範：陣列 [ 2, 4, 1, 5, 3 ] 的前綴和/差分陣列 帳本
 原始數字：    2     4     1     5     3
 累計總和：    2     6     7    12    15
 如果要查第 2 個到第 4 個總和 (4+1+5 = 10)：
-直接拿 prefix[4] (12) - prefix[1] (2) = 10，秒殺！`
-        }
+直接拿 prefix[4] (12) - prefix[1] (2) = 10，秒殺！
+
+示範：小明從第 2 站坐到第 4 站
+車站編號：   [ 1 ]   [ 2 ]   [ 3 ]   [ 4 ]   [ 5 ]
+上下車記號：          +1                      -1   (第 4 站下車，故第 5 站少 1 人)
+--------------------------------------------------
+一路加過去：   0       1       1       1       0   (每站車上有幾人一清二楚！)`
+         
+ }
     },
     "貪婪演算法": {
         name: "貪婪演算法",
@@ -595,39 +627,6 @@ while (!q.empty()) {
 像波浪一樣展開，找到出口保證步數最少！`
         }
     },
-    "差分陣列": {
-        name: "差分陣列",
-        feature: "利用區間端點 O(1) 增減打標記（diff[L] += val, diff[R+1] -= val），最後以前綴和一次線性掃描 O(N) 還原數值，免除大量區間重複操作造成的 O(N·M) 耗時。",
-        scenario: "多個區間重複覆蓋統計、求特定時刻的最大教室使用量/在線人數、或大量連續加權異動。",
-        template: `// 差分陣列基本結構
-int diff[MAX_SIZE] = {0};
-
-// 1. 區間 [L, R] 加上 val (O(1))
-void range_add(int L, int R, int val) {
-    diff[L] += val;
-    diff[R + 1] -= val;
-}
-
-// 2. 一次線性前綴和還原即時量 (O(N))
-int now = 0;
-for (int i = 0; i < MAX_SIZE; i++) {
-    now += diff[i];
-    // now 即為該位置真實數值
-}`,
-        pedagogy: {
-            summary: "「不要每個人都跑去一間間教室敲門；只要在『開始的教室門口貼 +1』、『結束的下一間門口貼 -1』，最後從頭走一次算總數，就能瞬間知道每間教室有幾個人！」",
-            analogy: "【公車司機上下車記帳】：司機不要每過一站就把整車的人重新數一次。只要在第 2 站筆記「上車 +10」，第 9 站筆記「下車 -10」，最後順著加減算一次，每一站的人數就全部算出來了！",
-            table: [
-                { term: "區間端點打標記", kid: "「只在頭貼加號、尾巴貼減號」：進門領號碼牌，出門交回。" },
-                { term: "線性前綴還原", kid: "「像開火車一樣順著加過去」：只排隊結帳一次就全算好。" }
-            ],
-            board: `示範：小明從第 2 站坐到第 4 站
-車站編號：   [ 1 ]   [ 2 ]   [ 3 ]   [ 4 ]   [ 5 ]
-上下車記號：          +1                      -1   (第 4 站下車，故第 5 站少 1 人)
---------------------------------------------------
-一路加過去：   0       1       1       1       0   (每站車上有幾人一清二楚！)`
-        }
-    },
     "深度優先搜尋 (DFS)": {
         name: "深度優先搜尋 (DFS)",
         feature: "利用遞迴（Recursion）或堆疊（Stack）一路往前衝到底，撞牆無路可走時再退回（Backtracking）探索其他岔路。",
@@ -680,7 +679,24 @@ for (int i = 1; i <= N; i++) {
 勝負狀態：    必敗(0)    必勝(1)    必勝(1)    必敗(0)
 (只要把剩 3 顆的爛攤子留給對手，對手就輸穩了！)`
         }
-    }
+    },
+    "綜合練習": {
+        name: "綜合練習",
+        feature: "綜合練習",
+        scenario: "綜合練習",
+        template: `綜合練習`,
+        pedagogy: {
+            summary: "綜合練習",
+            analogy: "綜合練習",
+            table: [
+                { term: "綜合練習", kid: "加油努力" },
+                { term: "綜合練習", kid: "加油努力" },
+			],
+            board: `綜合練習`
+        }
+    },
+	
+	
 };
 
 let activeCategory = "基礎模擬";
