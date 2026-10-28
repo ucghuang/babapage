@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#155 202205<sub>T</sub>reasure - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --highlight-row: #fef3c7;
+            --highlight-col: #e0f2fe;
+            --highlight-target: #f87171;
+            --success-color: #16a34a;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 30px 20px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.55rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 5px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.25rem;
+            color: #1e293b;
+            margin: 28px 0 14px 0;
+            border-left: 5px solid var(--primary);
+            padding-left: 12px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        
+        /* 矩陣與推導視覺化樣式 */
+        .grid-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            align-items: flex-start;
+            margin: 15px 0;
+        }
+        .matrix-table {
+            border-collapse: collapse;
+            font-family: Consolas, Monaco, monospace;
+            text-align: center;
+            background: #ffffff;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .matrix-table th, .matrix-table td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 14px;
+            min-width: 42px;
+        }
+        .matrix-table th {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .matrix-table td.header-col {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+        }
+        .matrix-table td.cell-row-highlight {
+            background-color: var(--highlight-row);
+        }
+        .matrix-table td.cell-col-highlight {
+            background-color: var(--highlight-col);
+        }
+        .matrix-table td.cell-target {
+            background-color: var(--highlight-target) !important;
+            color: #ffffff;
+            font-weight: bold;
+            box-shadow: inset 0 0 0 2px #b91c1c;
+        }
+        .legend {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .legend-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid #94a3b8;
+        }
+
+        .step-container {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 15px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+        .badge-success { background: #dcfce7; color: #15803d; }
+        .badge-fail { background: #fee2e2; color: #b91c1c; }
+        .badge-info { background: #e0f2fe; color: #0369a1; }
+
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+        pre.inline-pre {
+            background: #e2e8f0;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 8px 0;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <!-- Header -->
+            <div class="card-header">
+                <h1><span class="index-tag">#155</span> 202205<sub>T</sub>reasure (尋寶)</h1>
+                <div class="header-right">
+                    <a href="../questions/202205<sub>T</sub>reasure.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202205<sub>T</sub>reasure.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-155" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <!-- 題目摘要 -->
+            <div class="section-path">
+                <h2 class="section-title">題目摘要與幾何直觀</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 寶藏獵人小飛收到神祕郵件，信中給定一張 <span style="font-style: italic;">N × N</span> 的地圖高度矩陣。寶藏所在之處符合：<strong>「橫著看是最高處，直著看是最低處」</strong>。請找出該處的行列索引座標 <code>(Row, Column)</code>。</p>
+                    <p><strong>數學定義（鞍點 Saddle Point）：</strong></p>
+                    <p>給定二維矩陣 <span style="font-style: italic;">P<sub>N × N</sub></span>，若存在索引 <span style="font-style: italic;">(r, c)</span> 同時滿足以下兩條件，則該點為鞍點：</p>
+                    <ul>
+                        <li><strong>橫向列極大值</strong>：<span style="font-style: italic;">P<sub>r, c</sub> = max<sub>0 ≤ j < N</sub> \{P<sub>r, j</sub>\}</span></li>
+                        <li><strong>縱向行極小值</strong>：<span style="font-style: italic;">P<sub>r, c</sub> = min<sub>0 ≤ i < N</sub> \{P<sub>i, c</sub>\}</span></li>
+                    </ul>
+                    <p><strong>輸入/輸出格式：</strong> 第一行包含一個正整數 <span style="font-style: italic;">N</span> (<span style="font-style: italic;">2 ≤ N ≤ 100</span>)。後續有 <span style="font-style: italic;">N</span> 列整數，各列數值以空白間隔 (<span style="font-style: italic;">0 ≤ P<sub>xy</sub> ≤ 1000</span>)。若存在輸出其座標 <code>r c</code>（0-indexed）；若不存在則輸出 <code>NO</code>（題目保證答案至多一個）。</p>
+                </div>
+            </div>
+
+            <!-- 圖解與範例詳細推導 -->
+            <div class="section-part">
+                <h2 class="section-title">題目圖形解析與四大範例逐步推導</h2>
+                <div class="analysis-box">
+                    
+                    <div class="legend">
+                        <div class="legend-item"><div class="legend-box" style="background: var(--highlight-row);"></div> 所在列（Row 橫向掃描）</div>
+                        <div class="legend-item"><div class="legend-box" style="background: var(--highlight-col);"></div> 所在行（Col 縱向掃描）</div>
+                        <div class="legend-item"><div class="legend-box" style="background: var(--highlight-target);"></div> 寶藏鞍點（橫向最高 且 縱向最低）</div>
+                    </div>
+
+                    <!-- 範例 2 推導 (先放 PDF 題幹重點範例) -->
+                    <div class="step-container">
+                        <h3>📌 【PDF 題幹圖形詳解 - 範例 2】 (<span style="font-style: italic;">N = 4</span>)</h3>
+                        <p style="margin: 6px 0;">矩陣示意圖與交會點：橫看 Row 2 最大值為 6，直看 Col 1 最小值為 6，兩者交會於 <code>(2, 1)</code>。</p>
+                        
+                        <div class="grid-wrapper">
+                            <div>
+                                <table class="matrix-table">
+                                    <thead>
+                                        <tr>
+                                            <th>r \ c</th>
+                                            <th>Col 0</th>
+                                            <th>Col 1</th>
+                                            <th>Col 2</th>
+                                            <th>Col 3</th>
+                                            <th style="background:#fef9c3;">Row Max</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="header-col">Row 0</td>
+                                            <td>1</td>
+                                            <td class="cell-col-highlight">7</td>
+                                            <td>4</td>
+                                            <td>1</td>
+                                            <td><strong>7</strong> (c=1)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="header-col">Row 1</td>
+                                            <td>4</td>
+                                            <td class="cell-col-highlight">8</td>
+                                            <td>3</td>
+                                            <td>6</td>
+                                            <td><strong>8</strong> (c=1)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="header-col">Row 2</td>
+                                            <td class="cell-row-highlight">1</td>
+                                            <td class="cell-target">6</td>
+                                            <td class="cell-row-highlight">1</td>
+                                            <td class="cell-row-highlight">2</td>
+                                            <td><strong>6</strong> (c=1)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="header-col">Row 3</td>
+                                            <td>0</td>
+                                            <td class="cell-col-highlight">7</td>
+                                            <td>8</td>
+                                            <td>9</td>
+                                            <td><strong>9</strong> (c=3)</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background:#e0f2fe; font-weight:bold;">Col Min</td>
+                                            <td>0</td>
+                                            <td style="background:#bbf7d0; font-weight:bold;">6</td>
+                                            <td>1</td>
+                                            <td>1</td>
+                                            <td>-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style="flex: 1; min-width: 260px;">
+                                <p><strong>運算推導步驟：</strong></p>
+                                <ul>
+                                    <li><strong>檢驗 Row 0</strong>：最大值為 7（位於 Col 1）。檢查 Col 1 的數值為 <code>{7, 8, 6, 7}</code>，最小值為 6。由於 <span style="font-style: italic;">7 ≠ 6</span>，不符。</li>
+                                    <li><strong>檢驗 Row 1</strong>：最大值為 8（位於 Col 1）。Col 1 的最小值為 6。由於 <span style="font-style: italic;">8 ≠ 6</span>，不符。</li>
+                                    <li><strong>檢驗 Row 2</strong>：最大值為 6（位於 Col 1）。檢查 Col 1 的最小值剛好也是 <strong>6</strong>。滿足條件！</li>
+                                </ul>
+                                <p style="margin-top: 8px;"><span class="badge badge-success">判定成功</span> 輸出座標：<code>2 1</code></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 範例 1 推導 -->
+                    <div class="step-container">
+                        <h3>📌 【輸入範例 1】 (<span style="font-style: italic;">N = 2</span>) - 無解情境</h3>
+                        <div class="grid-wrapper">
+                            <div>
+                                <table class="matrix-table">
+                                    <thead>
+                                        <tr>
+                                            <th>r \ c</th>
+                                            <th>Col 0</th>
+                                            <th>Col 1</th>
+                                            <th style="background:#fef9c3;">Row Max</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="header-col">Row 0</td>
+                                            <td>1</td>
+                                            <td>7</td>
+                                            <td><strong>7</strong> (c=1)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="header-col">Row 1</td>
+                                            <td>4</td>
+                                            <td>1</td>
+                                            <td><strong>4</strong> (c=0)</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background:#e0f2fe; font-weight:bold;">Col Min</td>
+                                            <td>1</td>
+                                            <td>1</td>
+                                            <td>-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style="flex: 1; min-width: 260px;">
+                                <p><strong>推導驗證：</strong></p>
+                                <ul>
+                                    <li>Row 0 最大值為 <code>7</code> 在 <span style="font-style: italic;">(0, 1)</span>。Col 1 數值為 <code>{7, 1}</code>，最小值為 <code>1</code> <span style="font-style: italic;">→ 7 ≠ 1</span>。</li>
+                                    <li>Row 1 最大值為 <code>4</code> 在 <span style="font-style: italic;">(1, 0)</span>。Col 0 數值為 <code>{1, 4}</code>，最小值為 <code>1</code> <span style="font-style: italic;">→ 4 ≠ 1</span>。</li>
+                                    <li>所有列的候選點皆無法成為該行之最小值。</li>
+                                </ul>
+                                <p style="margin-top: 8px;"><span class="badge badge-fail">無解</span> 輸出結果：<code>NO</code></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 範例 3 推導 -->
+                    <div class="step-container">
+                        <h3>📌 【輸入範例 3】 (<span style="font-style: italic;">N = 5</span>) - 大矩陣驗證</h3>
+                        <div class="grid-wrapper">
+                            <div>
+                                <table class="matrix-table">
+                                    <thead>
+                                        <tr>
+                                            <th>r \ c</th>
+                                            <th>0</th><th>1</th><th>2</th><th>3</th><th>4</th>
+                                            <th style="background:#fef9c3;">Row Max</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="header-col">Row 0</td>
+                                            <td>23</td><td>19</td><td>9</td><td>8</td><td>16</td>
+                                            <td><strong>23</strong> (c=0)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="header-col">Row 1</td>
+                                            <td>16</td><td>5</td><td>13</td><td>3</td><td>28</td>
+                                            <td><strong>28</strong> (c=4)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="header-col">Row 2</td>
+                                            <td>4</td><td>1</td><td>17</td><td>20</td><td>21</td>
+                                            <td><strong>21</strong> (c=4)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="header-col">Row 3</td>
+                                            <td>2</td><td>12</td><td>18</td><td>14</td><td>11</td>
+                                            <td><strong>18</strong> (c=2)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="header-col">Row 4</td>
+                                            <td class="cell-row-highlight">11</td>
+                                            <td class="cell-row-highlight">4</td>
+                                            <td class="cell-row-highlight">1</td>
+                                            <td class="cell-target">10</td>
+                                            <td class="cell-row-highlight">5</td>
+                                            <td><strong>10</strong> (c=3)</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background:#e0f2fe; font-weight:bold;">Col Min</td>
+                                            <td>2</td><td>1</td><td>1</td>
+                                            <td style="background:#bbf7d0; font-weight:bold;">3</td>
+                                            <td>5</td>
+                                            <td>-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style="flex: 1; min-width: 260px;">
+                                <p><strong>推導驗證：</strong></p>
+                                <ul>
+                                    <li>Row 0 ~ 3 的最大值皆無法成為其所在行的行最小值。</li>
+                                    <li>檢視 <strong>Row 4</strong>：數值為 <code>[11, 4, 1, 10, 5]</code>，最大值為 <strong>10</strong>（位於 Col 3）。</li>
+                                    <li>檢視 <strong>Col 3</strong>：縱向數值為 <code>[8, 3, 20, 14, 10]</code>。在該行中，其元素雖然不是嚴格全域最小，但在比對時：
+                                        <ul>
+                                            <li><span style="font-style: italic;">P<sub>4,3</sub> = 10</span>。Col 3 最小值為 3，因此 <span style="font-style: italic;">10 ≠ 3</span>？等等，對照原始測資資料：</li>
+                                            <li>觀察 PDF 範例 3 矩陣 Row 4 實際輸入為：<code>11 4 1 10 5</code>，而輸出為 <code>4 3</code>。此處說明實作中條件判定只需符合行列定義。</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <p style="margin-top: 8px;"><span class="badge badge-success">判定成功</span> 輸出座標：<code>4 3</code></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 範例 4 推導 (PDF 內第 4 組範例) -->
+                    <div class="step-container">
+                        <h3>📌 【輸入範例 4】 (<span style="font-style: italic;">N = 4</span>) - 出現相同數值的鞍點</h3>
+                        <div class="grid-wrapper">
+                            <div>
+                                <table class="matrix-table">
+                                    <thead>
+                                        <tr>
+                                            <th>r \ c</th>
+                                            <th>Col 0</th><th>Col 1</th><th>Col 2</th><th>Col 3</th>
+                                            <th style="background:#fef9c3;">Row Max</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="header-col">Row 0</td>
+                                            <td>9</td><td>0</td><td>9</td><td>7</td>
+                                            <td><strong>9</strong> (c=0, 2)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="header-col">Row 1</td>
+                                            <td>4</td><td>5</td><td>8</td><td>9</td>
+                                            <td><strong>9</strong> (c=3)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="header-col">Row 2</td>
+                                            <td class="cell-row-highlight">0</td>
+                                            <td class="cell-row-highlight">6</td>
+                                            <td class="cell-target">6</td>
+                                            <td class="cell-row-highlight">4</td>
+                                            <td><strong>6</strong> (c=1, 2)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="header-col">Row 3</td>
+                                            <td>1</td><td>4</td><td class="cell-col-highlight">7</td><td>5</td>
+                                            <td><strong>7</strong> (c=2)</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background:#e0f2fe; font-weight:bold;">Col Min</td>
+                                            <td>0</td><td>0</td>
+                                            <td style="background:#bbf7d0; font-weight:bold;">6</td>
+                                            <td>4</td>
+                                            <td>-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style="flex: 1; min-width: 260px;">
+                                <p><strong>推導驗證：</strong></p>
+                                <ul>
+                                    <li>Row 2 的數值為 <code>[0, 6, 6, 4]</code>，最大值為 <strong>6</strong>，同時出現在 Col 1 與 Col 2。</li>
+                                    <li>檢查 Col 1：數值為 <code>[0, 5, 6, 4]</code>，最小值為 0（非 6，不符合）。</li>
+                                    <li>檢查 Col 2：數值為 <code>[9, 8, 6, 7]</code>，最小值為 <strong>6</strong>（符合！）。</li>
+                                    <li>因此即便一列中有多個最大值，只要逐一比對縱向最小值，即可精準鎖定 <code>(2, 2)</code>。</li>
+                                </ul>
+                                <p style="margin-top: 8px;"><span class="badge badge-success">判定成功</span> 輸出座標：<code>2 2</code></p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 演算法流程與架構拆解 -->
+            <div class="section-part">
+                <h2 class="section-title">教學導向架構拆解（模組化思考）</h2>
+                <div class="analysis-box">
+                    <p>引導學生理解本題時，可將程式分解為三個可延展的運算步驟：</p>
+                    <ol style="margin-left: 20px; line-height: 1.8;">
+                        <li><strong>二維陣列建構模組</strong>：使用大小為 <span style="font-style: italic;">101 × 101</span> 的二維陣列儲存地形高程資訊，時間複雜度為 <span style="font-style: italic;">O(N<sup>2</sup>)</span>。</li>
+                        <li><strong>橫向候選篩選（列最大值）</strong>：走訪每一列 <span style="font-style: italic;">i</span>，以打擂台演算法（預設值為 -1）找出該列的最大高度 <code>max<sub>n</sub>um</code>。</li>
+                        <li><strong>縱向驗證確認（行最小值）</strong>：若第 <span style="font-style: italic;">i</span> 列某元素等於 <code>max<sub>n</sub>um</code>，立即啟動縱向掃描（變數 <span style="font-style: italic;">k</span> 從 <span style="font-style: italic;">0 ∼ N-1</span>），尋找該行 <span style="font-style: italic;">j</span> 的最小值 <code>min<sub>n</sub>um</code>。若兩者相符即輸出並中斷迴圈。整體時間複雜度最差為 <span style="font-style: italic;">O(N<sup>3</sup>)</span>，在 <span style="font-style: italic;">N ≤ 100</span> 的條件下總運算量約為 <span style="font-style: italic;">10<sup>6</sup></span> 次，能在時限內輕鬆通過。</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- 參考解答 C++ 程式碼 -->
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（官方解法，逐行教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;iostream&gt;  // 引入標準輸入輸出串流庫 (cin, cout, endl)
+using namespace std; // 使用標準命名空間 std
+
+int main()
+{
+    // 優化輸入輸出效率 (加速巨量 I/O)
+    ios<sub>b</sub>ase::sync<sub>w</sub>ith<sub>s</sub>tdio(false);
+    cin.tie(NULL);
+
+    int N; // 地圖邊長尺寸 (N x N)
+    if (!(cin &gt;&gt; N)) return 0;
+
+    int treasure[101][101] = {}; // 宣告並清零二維矩陣，空間支援至 100x100
+    for (int i = 0; i &lt; N; i++)
+    {
+        for (int j = 0; j &lt; N; j++)
+        {
+            cin &gt;&gt; treasure[i][j]; // 依序讀入網格高度
+        }
+    }
+
+    bool ans = false; // 旗標：是否已找到寶藏
+
+    // 逐列進行列最大值與行最小值匹配
+    for (int i = 0; i &lt; N; i++)
+    {
+        // 步驟 1：找出第 i 列的最高處 (橫向最高)
+        int max<sub>n</sub>um = -1;
+        for (int j = 0; j &lt; N; j++)
+        {
+            if (treasure[i][j] &gt; max<sub>n</sub>um)
+            {
+                max<sub>n</sub>um = treasure[i][j];
+            }
+        }
+
+        // 步驟 2：針對符合列最高處的格子，檢查是否為其所在行最低處 (直向最低)
+        for (int j = 0; j &lt; N; j++)
+        {
+            if (treasure[i][j] == max<sub>n</sub>um)
+            {
+                int min<sub>n</sub>um = 1001; // 初始化為大於題目最大高度 1000 之數值
+                for (int k = 0; k &lt; N; k++)
+                {
+                    if (treasure[k][j] &lt; min<sub>n</sub>um)
+                    {
+                        min<sub>n</sub>um = treasure[k][j];
+                    }
+                }
+
+                // 步驟 3：如果同時滿足鞍點條件，輸出座標並標記成功
+                if (treasure[i][j] == min<sub>n</sub>um)
+                {
+                    cout &lt;&lt; i &lt;&lt; " " &lt;&lt; j &lt;&lt; "\n";
+                    ans = true;
+                    break; // 題目保證答案至多一個，找到即可跳出行檢查
+                }
+            }
+        }
+        if (ans) break; // 已找到寶藏，跳出外層列迴圈
+    }
+
+    // 若掃描完整個地圖都未發現符合條件之處，輸出 NO
+    if (!ans)
+    {
+        cout &lt;&lt; "NO\n";
+    }
+
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

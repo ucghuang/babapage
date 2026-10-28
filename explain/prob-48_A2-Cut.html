@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#48 201912<sub>A</sub>2-Cut (空間切割) - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+
+        /* 二維表格樣式 */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+        .dp-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 14px;
+            background: #ffffff;
+        }
+        .dp-table th, .dp-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+        }
+        .dp-table th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+        }
+        .dp-table th.axis-title {
+            background-color: #e2e8f0;
+            color: #0f172a;
+        }
+        .dp-table td.highlight-target {
+            background-color: #fef08a; /* 醒目黃色，目標格 */
+            font-weight: bold;
+            color: #854d0e;
+            border: 2px solid #ca8a04;
+        }
+        .dp-table td.highlight-source {
+            background-color: #dbeafe; /* 藍色，來源相加項 */
+            font-weight: 600;
+            color: #1e40af;
+        }
+        .legend-box {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            margin-top: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#48</span> 201912<sub>A</sub>2-Cut (空間切割)</h1>
+                <div class="header-right">
+                    <a href="../questions/201912<sub>A</sub>2-Cut.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201912<sub>A</sub>2-Cut.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-48" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 在一維空間中，對空間進行一次切割，稱為一刀，會使得空間變為二塊區域。而後我們每次再對空間進行切割，都只能再增加一塊區域，也就是一刀二塊，二刀三塊，三刀四塊等等，以此類推。但在更高維的空間中，每切割一次，不一定只增加一個區域，像在二維空間中，一刀最多會有二塊，二刀四塊，三刀七塊等等。請寫一個程式，計算 <span style="font-style: italic;">D</span> 維空間中切割 <span style="font-style: italic;">N</span>（原題為 <span style="font-style: italic;">C</span>）次能分出來最多的區域個數。</p>
+                    <p><strong>輸入格式：</strong> 第一列為一個正整數 <span style="font-style: italic;">N</span> (<span style="font-style: italic;">1 ≤ N ≤ 10<sup>4</sup></span>)，代表要計算的資料筆數。接著 <span style="font-style: italic;">N</span> 列，每一列有兩個正整數，以一個空白隔開，代表空間維度 <span style="font-style: italic;">D</span> (<span style="font-style: italic;">1 ≤ D ≤ 50</span>) 與切割的次數 <span style="font-style: italic;">C</span> (<span style="font-style: italic;">1 ≤ C ≤ 50</span>)。</p>
+                    <p><strong>輸出格式：</strong> 對每筆資料輸出 <span style="font-style: italic;">N</span> 列，每一列為該情況下能切割出的最多區域數。</p>
+                    <p><strong>評分說明：</strong></p>
+                    <ul>
+                        <li>第一組 (10 分) : <span style="font-style: italic;">1 ≤ N ≤ 10</span>、<span style="font-style: italic;">1 ≤ D ≤ 2</span>、<span style="font-style: italic;">1 ≤ C ≤ 5</span>。</li>
+                        <li>第二組 (30 分) : <span style="font-style: italic;">1 ≤ N ≤ 10</span>、<span style="font-style: italic;">1 ≤ D ≤ 3</span>、<span style="font-style: italic;">1 ≤ C ≤ 5</span>。</li>
+                        <li>第三組 (60 分) : <span style="font-style: italic;">1 ≤ N ≤ 10<sup>4</sup></span>、<span style="font-style: italic;">1 ≤ D ≤ 50</span>、<span style="font-style: italic;">1 ≤ C ≤ 50</span>。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【動態規劃 (Dynamic Programming) 與組合遞迴】</h2>
+                <div class="analysis-box">
+                    <p>本題探討在 <span style="font-style: italic;">D</span> 維空間中切割 <span style="font-style: italic;">C</span> 次所能產生的最多區域個數 <span style="font-style: italic;">P(D, C)</span>。透過組合數學與遞迴關係式：</p>
+                    <ul>
+                        <li><strong>遞迴關係式：</strong> <span style="font-style: italic;">P(D, C) = P(D, C-1) + P(D-1, C-1)</span></li>
+                        <li><strong>邊界條件：</strong> 
+                            <ul>
+                                <li>當切割次數 <span style="font-style: italic;">C = 0</span> 時，任何維度 <span style="font-style: italic;">D</span> 的區域數皆為 <span style="font-style: italic;">1</span> (<span style="font-style: italic;">P(D, 0) = 1</span>)。</li>
+                                <li>當空間維度 <span style="font-style: italic;">D = 0</span> 時，切割 <span style="font-style: italic;">C</span> 次的區域數皆為 <span style="font-style: italic;">1</span> (<span style="font-style: italic;">P(0, C) = 1</span>)。</li>
+                            </ul>
+                        </li>
+                        <li><strong>效能優化：</strong> 由於測資範圍 <span style="font-style: italic;">D ≤ 50</span>、<span style="font-style: italic;">C ≤ 50</span>，且查詢筆數高達 <span style="font-style: italic;">10<sup>4</sup></span>，我們可利用動態規劃（二維陣列預處理）在 <span style="font-style: italic;">O(D × C)</span> 時間內預先算出所有可能答案，後續每次查詢僅需 <span style="font-style: italic;">O(1)</span> 時間輸出，完美應對大量測資。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 新增：二維表格狀態矩陣與結構解析 -->
+            <div class="section-part">
+                <h2 class="section-title">二維 DP 狀態矩陣與幾何轉移視覺化</h2>
+                <div class="analysis-box">
+                    <p>透過橫軸（切割次數 <span style="font-style: italic;">C</span>）與縱軸（空間維度 <span style="font-style: italic;">D</span>）建構表格，可以清楚看出每一格 <span style="font-style: italic;">DP[D][C]</span> 的來源就是其<strong>正左方一格</strong>加上<strong>左上一格</strong>：</p>
+                    
+                    <div class="table-wrapper">
+                        <table class="dp-table">
+                            <thead>
+                                <tr>
+                                    <th class="axis-title">維度 <span style="font-style: italic;">D</span> \ 切次 <span style="font-style: italic;">C</span></th>
+                                    <th>C = 0</th>
+                                    <th>C = 1</th>
+                                    <th>C = 2</th>
+                                    <th>C = 3</th>
+                                    <th>C = 4</th>
+                                    <th>C = 5</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>D = 0 (零維:點)</th>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <th>D = 1 (一維:線)</th>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td class="highlight-source">3</td>
+                                    <td>4</td>
+                                    <td>5</td>
+                                    <td>6</td>
+                                </tr>
+                                <tr>
+                                    <th>D = 2 (二維:面)</th>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td class="highlight-source">4</td>
+                                    <td class="highlight-target">7</td>
+                                    <td>11</td>
+                                    <td>16</td>
+                                </tr>
+                                <tr>
+                                    <th>D = 3 (三維:體)</th>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td>8</td>
+                                    <td>15</td>
+                                    <td>26</td>
+                                </tr>
+                                <tr>
+                                    <th>D = 4 (四維超空間)</th>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td>8</td>
+                                    <td>16</td>
+                                    <td>31</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="legend-box">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #fef08a; border-color: #ca8a04;"></div>
+                            <span><strong>目標計算格</strong>（以 <span style="font-style: italic;">DP[2][3] = 7</span> 為例）</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #dbeafe; border-color: #93c5fd;"></div>
+                            <span><strong>來源相加格</strong>（<span style="font-style: italic;">DP[2][2]=4</span> 與 <span style="font-style: italic;">DP[1][2]=3</span>）</span>
+                        </div>
+                    </div>
+
+                    <ul style="margin-top: 14px;">
+                        <li><strong>結構拆解邏輯：</strong> <span style="font-style: italic;">DP[2][3] = DP[2][2] (前 2 刀原有區域 (4)) + DP[1][2] (第 3 刀被前 2 刀分割出的段數 (3)) = 7</span> 塊。</li>
+                        <li><strong>物理意涵：</strong> 在 <span style="font-style: italic;">D</span> 維空間切下第 <span style="font-style: italic;">C</span> 個超平面時，該平面自身被前 <span style="font-style: italic;">C-1</span> 次切割截出最多 <span style="font-style: italic;">DP[D-1][C-1]</span> 個 <span style="font-style: italic;">D-1</span> 維子區域；而每一個子區域都會將原本的空間一分為二，恰好多創造出一個全新區域。</li>
+                        <li><strong>組合學關聯：</strong> 此規律即為巴斯卡三角形每行累加前 <span style="font-style: italic;">D</span> 項之和：<span style="font-style: italic;">P(D, C) = ∑<sub>k=0</sub><sup>D</sup> C(C, k)</span>。當 <span style="font-style: italic;">C ≤ D</span> 時，切刀數不足以受限於維度，區域數恆為 <span style="font-style: italic;">2<sup>C</sup></span>（如 <span style="font-style: italic;">1, 2, 4, 8, 16…</span>）。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【遞迴狀態轉移推導範例】</strong></p>
+                    <p>依據公式 <span style="font-style: italic;">P(D, C) = P(D, C-1) + P(D-1, C-1)</span>，我們以範例測資進行逐步推導：</p>
+                    <ul>
+                        <li><strong>計算 <span style="font-style: italic;">P(1, 1)</span>：</strong> <span style="font-style: italic;">P(1, 1) = P(1, 0) + P(0, 0) = 1 + 1 = 2</span></li>
+                        <li><strong>計算 <span style="font-style: italic;">P(1, 2)</span>：</strong> <span style="font-style: italic;">P(1, 2) = P(1, 1) + P(0, 1) = 2 + 1 = 3</span></li>
+                        <li><strong>計算 <span style="font-style: italic;">P(2, 2)</span>：</strong> <span style="font-style: italic;">P(2, 2) = P(2, 1) + P(1, 1) = 2 + 2 = 4</span>（其中 <span style="font-style: italic;">P(2, 1) = P(2, 0) + P(1, 0) = 1 + 1 = 2</span>）</li>
+                        <li><strong>計算 <span style="font-style: italic;">P(2, 3)</span>：</strong> <span style="font-style: italic;">P(2, 3) = P(2, 2) + P(1, 2) = 4 + 3 = 7</span></li>
+                        <li><strong>計算 <span style="font-style: italic;">P(3, 3)</span>：</strong> <span style="font-style: italic;">P(3, 3) = P(3, 2) + P(2, 2) = 4 + 4 = 8</span></li>
+                    </ul>
+
+                    <p style="margin-top: 15px;"><strong>【輸入範例 1 實際運作】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+4
+1 1
+1 2
+2 2
+1 3</pre>
+                    <p>輸出結果：<br>2<br>3<br>4<br>4</p>
+
+                    <p style="margin-top: 15px;"><strong>【輸入範例 2 實際運作】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+6
+2 1
+2 2
+2 3
+3 1
+3 2
+3 3</pre>
+                    <p>輸出結果：<br>2<br>4<br>7<br>2<br>4<br>8</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;bits/stdc++.h&gt; // 引入標準函式庫標頭檔，包含輸入輸出與常用演算法
+using namespace std; // 使用標準命名空間 std，避免重複寫 std::
+
+long long int DP[105][105] ={0}; // 宣告一個 105x105 的二維長整數陣列 DP，並初始化為 0，用來儲存 D 維空間切割 C 次的最大區域數
+
+int main(){ // 主程式開始
+	for(int i=0;i&lt;=50;i+=1){ // 當維度 i 從 0 到 50 遞增時
+		DP[i][0] = 1; // 任何維度 i 切割 0 次的區域數皆為 1
+		DP[0][i] = 1; // 0 維空間切割 i 次的區域數皆為 1
+	}
+	
+	for(int i=1;i&lt;=50;i+=1){ // 外層迴圈：維度 i 從 1 到 50
+		for(int j=1;j&lt;=50;j+=1){ // 內層迴圈：切割次數 j 從 1 到 50
+			DP[i][j] = DP[i][j-1] + DP[i-1][j-1]; // 狀態轉移方程式：P(D, C) = P(D, C-1) + P(D-1, C-1)
+		}
+	}
+	
+	int N; // 宣告整數 N，用來儲存查詢的資料筆數
+	cin &gt;&gt; N; // 讀入查詢筆數 N
+	
+	while(N--){ // 當 N 大於 0 時，每次迴圈將 N 減 1，處理每一筆測資
+		int D,C; // 宣告整數 D（維度）與 C（切割次數）
+		cin &gt;&gt; D &gt;&gt; C; // 讀入當前測資的維度 D 與切割次數 C
+		cout &lt;&lt;DP[D][C] &lt;&lt; endl; // 輸出查表得到的最多區域個數並換行
+	}
+} // 主程式結束</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

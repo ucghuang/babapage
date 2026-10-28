@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#248 202403<sub>T</sub>he21Game - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#248</span> 202403<sub>T</sub>he21Game (搶21)</h1>
+                <div class="header-right">
+                    <a href="../questions/202403<sub>T</sub>he21Game.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202403<sub>T</sub>he21Game.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-248" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-path">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 「搶數字」是一種雙人博弈遊戲。從 0 開始，兩人輪流加 <span style="font-style: italic;">1 ∼ R</span> 之間的數字，誰先加到目標數字 <span style="font-style: italic;">T</span> 就獲勝。給定目標數字 <span style="font-style: italic;">T</span> 與報數範圍 <span style="font-style: italic;">R</span>，請判斷是先手必勝（輸出 <code>1</code>）還是後手必勝（輸出 <code>0</code>）。</p>
+                    <p><strong>輸入格式：</strong> 輸入只有一列，包含兩個正整數 <span style="font-style: italic;">T</span> (<span style="font-style: italic;">1 ≤ T ≤ 10<sup>4</sup></span>) 和 <span style="font-style: italic;">R</span> (<span style="font-style: italic;">1 ≤ R ≤ 9</span>)，以一個空白隔開。</p>
+                    <p><strong>輸出格式：</strong> 若先手必勝輸出 <code>1</code>，否則輸出 <code>0</code>。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【賽局理論 (Game Theory) / 巴什博弈 (Bash Game)】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>賽局理論中的巴什博弈數學公式分析</strong>：</p>
+                    <ul>
+                        <li><strong>核心原理</strong>：每次可加 <span style="font-style: italic;">1 ∼ R</span> 的數字，目標是搶到 <span style="font-style: italic;">T</span>。若總數是 <span style="font-style: italic;">(1 + R)</span> 的倍數，則先手每次報數後，後手都可以搭配湊成 <span style="font-style: italic;">(1 + R)</span> 的總和，因此後手必勝；否則先手必勝。</li>
+                        <li><strong>判定公式</strong>：計算餘數 `target = T % (1 + R)`。
+                            <ul>
+                                <li>若 <code>0 &lt; target &lt;= R</code>，代表先手在第一步可以直接報數加 `target`，將局面留給對手一個 <span style="font-style: italic;">(1 + R)</span> 倍數的必敗態，因此先手必勝（輸出 <code>1</code>）。</li>
+                                <li>否則（即 <code>target == 0</code>），先手面對的是一個必敗態，後手必勝（輸出 <code>0</code>）。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 詳細拆解】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+21 3</pre>
+                    <ul>
+                        <li><strong>步驟一：計算關鍵餘數</strong>
+                            <ul>
+                                <li>目標 <span style="font-style: italic;">T = 21</span>，報數範圍 <span style="font-style: italic;">R = 3</span>。</li>
+                                <li><code>1 + R = 1 + 3 = 4</code>。</li>
+                                <li><code>target = 21 - 4 * (21 / 4) = 21 - 4 * 5 = 21 - 20 = 1</code>。</li>
+                            </ul>
+                        </li>
+                        <li><strong>步驟二：判定勝負</strong>
+                            <ul>
+                                <li>因為 <span style="font-style: italic;">1 ≤ 1 ≤ 3</span> 且 <span style="font-style: italic;">1 ≠ 0</span>，符合先手必勝條件。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>1</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 詳細拆解】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+30 1</pre>
+                    <ul>
+                        <li><strong>步驟一：計算關鍵餘數</strong>
+                            <ul>
+                                <li>目標 <span style="font-style: italic;">T = 30</span>，報數範圍 <span style="font-style: italic;">R = 1</span>。</li>
+                                <li><code>1 + R = 2</code>。</li>
+                                <li><code>target = 30 - 2 * (30 / 2) = 30 - 30 = 0</code>。</li>
+                            </ul>
+                        </li>
+                        <li><strong>步驟二：判定勝負</strong>
+                            <ul>
+                                <li>因為 <code>target == 0</code>，先手必敗，後手必勝。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>0</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（100% 取自官方解答，逐行繁體中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;iostream&gt;   // 引入 C++ 標準輸入輸出串流函式庫 (如 cin, cout, endl)
+using namespace std;  // 使用標準命名空間 std
+
+int main()            // 主程式起點
+{
+    int64<sub>t</sub> t, r;     // 宣告 64 位元整數 t（目標數字 T）與 r（報數範圍上限 R）
+    cin &gt;&gt; t &gt;&gt; r;    // 輸入目標數字 t 與報數範圍 r
+
+    // 根據巴什博弈 (Bash Game) 原理，計算目標值 t 對 (1 + r) 取餘數的剩餘量
+    int64<sub>t</sub> target = t - (1+r) * (t/(1+r));
+    
+    // 判定先手是否必勝：若剩餘量 target 介於 1 到 r 之間（即 0 &lt; target &lt;= r），代表先手可以透過第一步直接搶到關鍵數字，達到必勝態
+    if (target &lt;= r &amp;&amp; target != 0)
+        cout &lt;&lt; 1 &lt;&lt; endl;  // 先手必勝，輸出 1
+    else
+        cout &lt;&lt; 0 &lt;&lt; endl;  // 後手必勝（或先手必敗），輸出 0
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

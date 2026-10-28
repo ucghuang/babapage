@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#7 201904_A1-FarmlandIrrigating - TOI 題目詳解與 C++ 實作</title>
+    <title>#7 201904<sub>A</sub>1-FarmlandIrrigating - TOI 題目詳解與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -121,19 +121,19 @@
     <div class="container">
         <div class="problem-card">
             <div class="card-header">
-                <h1><span class="index-tag">#7</span> 201904_A1-FarmlandIrrigating (農田灌溉)</h1>
+                <h1><span class="index-tag">#7</span> 201904<sub>A</sub>1-FarmlandIrrigating (農田灌溉)</h1>
                 <div class="header-right">
-                    <a href="../questions/201904_A1-FarmlandIrrigating(Q).pdf" class="file-name-meta" target="_blank">PDF: 201904_A1-FarmlandIrrigating(Q).pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-7" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                    <a href="../questions/201904<sub>A</sub>1-FarmlandIrrigating(Q).pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201904<sub>A</sub>1-FarmlandIrrigating(Q).pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-7" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
             <div class="section-part">
                 <h2 class="section-title">題目摘要</h2>
                 <div class="analysis-box">
-                    <p><strong>問題敘述：</strong> 農夫引進新型灌溉裝置，電力分為五個等級 ($N = 1 \sim 5$)。若電力強度為 $N$，則可灌溉以自身為中心向左右延伸 $(N - 1)$ 單位的範圍。灌溉裝置可放在道路上任何地方，且所有裝置電力強度必須統一。給定道路長度 $L$ 以及種植作物與否的狀態（0 代表種植作物，1 代表無種植作物），每台灌溉裝置電費公式為：$1.32 \times N + 1.07$，請幫農夫計算灌溉所有農田的最低成本電費以及對應的電力強度（若成本相同，輸出電力強度較大者）。</p>
-                    <p><strong>輸入格式：</strong> 第一列有一個正整數 $L$ ($1 \le L \le 5,000,000$) 代表道路總長度；第二列共有 $L$ 個字元（0 代表種植作物，1 代表無種植作物）。</p>
-                    <p><strong>輸出格式：</strong> 輸出一列共兩個數字，分別為最低電費（至小數點後兩位）與對應的電力強度 $N$，中間以空白隔開。</p>
+                    <p><strong>問題敘述：</strong> 農夫引進新型灌溉裝置，電力分為五個等級 (<span style="font-style: italic;">N = 1 ∼ 5</span>)。若電力強度為 <span style="font-style: italic;">N</span>，則可灌溉以自身為中心向左右延伸 <span style="font-style: italic;">(N - 1)</span> 單位的範圍。灌溉裝置可放在道路上任何地方，且所有裝置電力強度必須統一。給定道路長度 <span style="font-style: italic;">L</span> 以及種植作物與否的狀態（0 代表種植作物，1 代表無種植作物），每台灌溉裝置電費公式為：<span style="font-style: italic;">1.32 × N + 1.07</span>，請幫農夫計算灌溉所有農田的最低成本電費以及對應的電力強度（若成本相同，輸出電力強度較大者）。</p>
+                    <p><strong>輸入格式：</strong> 第一列有一個正整數 <span style="font-style: italic;">L</span> (<span style="font-style: italic;">1 ≤ L ≤ 5,000,000</span>) 代表道路總長度；第二列共有 <span style="font-style: italic;">L</span> 個字元（0 代表種植作物，1 代表無種植作物）。</p>
+                    <p><strong>輸出格式：</strong> 輸出一列共兩個數字，分別為最低電費（至小數點後兩位）與對應的電力強度 <span style="font-style: italic;">N</span>，中間以空白隔開。</p>
                 </div>
             </div>
 
@@ -142,8 +142,8 @@
                 <div class="analysis-box">
                     <p>本題採用<strong>貪心策略與迴圈窮舉</strong>：</p>
                     <ul>
-                        <li>由於電力強度 $N$ 的範圍非常固定且很小（僅有 1 到 5 種等級），我們可以將每一種電力強度分別進行模擬計算。</li>
-                        <li>對每一個固定的電力強度 $N$，其有效覆蓋範圍（range）固定為 $2N - 1$。我們從左到右掃描道路，遇到需要灌溉的作物（字元 '0'）時，就放置一台灌溉裝置，並直接將指針向右跳過該裝置的最大灌溉距離，藉此計算出最少需要幾台裝置。</li>
+                        <li>由於電力強度 <span style="font-style: italic;">N</span> 的範圍非常固定且很小（僅有 1 到 5 種等級），我們可以將每一種電力強度分別進行模擬計算。</li>
+                        <li>對每一個固定的電力強度 <span style="font-style: italic;">N</span>，其有效覆蓋範圍（range）固定為 <span style="font-style: italic;">2N - 1</span>。我們從左到右掃描道路，遇到需要灌溉的作物（字元 '0'）時，就放置一台灌溉裝置，並直接將指針向右跳過該裝置的最大灌溉距離，藉此計算出最少需要幾台裝置。</li>
                         <li>最後計算出總電費，並在所有電力等級中挑選出花費最低的方案（若金額相同則選電力強度較大者）。</li>
                     </ul>
                 </div>
@@ -157,20 +157,20 @@
 8
 00011110</pre>
                     <ul>
-                        <li><strong>道路總長度：</strong> $L = 8$，農田狀態為 <code>00011110</code>（索引 0~2 及 7 需要灌溉，3~6 無需灌溉）。</li>
-                        <li><strong>分別測試 5 種電力強度 $N$：</strong>
+                        <li><strong>道路總長度：</strong> <span style="font-style: italic;">L = 8</span>，農田狀態為 <code>00011110</code>（索引 0~2 及 7 需要灌溉，3~6 無需灌溉）。</li>
+                        <li><strong>分別測試 5 種電力強度 <span style="font-style: italic;">N</span>：</strong>
                             <ul>
-                                <li><strong>$N = 1$ (範圍 = 1)：</strong> 需要 5 台裝置，總成本高。</li>
-                                <li><strong>$N = 2$ (範圍 = $2 \times 2 - 1 = 3$)：</strong> 
+                                <li><strong><span style="font-style: italic;">N = 1</span> (範圍 = 1)：</strong> 需要 5 台裝置，總成本高。</li>
+                                <li><strong><span style="font-style: italic;">N = 2</span> (範圍 = <span style="font-style: italic;">2 × 2 - 1 = 3</span>)：</strong> 
                                     <ul>
                                         <li>從左掃描，在索引 0 放置第一台（涵蓋 0~2），接著跳到索引 3，遇到 '1' 略過，直到索引 7 放置第二台。總共需要 2 台裝置。</li>
-                                        <li>單台成本：$1.32 \times 2 + 1.07 = 3.71$。總成本：$3.71 \times 2 = \mathbf{7.42}$。</li>
+                                        <li>單台成本：<span style="font-style: italic;">1.32 × 2 + 1.07 = 3.71</span>。總成本：<span style="font-style: italic;">3.71 × 2 = <strong>7.42</strong></span>。</li>
                                     </ul>
                                 </li>
-                                <li><strong>$N = 3, 4, 5$：</strong> 分別計算出對應的裝置數量與總電費。</li>
+                                <li><strong><span style="font-style: italic;">N = 3, 4, 5</span>：</strong> 分別計算出對應的裝置數量與總電費。</li>
                             </ul>
                         </li>
-                        <li>經比較後，最小電費為 $7.42$，對應的電力強度為 $2$。</li>
+                        <li>經比較後，最小電費為 <span style="font-style: italic;">7.42</span>，對應的電力強度為 <span style="font-style: italic;">2</span>。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 1 結果：</strong> <code>7.42 2</code></p>
 
@@ -179,9 +179,9 @@
 9
 001011100</pre>
                     <ul>
-                        <li><strong>道路總長度：</strong> $L = 9$，農田狀態為 <code>001011100</code>。</li>
-                        <li>依序測試 $N = 1 \sim 5$，計算各電力強度下的最少裝置數與總電費。</li>
-                        <li>當 $N = 5$ 時，計算出的總電費最低為 $7.67$。</li>
+                        <li><strong>道路總長度：</strong> <span style="font-style: italic;">L = 9</span>，農田狀態為 <code>001011100</code>。</li>
+                        <li>依序測試 <span style="font-style: italic;">N = 1 ∼ 5</span>，計算各電力強度下的最少裝置數與總電費。</li>
+                        <li>當 <span style="font-style: italic;">N = 5</span> 時，計算出的總電費最低為 <span style="font-style: italic;">7.67</span>。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 2 結果：</strong> <code>7.67 5</code></p>
                 </div>

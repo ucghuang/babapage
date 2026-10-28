@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#13 201905_A1-Bits - TOI 題目詳解與 C++ 實作</title>
+    <title>#13 201905<sub>A</sub>1-Bits - TOI 題目詳解與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -13,6 +13,12 @@
             --bg-main: #f8fafc;
             --card-bg: #ffffff;
             --border-color: #e2e8f0;
+            --success-bg: #ecfdf5;
+            --success-border: #a7f3d0;
+            --success-text: #065f46;
+            --warning-bg: #fffbeb;
+            --warning-border: #fde68a;
+            --warning-text: #92400e;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -23,7 +29,7 @@
             padding: 40px;
         }
         .container {
-            max-width: 900px;
+            max-width: 960px;
             margin: 0 auto;
         }
         .problem-card {
@@ -86,7 +92,7 @@
         .section-title {
             font-size: 1.15rem;
             color: #334155;
-            margin: 24px 0 12px 0;
+            margin: 28px 0 14px 0;
             border-left: 4px solid var(--primary);
             padding-left: 10px;
         }
@@ -115,24 +121,65 @@
             font-family: Consolas, Monaco, "Courier New", monospace;
             line-height: 1.6;
         }
+        /* 進階範例表格與標籤樣式 */
+        .step-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0;
+            font-size: 14px;
+        }
+        .step-table th, .step-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .step-table th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+        }
+        .step-table tr:nth-child(even) td {
+            background-color: #fcfcfd;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-success { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+        .badge-prune { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-border); }
+        .badge-skip { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
+        .sub-example {
+            border-top: 1px dashed var(--border-color);
+            padding-top: 16px;
+            margin-top: 20px;
+        }
+        .sub-example:first-of-type {
+            border-top: none;
+            padding-top: 0;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="problem-card">
             <div class="card-header">
-                <h1><span class="index-tag">#13</span> 201905_A1-Bits (位元加法)</h1>
+                <h1><span class="index-tag">#13</span> 201905<sub>A</sub>1-Bits (位元加法)</h1>
                 <div class="header-right">
-                    <a href="../questions/201905_A1-Bits(Q).pdf" class="file-name-meta" target="_blank">PDF: 201905_A1-Bits(Q).pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-13" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                    <a href="../questions/201905<sub>A</sub>1-Bits(Q).pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201905<sub>A</sub>1-Bits(Q).pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-13" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
             <div class="section-part">
                 <h2 class="section-title">題目摘要</h2>
                 <div class="analysis-box">
-                    <p><strong>問題敘述：</strong> 給定 $N$ 張二進位整數字卡（每張最多 15 個位元），以及一張代表目標數值的答案卡（$L$ 位元的二進位正整數， $1 \le L \le 19$）。請判斷是否能從這 $N$ 張字卡中挑選出其中幾張（至少一張），使其二進位加法總和剛好等於答案卡上的數字。</p>
-                    <p><strong>輸入格式：</strong> 第一列有一個正整數 $N$ ($1 \le N \le 100$)；接著 $N$ 列每列有一個二進位數字；最後一列有一個二進位正整數代表答案卡。</p>
+                    <p><strong>問題敘述：</strong> 給定 <span style="font-style: italic;">N</span> 張二進位整數字卡（每張最多 15 個位元），以及一張代表目標數值的答案卡（<span style="font-style: italic;">L</span> 位元的二進位正整數， <span style="font-style: italic;">1 ≤ L ≤ 19</span>）。請判斷是否能從這 <span style="font-style: italic;">N</span> 張字卡中挑選出其中幾張（至少一張），使其二進位加法總和剛好等於答案卡上的數字。</p>
+                    <p><strong>輸入格式：</strong> 第一列有一個正整數 <span style="font-style: italic;">N</span> (<span style="font-style: italic;">1 ≤ N ≤ 100</span>)；接著 <span style="font-style: italic;">N</span> 列每列有一個二進位數字；最後一列有一個二進位正整數代表答案卡。</p>
                     <p><strong>輸出格式：</strong> 若存在一組字卡總和等於答案卡則輸出 <code>YES</code>，否則輸出 <code>NO</code>。</p>
                 </div>
             </div>
@@ -163,18 +210,18 @@
                     <ul>
                         <li><strong>二進位字卡轉十進位：</strong> 
                             <ul>
-                                <li><code>1</code> $\to 1$</li>
-                                <li><code>10</code> $\to 2$</li>
-                                <li><code>100</code> $\to 4$</li>
-                                <li><code>101</code> $\to 5$</li>
+                                <li><code>1</code> <span style="font-style: italic;">→ 1</span></li>
+                                <li><code>10</code> <span style="font-style: italic;">→ 2</span></li>
+                                <li><code>100</code> <span style="font-style: italic;">→ 4</span></li>
+                                <li><code>101</code> <span style="font-style: italic;">→ 5</span></li>
                             </ul>
                         </li>
-                        <li><strong>答案卡轉十進位：</strong> <code>111</code> $\to 7$ ($goal = 7$)。</li>
+                        <li><strong>答案卡轉十進位：</strong> <code>111</code> <span style="font-style: italic;">→ 7</span> (<span style="font-style: italic;">goal = 7</span>)。</li>
                         <li><strong>組合嘗試過程：</strong>
                             <ul>
                                 <li>加入 1：可組成 {1}</li>
                                 <li>加入 2：可組成 {2, 1+2=3}</li>
-                                <li>加入 4：可組成 {4, 1+4=5, 2+4=6, 3+4=<strong>7</strong>} $\to$ 成功湊出目標 7！</li>
+                                <li>加入 4：可組成 {4, 1+4=5, 2+4=6, 3+4=<strong>7</strong>} <span style="font-style: italic;">→</span> 成功湊出目標 7！</li>
                             </ul>
                         </li>
                     </ul>
@@ -188,8 +235,8 @@
 100</pre>
                     <ul>
                         <li><strong>字卡十進位：</strong> 1, 2</li>
-                        <li><strong>目標十進位：</strong> <code>100</code> $\to 4$ ($goal = 4$)。</li>
-                        <li><strong>組合嘗試：</strong> 可湊出的最大總和為 $1 + 2 = 3$，小於目標值 4，無法湊出。</li>
+                        <li><strong>目標十進位：</strong> <code>100</code> <span style="font-style: italic;">→ 4</span> (<span style="font-style: italic;">goal = 4</span>)。</li>
+                        <li><strong>組合嘗試：</strong> 可湊出的最大總和為 <span style="font-style: italic;">1 + 2 = 3</span>，小於目標值 4，無法湊出。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 2 結果：</strong> <code>NO</code></p>
                 </div>
@@ -204,7 +251,7 @@ using namespace std;
 int bintodec(char s[])
 {
     int re=0;  // 儲存轉換後的十進位結果
-    int base=1;  // 代表當前二進位位數的權重（從 2^0 開始）
+    int base=1;  // 代表當前二進位位數的權重（從 2<sup>0</sup> 開始）
     for(int i=strlen(s)-1; i&gt;=0; i-=1)
     {
         re+=(base*(s[i]=='1'));  // 若該字元為 '1'，則加上當前權重
@@ -252,7 +299,7 @@ int main()
             if(!visit[num[i]+v[j]])
             {
                 visit[num[i]+v[j]]=true;  // 標記為已訪問
-                v.push_back(num[i]+v[j]);  // 加入到可能的總和集合中
+                v.push<sub>b</sub>ack(num[i]+v[j]);  // 加入到可能的總和集合中
             }
         }
         
@@ -260,7 +307,7 @@ int main()
         if(!visit[num[i]] &amp;&amp; num[i]&lt;=goal)
         {
             visit[num[i]]=true;  // 標記已訪問
-            v.push_back(num[i]);  // 加入集合
+            v.push<sub>b</sub>ack(num[i]);  // 加入集合
             if(num[i]==goal)  // 若單張字卡本身就等於目標值
             {
                 found=true;  // 標記為找到解答
@@ -272,6 +319,172 @@ int main()
     printf("%s\n",print[found]);  // 根據 found 的布林值輸出對應結果
 }</code></pre>
             </div>
+
+            <!-- 以下為融合之進階範例解說網頁內容 -->
+            <div class="section-part">
+                <h2 class="section-title">進階複雜範例與 C++ 內部迴圈追蹤</h2>
+                <div class="analysis-box">
+                    <p>為了深入理解 C++ 原始碼中 <code>vector&lt;int&gt; v</code>、<code>visit[]</code> 與 <code>goal</code> 剪枝機制的協同運作，以下提供兩個更具代表性的情境逐步追蹤：</p>
+
+                    <!-- 範例 A -->
+                    <div class="sub-example">
+                        <h3 style="color: #1e3a8a; margin-bottom: 8px;">範例 A：包含剪枝（> goal）與重複路徑過濾（成功命中 YES）</h3>
+                        <p><strong>輸入資料：</strong></p>
+                        <pre style="background: #e2e8f0; padding: 8px 12px; border-radius: 6px; margin: 6px 0;">4
+11
+101
+110
+1000
+1011</pre>
+                        <p><strong>數值轉換：</strong></p>
+                        <ul>
+                            <li>字卡 <code>num[]</code>：<code>11</code> <span style="font-style: italic;">→ 3</span>, <code>101</code> <span style="font-style: italic;">→ 5</span>, <code>110</code> <span style="font-style: italic;">→ 6</span>, <code>1000</code> <span style="font-style: italic;">→ 8</span></li>
+                            <li>目標卡 <code>goal</code>：<code>1011</code> <span style="font-style: italic;">→ 11</span></li>
+                        </ul>
+                        <p style="margin-top: 10px;"><strong>C++ 迴圈步進追蹤（Trace Table）：</strong></p>
+                        <table class="step-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 12%;">處理字卡</th>
+                                    <th style="width: 20%;">當前集合 v 的長度與內容</th>
+                                    <th style="width: 38%;">內層迴圈 (num[i] + v[j]) 與單卡運算</th>
+                                    <th style="width: 30%;">迴圈結束後 v 與 visit 狀態</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>i = 0</strong><br>num[0] = 3</td>
+                                    <td>len = 0<br>v = { }</td>
+                                    <td>
+                                        • 內層迴圈不執行 (len=0)<br>
+                                        • 單卡檢查：3 &le; 11，未被造訪。<br>
+                                        <span class="badge badge-success">+ 加入 3</span>
+                                    </td>
+                                    <td>
+                                        v = { 3 }<br>
+                                        visit[3] = true
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>i = 1</strong><br>num[1] = 5</td>
+                                    <td>len = 1<br>v = { 3 }</td>
+                                    <td>
+                                        • j=0: 5 + 3 = 8 (&lt; 11, 新值)<br>
+                                        <span class="badge badge-success">+ 加入 8</span><br>
+                                        • 單卡檢查：5 &le; 11，未被造訪。<br>
+                                        <span class="badge badge-success">+ 加入 5</span>
+                                    </td>
+                                    <td>
+                                        v = { 3, 8, 5 }<br>
+                                        visit[3, 5, 8] = true
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>i = 2</strong><br>num[2] = 6</td>
+                                    <td>len = 3<br>v = { 3, 8, 5 }</td>
+                                    <td>
+                                        • j=0 (v[0]=3): 6 + 3 = 9 (&lt; 11, 新值) <span class="badge badge-success">+ 加入 9</span><br>
+                                        • j=1 (v[1]=8): 6 + 8 = 14 (&gt; 11) <span class="badge badge-prune">剪枝 continue</span><br>
+                                        • j=2 (v[2]=5): 6 + 5 = 11 (== goal) <span class="badge badge-success">found = true!</span><br>
+                                        👉 觸發 <code>break</code>，提早終止內層運算。
+                                    </td>
+                                    <td>
+                                        <code>found</code> 旗標設為 <code>true</code><br>
+                                        外層迴圈檢查 <code>if(found) break</code>，第 4 張卡片 (8) 完全不需處理。
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p>👉 <strong>程式輸出：</strong> <code>print[found]</code> <span style="font-style: italic;">→</span> <code>YES</code>（由字卡 <code>101</code>(5) + <code>110</code>(6) 湊成 <code>1011</code>(11)）。</p>
+                    </div>
+
+                    <!-- 範例 B -->
+                    <div class="sub-example">
+                        <h3 style="color: #1e3a8a; margin-bottom: 8px;">範例 B：無解狀態與重複數值抑制（成功走訪至結束 NO）</h3>
+                        <p><strong>輸入資料：</strong></p>
+                        <pre style="background: #e2e8f0; padding: 8px 12px; border-radius: 6px; margin: 6px 0;">4
+10
+100
+110
+1000
+1101</pre>
+                        <p><strong>數值轉換：</strong></p>
+                        <ul>
+                            <li>字卡 <code>num[]</code>：<code>10</code> <span style="font-style: italic;">→ 2</span>, <code>100</code> <span style="font-style: italic;">→ 4</span>, <code>110</code> <span style="font-style: italic;">→ 6</span>, <code>1000</code> <span style="font-style: italic;">→ 8</span>（全為偶數）</li>
+                            <li>目標卡 <code>goal</code>：<code>1101</code> <span style="font-style: italic;">→ 13</span>（奇數）</li>
+                        </ul>
+                        <p style="margin-top: 10px;"><strong>C++ 迴圈步進追蹤（Trace Table）：</strong></p>
+                        <table class="step-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 12%;">處理字卡</th>
+                                    <th style="width: 20%;">當前集合 v 的長度與內容</th>
+                                    <th style="width: 38%;">內層迴圈核心行為</th>
+                                    <th style="width: 30%;">迴圈結束後 v 的增長變化</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>i = 0</strong><br>num[0] = 2</td>
+                                    <td>len = 0<br>v = { }</td>
+                                    <td>
+                                        • 單卡加入 2
+                                    </td>
+                                    <td>v = { 2 }</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>i = 1</strong><br>num[1] = 4</td>
+                                    <td>len = 1<br>v = { 2 }</td>
+                                    <td>
+                                        • j=0: 4 + 2 = 6 <span class="badge badge-success">+ 加入 6</span><br>
+                                        • 單卡加入 4 <span class="badge badge-success">+ 加入 4</span>
+                                    </td>
+                                    <td>v = { 2, 6, 4 }</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>i = 2</strong><br>num[2] = 6</td>
+                                    <td>len = 3<br>v = { 2, 6, 4 }</td>
+                                    <td>
+                                        • j=0: 6 + 2 = 8 <span class="badge badge-success">+ 加入 8</span><br>
+                                        • j=1: 6 + 6 = 12 <span class="badge badge-success">+ 加入 12</span><br>
+                                        • j=2: 6 + 4 = 10 <span class="badge badge-success">+ 加入 10</span><br>
+                                        • 單卡檢查：6 已經被 <code>visit[6]=true</code> 標記！<span class="badge badge-skip">略過重複</span>
+                                    </td>
+                                    <td>v = { 2, 6, 4, 8, 12, 10 }<br>有效防止 6 被重複塞入</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>i = 3</strong><br>num[3] = 8</td>
+                                    <td>len = 6<br>v = { 2, 6, 4, 8, 12, 10 }</td>
+                                    <td>
+                                        • 嘗試與 v 中 6 個數字相加：<br>
+                                        - 8+2=10 (<span class="badge badge-skip">visit[10] 已存在</span>)<br>
+                                        - 8+6=14 (> 13, <span class="badge badge-prune">剪枝</span>)<br>
+                                        - 8+4=12 (<span class="badge badge-skip">visit[12] 已存在</span>)<br>
+                                        - 8+8=16, 8+12=20, 8+10=18 (<span class="badge badge-prune">皆 > 13 剪枝</span>)<br>
+                                        • 單卡 8 (<span class="badge badge-skip">visit[8] 已存在</span>)
+                                    </td>
+                                    <td>
+                                        未產生任何小於等於 13 的新和。<br>
+                                        v 維持 6 個元素。
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p>👉 <strong>程式輸出：</strong> 全程皆無任何和為 13，<code>found</code> 保持 <code>false</code>，最終輸出 <code>NO</code>。</p>
+                    </div>
+
+                    <!-- 模組化技術總結 -->
+                    <div style="background: #f1f5f9; padding: 12px 16px; border-radius: 6px; margin-top: 18px; border-left: 4px solid #64748b;">
+                        <strong>邏輯關鍵模組回顧：</strong>
+                        <ol style="margin-left: 20px; margin-top: 6px;">
+                            <li><strong>二進位預先降維</strong>：先由 <code>bintodec</code> 將字串轉成整數，避開高位元進位的字串運算負擔。</li>
+                            <li><strong>固定長度快照 (<code>len = v.size()</code>)</strong>：避免迴圈在執行時邊跑邊讀取剛加入的新元素（防止同一個數字重複自加）。</li>
+                            <li><strong>雙重剪枝機制</strong>：<code>> goal</code> 排除無效解，<code>visit[]</code> 布林陣列封鎖重複路徑，將最壞情況的指數級增長壓制在目標值大小以內。</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </body>

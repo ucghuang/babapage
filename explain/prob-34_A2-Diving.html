@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#34 201911_A2-Diving - TOI 題目詳解與 C++ 實作</title>
+    <title>#34 201911<sub>A</sub>2-Diving - TOI 題目詳解與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -121,18 +121,18 @@
     <div class="container">
         <div class="problem-card">
             <div class="card-header">
-                <h1><span class="index-tag">#34</span> 201911_A2-Diving (潛水)</h1>
+                <h1><span class="index-tag">#34</span> 201911<sub>A</sub>2-Diving (潛水)</h1>
                 <div class="header-right">
-                    <a href="../questions/201911_A2-Diving.pdf" class="file-name-meta" target="_blank">PDF: 201911_A2-Diving.pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-34" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                    <a href="../questions/201911<sub>A</sub>2-Diving.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201911<sub>A</sub>2-Diving.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-34" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
             <div class="section-part">
                 <h2 class="section-title">題目摘要</h2>
                 <div class="analysis-box">
-                    <p><strong>問題敘述：</strong> 小軒想從島嶼 $A$ 經由潛水方式移動到島嶼 $B$。每條潛水路徑都有對應需要的氧氣量 $W$（代表該路徑的難度/消耗量）。到達每個島嶼都可以將氧氣筒重新裝滿。小軒希望能背負<strong>容量最小</strong>的氧氣筒，順利從 $A$ 島移動到 $B$ 島（即最小化路徑中單段最大的氧氣消耗量）。若無法到達則輸出 `-1`。</p>
-                    <p><strong>輸入格式：</strong> 第一列有兩個整數 $N$ 與 $M$ ($2 \le N \le 500$)，代表小島數與潛水路徑數；接著 $M$ 列每列三個整數，代表兩島編號與所需氧氣量 $W$ ($2 \le W \le 50000$)；最後一列有兩個整數 $A$ 與 $B$。</p>
+                    <p><strong>問題敘述：</strong> 小軒想從島嶼 <span style="font-style: italic;">A</span> 經由潛水方式移動到島嶼 <span style="font-style: italic;">B</span>。每條潛水路徑都有對應需要的氧氣量 <span style="font-style: italic;">W</span>（代表該路徑的難度/消耗量）。到達每個島嶼都可以將氧氣筒重新裝滿。小軒希望能背負<strong>容量最小</strong>的氧氣筒，順利從 <span style="font-style: italic;">A</span> 島移動到 <span style="font-style: italic;">B</span> 島（即最小化路徑中單段最大的氧氣消耗量）。若無法到達則輸出 `-1`。</p>
+                    <p><strong>輸入格式：</strong> 第一列有兩個整數 <span style="font-style: italic;">N</span> 與 <span style="font-style: italic;">M</span> (<span style="font-style: italic;">2 ≤ N ≤ 500</span>)，代表小島數與潛水路徑數；接著 <span style="font-style: italic;">M</span> 列每列三個整數，代表兩島編號與所需氧氣量 <span style="font-style: italic;">W</span> (<span style="font-style: italic;">2 ≤ W ≤ 50000</span>)；最後一列有兩個整數 <span style="font-style: italic;">A</span> 與 <span style="font-style: italic;">B</span>。</p>
                     <p><strong>輸出格式：</strong> 輸出小軒最少要背多少容量的氧氣筒；若無法到達輸出 `-1`。</p>
                 </div>
             </div>
@@ -142,9 +142,9 @@
                 <div class="analysis-box">
                     <p>本題採用<strong>Kruskal 演算法與併查集 (Disjoint Set Union, DSU)</strong>：</p>
                     <ul>
-                        <li>題目要求找出從 $A$ 到 $B$ 的一條路徑，使得該路徑上的最大邊權（氧氣消耗量）達到最小，這正是經典的<strong>最大權最小邊 / 最小生成樹 (MST) 應用</strong>。</li>
-                        <li>我們將所有潛水路徑依據氧氣量 $W$ 由小到大進行排序。</li>
-                        <li>使用 DSU 將邊逐一加入，當島嶼 $A$ 與島嶼 $B$ 連通時，當前加入的邊權就是能讓 $A$ 到 $B$ 暢通且容量最小的氧氣筒需求。</li>
+                        <li>題目要求找出從 <span style="font-style: italic;">A</span> 到 <span style="font-style: italic;">B</span> 的一條路徑，使得該路徑上的最大邊權（氧氣消耗量）達到最小，這正是經典的<strong>最大權最小邊 / 最小生成樹 (MST) 應用</strong>。</li>
+                        <li>我們將所有潛水路徑依據氧氣量 <span style="font-style: italic;">W</span> 由小到大進行排序。</li>
+                        <li>使用 DSU 將邊逐一加入，當島嶼 <span style="font-style: italic;">A</span> 與島嶼 <span style="font-style: italic;">B</span> 連通時，當前加入的邊權就是能讓 <span style="font-style: italic;">A</span> 到 <span style="font-style: italic;">B</span> 暢通且容量最小的氧氣筒需求。</li>
                     </ul>
                 </div>
             </div>
@@ -173,7 +173,7 @@
                             <ul>
                                 <li>加入 (0, 1) 權重 1：島 0 與島 1 連通。</li>
                                 <li>加入 (0, 2) 權重 3：島 0, 1, 2 連通。</li>
-                                <li>加入 (2, 3) 權重 5：島 0, 1, 2, 3 全部連通。此時檢查目標 $A = 0$ 與 $B = 3$ 已經連通！</li>
+                                <li>加入 (2, 3) 權重 5：島 0, 1, 2, 3 全部連通。此時檢查目標 <span style="font-style: italic;">A = 0</span> 與 <span style="font-style: italic;">B = 3</span> 已經連通！</li>
                             </ul>
                         </li>
                         <li>最後加入的邊權重為 5，即為最小氧氣筒容量。</li>
@@ -204,10 +204,10 @@
                         <li><strong>逐步加入 Kruskal MST：</strong>
                             <ul>
                                 <li>依序加入權重 1、2、4、5 後，島 0 與島 4 尚未連通。</li>
-                                <li>加入權重 6 的邊 (4, 2) 後，起點 $A = 0$ 與終點 $B = 4$ 順利連通。</li>
+                                <li>加入權重 6 的邊 (4, 2) 後，起點 <span style="font-style: italic;">A = 0</span> 與終點 <span style="font-style: italic;">B = 4</span> 順利連通。</li>
                             </ul>
                         </li>
-                        <li>最後加入且讓 $A$、$B$ 連通的邊權重為 6。</li>
+                        <li>最後加入且讓 <span style="font-style: italic;">A</span>、<span style="font-style: italic;">B</span> 連通的邊權重為 6。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 2 結果：</strong> <code>6</code></p>
                 </div>
@@ -219,7 +219,7 @@
 #include &lt;algorithm&gt;
 #include &lt;vector&gt;
 #define endl '\n'
-#define IOS cin.tie(0), cout.tie(0), ios::sync_with_stdio(false)
+#define IOS cin.tie(0), cout.tie(0), ios::sync<sub>w</sub>ith<sub>s</sub>tdio(false)
 #define N 1500
 using namespace std;
 
@@ -281,7 +281,7 @@ int main()
     {
         int x, y, z;
         cin &gt;&gt; x &gt;&gt; y &gt;&gt; z;  // 讀入兩島編號 x, y 與所需氧氣量 z
-        v.emplace_back(edge(x, y, z));  // 將邊加入陣列中
+        v.emplace<sub>b</sub>ack(edge(x, y, z));  // 將邊加入陣列中
     }
     int a, b;
     cin &gt;&gt; a &gt;&gt; b;  // 讀入想從島 a 移動到島 b

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#28 201910_A2-Roads - TOI 題目詳解與 C++ 實作</title>
+    <title>#28 201910<sub>A</sub>2-Roads - TOI 題目詳解與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -121,20 +121,20 @@
     <div class="container">
         <div class="problem-card">
             <div class="card-header">
-                <h1><span class="index-tag">#28</span> 201910_A2-Roads (道路鋪設)</h1>
+                <h1><span class="index-tag">#28</span> 201910<sub>A</sub>2-Roads (道路鋪設)</h1>
                 <div class="header-right">
-                    <a href="../questions/201910_A2-Roads.pdf" class="file-name-meta" target="_blank">PDF: 201910_A2-Roads.pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-28" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                    <a href="../questions/201910<sub>A</sub>2-Roads.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201910<sub>A</sub>2-Roads.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-28" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
             <div class="section-part">
                 <h2 class="section-title">題目摘要</h2>
                 <div class="analysis-box">
-                    <p><strong>問題敘述：</strong> 給定一條長度為 $L$ 的道路和長度為 $1, 2, 3, \dots, L$ 的磁磚各無限個，請問將道路用磁磚鋪滿共有幾種不同的鋪法？答案需對 $10^9 + 7$ 取餘數。</p>
+                    <p><strong>問題敘述：</strong> 給定一條長度為 <span style="font-style: italic;">L</span> 的道路和長度為 <span style="font-style: italic;">1, 2, 3, …, L</span> 的磁磚各無限個，請問將道路用磁磚鋪滿共有幾種不同的鋪法？答案需對 <span style="font-style: italic;">10<sup>9</sup> + 7</span> 取餘數。</p>
                     <ul>
-                        <li><strong>輸入格式：</strong> 第一列有一個正整數 $T$（$1 \le T \le 10^4$），代表有 $T$ 條路要鋪。接著 $T$ 列每列有一個正整數 $L$（$1 \le L \le 10^9$），為道路的長度。</li>
-                        <li><strong>輸出格式：</strong> 對每筆資料輸出一個正整數，為鋪法總數除以 $10^9 + 7$ 後的餘數。</li>
+                        <li><strong>輸入格式：</strong> 第一列有一個正整數 <span style="font-style: italic;">T</span>（<span style="font-style: italic;">1 ≤ T ≤ 10<sup>4</sup></span>），代表有 <span style="font-style: italic;">T</span> 條路要鋪。接著 <span style="font-style: italic;">T</span> 列每列有一個正整數 <span style="font-style: italic;">L</span>（<span style="font-style: italic;">1 ≤ L ≤ 10<sup>9</sup></span>），為道路的長度。</li>
+                        <li><strong>輸出格式：</strong> 對每筆資料輸出一個正整數，為鋪法總數除以 <span style="font-style: italic;">10<sup>9</sup> + 7</span> 後的餘數。</li>
                     </ul>
                 </div>
             </div>
@@ -142,16 +142,35 @@
             <div class="section-part">
                 <h2 class="section-title">演算法使用解析：【遞迴規律推導、前綴和優化與快速冪模運算】</h2>
                 <div class="analysis-box">
-                    <p>本題在教學分類上歸納為<strong>「前綴和」</strong>與<strong>「教學範例」</strong>（難度評級：2 星 ★★☆☆☆）。我們可以透過嚴謹的前綴和狀態轉移與遞迴化簡來掌握其核心思路：</p>
-                    <ul>
-                        <li><strong>從動態規劃與前綴和出發的思路：</strong> 
-                            <ul>
-                                <li>若設 $f(L)$ 為長度為 $L$ 的道路鋪法總數。當我們考慮最後一塊放的磁磚長度為 $k$（$1 \le k \le L$），則前面的長度為 $L-k$，因此可以得到遞迴式：$f(L) = \sum_{k=1}^{L} f(L-k) = f(L-1) + f(L-2) + \dots + f(0)$。</li>
-                                <li>如果利用<strong>「前綴和」</strong>的概念來優化觀看這個累加過程：不難發現 $f(L-1) = \sum_{k=1}^{L-1} f(L-1-k)$。將兩式相減或遞推展開會發現 $f(L) = 2f(L-1)$。</li>
-                                <li>透過這樣的遞迴關係，我們能迅速推導出封閉形式的數學解：$f(L) = 2^{L-1}$。</li>
-                            </ul>
+                    <p>本題在教學分類上歸納為<strong>「前綴和」</strong>與<strong>「教學範例」</strong>（難度評級：2 星 ★★☆☆☆）。我們可以透過以下五個步驟的嚴謹推導來掌握其核心思路：</p>
+                    
+                    <ul style="list-style-type: none; margin-left: 0;">
+                        <li style="margin-bottom: 12px;"><strong>步驟一：定義狀態與基本情形</strong><br>
+                            設 <span style="font-style: italic;">f(L)</span> 代表長度為 <span style="font-style: italic;">L</span> 的道路鋪滿各種長度磁磚的總方法數[cite: 1]。當道路長度 <span style="font-style: italic;">L = 0</span> 時，代表不需要鋪設，唯一的方法就是「什麼都不放」，因此規定基準值 <span style="font-style: italic;">f(0) = 1</span>。當 <span style="font-style: italic;">L = 1</span> 時，只能放一張長度為 <span style="font-style: italic;">1</span> 的磁磚，故 <span style="font-style: italic;">f(1) = 1</span>。
                         </li>
-                        <li><strong>超大範圍處理與快速冪：</strong> 題目給定的道路長度 $L$ 高達 $10^9$，若直接用迴圈乘 $L-1$ 次會超時。因此必須結合<strong>快速冪（Binary Exponentiation）</strong>演算法，在 $O(\log N)$ 時間內完成 $2^{L-1} \bmod (10^9+7)$ 的計算，完美兼顧時間效能與取模正確性。</li>
+                        <li style="margin-bottom: 12px;"><strong>步驟二：建立動態規劃狀態轉移方程式</strong><br>
+                            當我們要鋪設長度為 <span style="font-style: italic;">L</span> 的道路時，可以從「最後一塊放的磁磚長度 <span style="font-style: italic;">k</span>」切入思考（<span style="font-style: italic;">1 ≤ k ≤ L</span>）[cite: 1]。當決定最後一塊磁磚長度為 <span style="font-style: italic;">k</span> 後，前面剩下的道路長度就會是 <span style="font-style: italic;">L - k</span>。透過將所有可能的 <span style="font-style: italic;">k</span> 累加起來，得到遞迴關係式[cite: 1]：<br>
+                            <code>f(L) = f(L-1) + f(L-2) + f(L-3) + ... + f(1) + f(0)</code>
+                        </li>
+                        <li style="margin-bottom: 12px;"><strong>步驟三：實際代入小數值觀察規律</strong><br>
+                            <ul>
+                                <li><span style="font-style: italic;">L = 1 ⟹ f(1) = f(0) = 1</span></li>
+                                <li><span style="font-style: italic;">L = 2 ⟹ f(2) = f(1) + f(0) = 1 + 1 = 2</span></li>
+                                <li><span style="font-style: italic;">L = 3 ⟹ f(3) = f(2) + f(1) + f(0) = 2 + 1 + 1 = 4</span></li>
+                                <li><span style="font-style: italic;">L = 4 ⟹ f(4) = f(3) + f(2) + f(1) + f(0) = 4 + 2 + 1 + 1 = 8</span></li>
+                            </ul>
+                            觀察結果 <span style="font-style: italic;">1, 2, 4, 8 …</span> 可以發現這是一個以 <span style="font-style: italic;">2</span> 為底數的等比成長規律。
+                        </li>
+                        <li style="margin-bottom: 12px;"><strong>步驟四：利用前綴和觀念進行代數化簡</strong><br>
+                            為了避免 <span style="font-style: italic;">O(L<sup>2</sup>)</span> 的重複累加，我們觀察 <span style="font-style: italic;">f(L)</span> 與 <span style="font-style: italic;">f(L-1)</span> 的展開式：<br>
+                            <span style="font-style: italic;">f(L) = f(L-1) + f(L-2) + f(L-3) + … + f(0) (f(L-1))</span><br>
+                            由於後面那一整串相加剛好就是 <span style="font-style: italic;">f(L-1)</span> 本身[cite: 1]，因此可以將式子化簡為：<br>
+                            <code>f(L) = f(L-1) + f(L-1) = 2 * f(L-1)</code>
+                        </li>
+                        <li style="margin-bottom: 12px;"><strong>步驟五：推導一般項公式與快速冪應用</strong><br>
+                            透過遞迴展開 <span style="font-style: italic;">f(L) = 2f(L-1)</span>，最終可推導出封閉形式的數學解：<code>f(L) = 2^(L-1)</code>[cite: 1]。<br>
+                            因為題目給定的道路長度 <span style="font-style: italic;">L</span> 高達 <span style="font-style: italic;">10<sup>9</sup></span>[cite: 1]，若直接用迴圈乘會超時，因此必須結合<strong>快速冪（Binary Exponentiation）</strong>演算法，在 <span style="font-style: italic;">O(log N)</span> 時間內完成 <span style="font-style: italic;">2<sup>L-1</sup> bmod (10<sup>9</sup>+7)</span> 的計算[cite: 1]。
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -164,9 +183,9 @@
 1
 3</pre>
                     <ul>
-                        <li>道路長度 $L = 3$。</li>
-                        <li>根據推導公式 $f(L) = 2^{L-1}$，可得 $f(3) = 2^{3-1} = 2^2 = 4$。</li>
-                        <li>對 $10^9 + 7$ 取餘數後仍為 $4$。與範例說明完全吻合。</li>
+                        <li>道路長度 <span style="font-style: italic;">L = 3</span>[cite: 1]。</li>
+                        <li>根據推導公式 <span style="font-style: italic;">f(L) = 2<sup>L-1</sup></span>，可得 <span style="font-style: italic;">f(3) = 2<sup>3-1</sup> = 2<sup>2</sup> = 4</span>[cite: 1]。</li>
+                        <li>對 <span style="font-style: italic;">10<sup>9</sup> + 7</span> 取餘數後仍為 <span style="font-style: italic;">4</span>。與範例說明完全吻合[cite: 1]。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 1 結果：</strong><br>4</p>
 
@@ -175,9 +194,9 @@
 1
 50000</pre>
                     <ul>
-                        <li>道路長度 $L = 50000$。</li>
-                        <li>需計算 $2^{49999} \bmod (10^9 + 7)$。</li>
-                        <li>透過快速冪的分治策略，將指數折半運算，迅速得出結果。</li>
+                        <li>道路長度 <span style="font-style: italic;">L = 50000</span>[cite: 1]。</li>
+                        <li>需計算 <span style="font-style: italic;">2<sup>49999</sup> bmod (10<sup>9</sup> + 7)</span>[cite: 1]。</li>
+                        <li>透過快速冪的分治策略，將指數折半運算，迅速得出結果[cite: 1]。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 2 結果：</strong><br>509082729</p>
                 </div>
@@ -187,19 +206,19 @@
                 <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
                 <pre class="code-box"><code>#include&lt;bits/stdc++.h&gt; // 引入常用標準函式庫
 
-const long long MOD = 1e9 + 7; // 定義題目要求的模數 10^9 + 7，避免整數溢位
+const long long MOD = 1e9 + 7; // 定義題目要求的模數 10<sup>9</sup> + 7，避免整數溢位
 
-// 定義遞迴加快速冪函式 mod(a)，用來計算 2^a 對 MOD 取餘數的結果 (對應前綴和化簡後的公式 2^(L-1))
+// 定義遞迴加快速冪函式 mod(a)，用來計算 2<sup>a</sup> 對 MOD 取餘數的結果 (對應前綴和化簡後的公式 2^(L-1))
 long long mod(long long a)
 {
-    if(a == 0) return 1; // 遞迴終止條件：任何數的 0 次方為 1 (即 2^0 = 1)
+    if(a == 0) return 1; // 遞迴終止條件：任何數的 0 次方為 1 (即 2<sup>0</sup> = 1)
     else if(a == 1) return 2; // 基本條件：2 的 1 次方為 2
-    else if(a % 2 == 0) // 若指數 a 為偶數，利用分治法：2^a = (2^(a/2)) * (2^(a/2))
+    else if(a % 2 == 0) // 若指數 a 為偶數，利用分治法：2<sup>a</sup> = (2^(a/2)) * (2^(a/2))
     {
         long long x = mod(a / 2); // 遞迴計算一半指數的結果
         return (x * x) % MOD; // 將兩半相乘並直接取模，防範數值過大
     }
-    else return (mod(a - 1) * mod(1)) % MOD; // 若指數 a 為奇數，拆成 2^(a-1) * 2^1 再進行運算
+    else return (mod(a - 1) * mod(1)) % MOD; // 若指數 a 為奇數，拆成 2^(a-1) * 2<sup>1</sup> 再進行運算
 }
 
 int main()
@@ -209,10 +228,10 @@ int main()
     
     while(a--) // 當還有測資時持續迴圈
     {
-        long long x; // 宣告長整數 x 用來儲存道路長度 L（數值可達 10^9）
+        long long x; // 宣告長整數 x 用來儲存道路長度 L（數值可達 10<sup>9</sup>）
         scanf("%lld", &amp;x); // 讀入道路長度 L
         
-        // 根據前綴和遞迴化簡公式 f(L) = 2^(L-1)，呼叫 mod 函式計算 2^(x-1) % (10^9 + 7)
+        // 根據前綴和遞迴化簡公式 f(L) = 2^(L-1)，呼叫 mod 函式計算 2^(x-1) % (10<sup>9</sup> + 7)
         printf("%lld\n", mod(x - 1)); // 輸出最終答案並換行
     }
 }</code></pre>

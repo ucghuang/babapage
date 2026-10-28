@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#90 202011<sub>W</sub>rapper - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#90</span> 202011<sub>W</sub>rapper (包雞紙包雞包紙包雞)</h1>
+                <div class="header-right">
+                    <a href="../questions/202011<sub>W</sub>rapper.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202011<sub>W</sub>rapper.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-90" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong>小明受到影集《麥兜的故事》名菜「包雞紙包雞包紙包雞」啟發，創造了「包雞數列」。包雞數列的第 <span style="font-style: italic;">i</span> 項 <span style="font-style: italic;">T<sub>i</sub></span> 定義為費式數列前 <span style="font-style: italic;">0 ∼ i</span> 項的總和：</p>
+                    <ul>
+                        <li><span style="font-style: italic;">T<sub>0</sub> = F<sub>0</sub> = F<sub>1</sub> = 1</span></li>
+                        <li><span style="font-style: italic;">T<sub>1</sub> = F<sub>0</sub> + F<sub>1</sub> = 1 + 1 = 2</span>（或根據題目定義 <span style="font-style: italic;">F<sub>0</sub>=1, F<sub>1</sub>=1</span>）</li>
+                        <li><span style="font-style: italic;">T<sub>2</sub> = F<sub>0</sub> + F<sub>1</sub> + F<sub>2</sub> = 4</span></li>
+                        <li>以此類推：<span style="font-style: italic;">T<sub>n</sub> = ∑<sub>i=0</sub><sup>n</sup> F<sub>i</sub></span></li>
+                    </ul>
+                    <p>其中費式數列 <span style="font-style: italic;">F<sub>i</sub></span> 定義為 <span style="font-style: italic;">F<sub>0</sub> = 1, F<sub>1</sub> = 1</span>。</p>
+                    <p><strong>輸入格式：</strong>輸入只有一個整數 <span style="font-style: italic;">n</span> (<span style="font-style: italic;">0 ≤ n ≤ 10<sup>8</sup></span>)，代表要求包雞數列的第 <span style="font-style: italic;">n</span> 項。</p>
+                    <p><strong>輸出格式：</strong>輸出包雞數列第 <span style="font-style: italic;">n</span> 項除以 <span style="font-style: italic;">1080494663</span> 的餘數。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【模運算與矩陣乘法模擬】</h2>
+                <div class="analysis-box">
+                    <p>本題探討費式數列前綴和的計算：</p>
+                    <ul>
+                        <li><strong>遞迴與模運算：</strong>使用 64 位元無號整數（<code>uint64<sub>t</sub></code>）配合指定大質數模數 <code>mod = 1080494663</code> 進行防溢位與取餘數。</li>
+                        <li><strong>矩陣結構與狀態更新：</strong>透過矩陣乘法函數 <code>matrix<sub>m</sub>ul</code> 以及指標操作、<code>swap</code> 交換矩陣狀態，逐步向前計算各項數值與前綴和累加 <code>res</code>。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導（全部範例詳細推導）</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+1
+輸出：
+1</pre>
+                    <ul>
+                        <li>當 <span style="font-style: italic;">n = 1</span> 時，根據程式邏輯，計算 <span style="font-style: italic;">T<sub>1</sub></span> 並對 <span style="font-style: italic;">1080494663</span> 取餘數，結果為 <code>1</code>。</li>
+                    </ul>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+2
+輸出：
+4</pre>
+                    <ul>
+                        <li>當 <span style="font-style: italic;">n = 2</span> 時，<span style="font-style: italic;">T<sub>2</sub> = F<sub>0</sub> + F<sub>1</sub> + F<sub>2</sub> = 1 + 1 + 2 = 4</span>，取餘數後為 <code>4</code>。</li>
+                    </ul>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 3 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+5
+輸出：
+49</pre>
+                    <ul>
+                        <li>當 <span style="font-style: italic;">n = 5</span> 時，經過遞迴矩陣累加計算與模運算後，得到包雞數列第 5 項為 <code>49</code>。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原檔邏輯與變數名稱，逐行中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;bits/stdc++.h&gt; // 引入 C++ 常用標準函式庫 (包含 IO、演算法、容器等)
+using namespace std; // 使用標準命名空間 std
+
+uint64<sub>t</sub> mod = 1080494663; // 定義全域 64 位元無號整數變數 mod，作為題目要求的除數（模數）
+
+void print<sub>m</sub>atrix(uint64<sub>t</sub> *matrix) // 定義列印 2x2 矩陣內容的輔助函式（接收指標）
+{
+    printf("%I64u %I64u\n", matrix[0], matrix[1]); // 格式化輸出矩陣第一列的兩個元素
+    printf("%I64u %I64u\n", matrix[2], matrix[3]); // 格式化輸出矩陣第二列的兩個元素
+}
+
+void matrix<sub>m</sub>ul(uint64<sub>t</sub> *m1, uint64<sub>t</sub> *m2, uint64<sub>t</sub> *res) // 定義 2x2 矩陣相乘函式，將 m1 與 m2 相乘結果存入 res
+{
+    res[0]=((m1[0]*m2[0])%mod+(m1[1]*m2[2])%mod)%mod, // 計算結果矩陣左上角元素並取模
+    res[1]=((m1[0]*m2[1])%mod+(m1[1]*m2[3])%mod)%mod, // 計算結果矩陣右上角元素並取模
+    res[2]=((m1[2]*m2[0])%mod+(m1[3]*m2[2])%mod)%mod, // 計算結果矩陣左下角元素並取模
+    res[3]=((m1[2]*m2[1])%mod+(m1[3]*m2[3])%mod)%mod; // 計算結果矩陣右下角元素並取模
+}
+
+uint64<sub>t</sub> get<sub>a</sub>ns(int n) // 定義計算包雞數列第 n 項的函式
+{
+    if(n == 0) // 若查詢項次 n 為 0
+        return 1; // 直接回傳 1
+
+    uint64<sub>t</sub> m1[] = {0,1,1,1}; // 宣告並初始化矩陣 m1
+    uint64<sub>t</sub> m2[] = {0,1,1,1}; // 宣告並初始化矩陣 m2
+    uint64<sub>t</sub> tmp[] = {0,0,0,0}; // 宣告暫存矩陣 tmp 用於矩陣相乘結果
+    uint64<sub>t</sub> res = (m1[0] + m1[1] + m2[0] + m2[1]) % mod; // 初始化前綴和總和 res 並取模
+    
+    for(int i = 0; i &lt; n - 1; ++i) // 透過迴圈進行 n-1 次疊代計算
+    {
+        matrix<sub>m</sub>ul(m1, m2, tmp); // 將 m1 與 m2 相乘，結果存入 tmp
+        swap(m1, m2); // 交換 m1 與 m2 的指標/內容
+        swap(m2, tmp); // 交換 m2 與 tmp 的指標/內容
+        res = (res + (m2[0] + m2[1]) % mod) % mod; // 累加當前項次數值至 res 並取模
+    }
+    return res; // 回傳最終計算結果
+}
+
+int main() // 主程式進入點
+{
+    int x; // 宣告整數變數 x，用來接收輸入的 n
+    cin &gt;&gt; x; // 從標準輸入讀取 x
+    cout &lt;&lt; get<sub>a</sub>ns(x) &lt;&lt; "\n"; // 呼叫 get<sub>a</sub>ns 計算結果並輸出，結尾換行
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

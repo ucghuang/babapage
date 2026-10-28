@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#8 201904_A2-Bonus - TOI 題目詳解與 C++ 實作</title>
+    <title>#8 201904<sub>A</sub>2-Bonus - TOI 題目詳解與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -13,6 +13,8 @@
             --bg-main: #f8fafc;
             --card-bg: #ffffff;
             --border-color: #e2e8f0;
+            --highlight-bg: #fef3c7;
+            --highlight-border: #f59e0b;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -103,7 +105,7 @@
             margin-top: 8px;
         }
         .analysis-box li {
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
         .code-box {
             background-color: #0f172a;
@@ -115,24 +117,53 @@
             font-family: Consolas, Monaco, "Courier New", monospace;
             line-height: 1.6;
         }
+        .callout-box {
+            background: #fffbeb;
+            border-left: 4px solid var(--highlight-border);
+            padding: 16px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-size: 14.5px;
+        }
+        .diagram-box {
+            background: #1e293b;
+            color: #38bdf8;
+            font-family: Consolas, Monaco, monospace;
+            padding: 14px 18px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 13.5px;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+        .tag-pill {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #3730a3;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            margin-right: 6px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="problem-card">
             <div class="card-header">
-                <h1><span class="index-tag">#8</span> 201904_A2-Bonus (獎金關卡)</h1>
+                <h1><span class="index-tag">#8</span> 201904<sub>A</sub>2-Bonus (獎金關卡)</h1>
                 <div class="header-right">
-                    <a href="../questions/201904_A2-Bonus(Q).pdf" class="file-name-meta" target="_blank">PDF: 201904_A2-Bonus(Q).pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-8" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                    <a href="../questions/201904<sub>A</sub>2-Bonus(Q).pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201904<sub>A</sub>2-Bonus(Q).pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-8" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
             <div class="section-part">
                 <h2 class="section-title">題目摘要</h2>
                 <div class="analysis-box">
-                    <p><strong>問題敘述：</strong> 遊戲桌上有排成一列的 $N$ 個按鈕，每個按鈕上有對應的積分。當按下其中一個按鈕時，可獲得等同該按鈕數字的積分，但會使其<strong>左右兩邊的相鄰按鈕失效</strong>。遊戲結束後獲得總獎金為所按按鈕的積分總和。請計算參賽者最多可以得到多少獎金（此題即為著名的<strong>「不相鄰子序列最大和 / House Robber」</strong>變形）。</p>
-                    <p><strong>輸入格式：</strong> 第一列有一個正整數 $N$ ($3 \le N \le 10^6$)，代表按鈕總數；第二列共有 $N$ 個正整數，代表每個按鈕上的積分（不超過 99），以空白隔開。</p>
+                    <p><strong>問題敘述：</strong> 遊戲桌上有排成一列的 <span style="font-style: italic;">N</span> 個按鈕，每個按鈕上有對應的積分。當按下其中一個按鈕時，可獲得等同該按鈕數字的積分，但會使其<strong>左右兩邊的相鄰按鈕失效</strong>。遊戲結束後獲得總獎金為所按按鈕的積分總和。請計算參賽者最多可以得到多少獎金（此題即為著名的<strong>「不相鄰子序列最大和 / House Robber」</strong>變形）。</p>
+                    <p><strong>輸入格式：</strong> 第一列有一個正整數 <span style="font-style: italic;">N</span> (<span style="font-style: italic;">3 ≤ N ≤ 10<sup>6</sup></span>)，代表按鈕總數；第二列共有 <span style="font-style: italic;">N</span> 個正整數，代表每個按鈕上的積分（不超過 99），以空白隔開。</p>
                     <p><strong>輸出格式：</strong> 輸出一列共一個數字，代表參賽者可以取得的最高獎金。</p>
                 </div>
             </div>
@@ -143,10 +174,10 @@
                     <p>本題採用<strong>動態規劃 (Dynamic Programming)</strong>：</p>
                     <ul>
                         <li>由於按下某個按鈕會使左右兩側失效，因此我們<strong>不能選擇相鄰的按鈕</strong>。這與「不能搶劫相鄰房屋」的經典 DP 問題完全相同。</li>
-                        <li><strong>狀態轉移方程式：</strong> 設 $DP[i]$ 代表考慮前 $i$ 個按鈕且<strong>必選第 $i$ 個按鈕</strong>時能獲得的最大累計積分。則到達第 $i$ 個按鈕時，我們只能從 $i-2$ 或 $i-3$ 的狀態轉移過來（因為選了 $i$ 會使 $i-1$ 失效）：
-                            $$DP[i] = \max(DP[i-2], DP[i-3]) + arr[i]$$
+                        <li><strong>狀態轉移方程式：</strong> 設 <span style="font-style: italic;">DP[i]</span> 代表考慮前 <span style="font-style: italic;">i</span> 個按鈕且<strong>必選第 <span style="font-style: italic;">i</span> 個按鈕</strong>時能獲得的最大累計積分。則到達第 <span style="font-style: italic;">i</span> 個按鈕時，我們只能從 <span style="font-style: italic;">i-2</span> 或 <span style="font-style: italic;">i-3</span> 的狀態轉移過來（因為選了 <span style="font-style: italic;">i</span> 會使 <span style="font-style: italic;">i-1</span> 失效）：
+                            $<span style="font-style: italic;">DP[i] = max(DP[i-2], DP[i-3]) + arr[i]</span>$
                         </li>
-                        <li>最後的答案為 $\max(DP[N-1], DP[N-2])$，代表最佳選擇可能落在倒數第一個或倒數第二個按鈕。</li>
+                        <li>最後的答案為 <span style="font-style: italic;">max(DP[N-1], DP[N-2])</span>，代表最佳選擇可能落在倒數第一個或倒數第二個按鈕。</li>
                     </ul>
                 </div>
             </div>
@@ -159,18 +190,18 @@
 6
 1 2 3 4 5 6</pre>
                     <ul>
-                        <li><strong>按鈕陣列：</strong> $arr = [1, 2, 3, 4, 5, 6]$，$N = 6$。</li>
+                        <li><strong>按鈕陣列：</strong> <span style="font-style: italic;">arr = [1, 2, 3, 4, 5, 6]</span>，<span style="font-style: italic;">N = 6</span>。</li>
                         <li><strong>逐步計算 DP 狀態：</strong>
                             <ul>
-                                <li>$DP[0] = arr[0] = 1$</li>
-                                <li>$DP[1] = arr[1] = 2$</li>
-                                <li>$DP[2] = arr[0] + arr[2] = 1 + 3 = 4$</li>
-                                <li>$DP[3] = \max(DP[1], DP[0]) + arr[3] = \max(2, 1) + 4 = 6$</li>
-                                <li>$DP[4] = \max(DP[2], DP[1]) + arr[4] = \max(4, 2) + 5 = 9$</li>
-                                <li>$DP[5] = \max(DP[3], DP[2]) + arr[5] = \max(6, 4) + 6 = \mathbf{12}$</li>
+                                <li><span style="font-style: italic;">DP[0] = arr[0] = 1</span></li>
+                                <li><span style="font-style: italic;">DP[1] = arr[1] = 2</span></li>
+                                <li><span style="font-style: italic;">DP[2] = arr[0] + arr[2] = 1 + 3 = 4</span></li>
+                                <li><span style="font-style: italic;">DP[3] = max(DP[1], DP[0]) + arr[3] = max(2, 1) + 4 = 6</span></li>
+                                <li><span style="font-style: italic;">DP[4] = max(DP[2], DP[1]) + arr[4] = max(4, 2) + 5 = 9</span></li>
+                                <li><span style="font-style: italic;">DP[5] = max(DP[3], DP[2]) + arr[5] = max(6, 4) + 6 = <strong>12</strong></span></li>
                             </ul>
                         </li>
-                        <li><strong>取最大值：</strong> $\max(DP[5], DP[4]) = \max(12, 9) = 12$。</li>
+                        <li><strong>取最大值：</strong> <span style="font-style: italic;">max(DP[5], DP[4]) = max(12, 9) = 12</span>。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 1 結果：</strong> <code>12</code></p>
 
@@ -179,17 +210,17 @@
 5
 2 1 2 5 2</pre>
                     <ul>
-                        <li><strong>按鈕陣列：</strong> $arr = [2, 1, 2, 5, 2]$，$N = 5$。</li>
+                        <li><strong>按鈕陣列：</strong> <span style="font-style: italic;">arr = [2, 1, 2, 5, 2]</span>，<span style="font-style: italic;">N = 5</span>。</li>
                         <li><strong>逐步計算 DP 狀態：</strong>
                             <ul>
-                                <li>$DP[0] = 2$</li>
-                                <li>$DP[1] = 1$</li>
-                                <li>$DP[2] = arr[0] + arr[2] = 2 + 2 = 4$</li>
-                                <li>$DP[3] = \max(DP[1], DP[0]) + arr[3] = \max(1, 2) + 5 = 7$</li>
-                                <li>$DP[4] = \max(DP[2], DP[1]) + arr[4] = \max(4, 1) + 2 = 6$</li>
+                                <li><span style="font-style: italic;">DP[0] = 2</span></li>
+                                <li><span style="font-style: italic;">DP[1] = 1</span></li>
+                                <li><span style="font-style: italic;">DP[2] = arr[0] + arr[2] = 2 + 2 = 4</span></li>
+                                <li><span style="font-style: italic;">DP[3] = max(DP[1], DP[0]) + arr[3] = max(1, 2) + 5 = 7</span></li>
+                                <li><span style="font-style: italic;">DP[4] = max(DP[2], DP[1]) + arr[4] = max(4, 1) + 2 = 6</span></li>
                             </ul>
                         </li>
-                        <li><strong>取最大值：</strong> $\max(DP[4], DP[3]) = \max(6, 7) = 7$。</li>
+                        <li><strong>取最大值：</strong> <span style="font-style: italic;">max(DP[4], DP[3]) = max(6, 7) = 7</span>。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 2 結果：</strong> <code>7</code></p>
                 </div>
@@ -217,6 +248,63 @@ int main()
     printf("%d\n",max(DP[N-1],DP[N-2]));  // 輸出最後一格或倒數第二格的最大累積積分作為最高獎金
 }</code></pre>
             </div>
+
+            <!-- 以下為融合至附件尾端之深度說明區塊 -->
+            <div class="section-part">
+                <h2 class="section-title">關鍵程式碼深度解析：為什麼只看前兩格、前三格與輸出倒數兩格？</h2>
+                
+                <div class="analysis-box">
+                    <p><span class="tag-pill">核心關鍵 1</span><strong>狀態定義的嚴謹理解：DP[i] 代表「第 i 格必選」</strong></p>
+                    <p>在經典的 House Robber 問題中，通常定義 <code>DP[i] = 前 i 格任選的最大值</code>（選或不選兩種可能）。但本題程式碼採用的是<strong>精簡狀態轉移</strong>：</p>
+                    <div class="callout-box">
+                        <strong>狀態嚴格定義：</strong><span style="font-style: italic;">DP[i]</span> 代表在<strong>「第 <span style="font-style: italic;">i</span> 個按鈕必須按下（必選）」</strong>的前提下，所能獲得的最大累積積分。
+                    </div>
+
+                    <p style="margin-top: 15px;"><span class="tag-pill">核心關鍵 2</span><strong>狀態轉移為什麼只有 <code>DP[i-2]</code> 和 <code>DP[i-3]</code>？（為什麼不需要 <code>DP[i-4]</code>？）</strong></p>
+                    <p>當我們決定在位置 <span style="font-style: italic;">i</span> 按下按鈕時，前一個被按下的按鈕會是哪一個？</p>
+                    <ul>
+                        <li><strong>情況 A（間隔 1 格，步長 2）：前一個按鈕選在 <span style="font-style: italic;">i-2</span></strong>
+                            <div class="diagram-box">按鈕序列：[ ... , (i-2:選取), (i-1:失效), (i:選取) ]</div>
+                            此時可由 <span style="font-style: italic;">DP[i-2]</span> 轉移過來，累計積分為：<code>DP[i-2] + arr[i]</code>。
+                        </li>
+                        <li><strong>情況 B（間隔 2 格，步長 3）：前一個按鈕選在 <span style="font-style: italic;">i-3</span></strong>
+                            <div class="diagram-box">按鈕序列：[ ... , (i-3:選取), (i-2:沒選), (i-1:失效), (i:選取) ]</div>
+                            此時可由 <span style="font-style: italic;">DP[i-3]</span> 轉移過來，累計積分為：<code>DP[i-3] + arr[i]</code>。
+                        </li>
+                        <li><strong>情況 C（間隔 3 格，步長 4）：前一個按鈕選在 <span style="font-style: italic;">i-4</span>？—— 不需要考慮！</strong>
+                            <div class="diagram-box">假設序列：[ ... , (i-4:選取), (i-3:沒選), (i-2:沒選), (i-1:失效), (i:選取) ]</div>
+                            <strong>數學邏輯反證法：</strong>
+                            <ul>
+                                <li>如果前一個按鈕在 <span style="font-style: italic;">i-4</span>，那麼觀察中間空下來的第 <span style="font-style: italic;">i-2</span> 格：它與左側的 <span style="font-style: italic;">i-4</span> 相隔 2 格，與右側的 <span style="font-style: italic;">i</span> 也相隔 2 格，<strong>完全沒有相鄰失效的限制</strong>！</li>
+                                <li>題目明定所有按鈕積分皆為正整數（<span style="font-style: italic;">arr[i] ≥ 1</span>）。如果我們在中間順手把 <span style="font-style: italic;">i-2</span> 也按下去，總獎金必定會嚴格增加 <span style="font-style: italic;">arr[i-2]</span>：
+                                    $<span style="font-style: italic;">DP[i-4] + arr[i-2] + arr[i] > DP[i-4] + arr[i]</span>$
+                                </li>
+                                <li>而 <span style="font-style: italic;">(DP[i-4] + arr[i-2])</span> 的所有最優組合，<strong>早就已經被完整計算並涵蓋在 <span style="font-style: italic;">DP[i-2]</span> 的狀態之中了！</strong></li>
+                                <li>同理，間隔 <span style="font-style: italic;">≥ 4</span> 格（如 <span style="font-style: italic;">i-5, i-6 …</span>）中間都能塞入更多合法的按鈕而獲得更高分，因此<strong>最大值的來源絕對只會由「跳一格 (<span style="font-style: italic;">i-2</span>)」或「跳兩格 (<span style="font-style: italic;">i-3</span>)」轉移而來</strong>。</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <p style="margin-top: 15px;"><span class="tag-pill">核心關鍵 3</span><strong>結尾為什麼輸出 <code>max(DP[N-1], DP[N-2])</code>？</strong></p>
+                    <p>回到 <span style="font-style: italic;">DP</span> 的定義：「<span style="font-style: italic;">DP[k]</span> 代表最後一個按下的按鈕是第 <span style="font-style: italic;">k</span> 格」。</p>
+                    <ul>
+                        <li>整個遊戲在結束時，<strong>最後一顆被按下的按鈕</strong>必定落在以下兩處之一：
+                            <ul>
+                                <li>最後一顆落在<strong>最後一格 (<span style="font-style: italic;">N-1</span>)</strong>：最佳成績為 <span style="font-style: italic;">DP[N-1]</span>。</li>
+                                <li>最後一顆落在<strong>倒數第二格 (<span style="font-style: italic;">N-2</span>)</strong>：使第 <span style="font-style: italic;">N-1</span> 格失效無法選取，最佳成績為 <span style="font-style: italic;">DP[N-2]</span>。</li>
+                            </ul>
+                        </li>
+                        <li><strong>為什麼最後一顆不可能落在倒數第三格 (<span style="font-style: italic;">N-3</span>) 或更前面？</strong>
+                            <ul>
+                                <li>若某個方案最後一顆按鈕停在 <span style="font-style: italic;">N-3</span>（或更左側），則最後一格 <span style="font-style: italic;">N-1</span> 與其距離至少 2 格，完全不受相鄰失效限制影響。</li>
+                                <li>此時參賽者若再順手按下第 <span style="font-style: italic;">N-1</span> 格，總獎金必定可以多拿 <span style="font-style: italic;">arr[N-1] > 0</span> 分。因此，最後按鈕落在 <span style="font-style: italic;">≤ N-3</span> 的方案絕對不可能成為全局最大值。</li>
+                                <li>故最佳解答必然且僅能存在於 <span style="font-style: italic;">DP[N-1]</span> 與 <span style="font-style: italic;">DP[N-2]</span> 之間，直接取兩者之最大值輸出即可。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
     </div>
 </body>

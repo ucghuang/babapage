@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#54 202004<sub>A</sub>2-Treasure - TOI 題目詳解、運算推導與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --primary-border: #bfdbfe;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --success: #16a34a;
+            --success-bg: #dcfce7;
+            --danger: #dc2626;
+            --danger-bg: #fee2e2;
+            --code-bg: #0f172a;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.65;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 5px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--primary-border);
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.2rem;
+            color: #1e293b;
+            margin: 28px 0 14px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 12px;
+            font-weight: 700;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box p {
+            margin-bottom: 10px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .math-block {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-family: Consolas, "Courier New", monospace;
+            margin: 10px 0;
+            font-size: 14.5px;
+            color: #0f172a;
+        }
+        
+        /* 視覺化圖表與表格樣式 */
+        .svg-wrapper {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            text-align: center;
+        }
+        .table-responsive {
+            overflow-x: auto;
+            margin: 12px 0 18px 0;
+        }
+        .calc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            text-align: left;
+            background: #ffffff;
+        }
+        .calc-table th, .calc-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+        }
+        .calc-table th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+        }
+        .calc-table tr:nth-child(even) {
+            background-color: #fcfcfd;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: monospace;
+        }
+        .badge-yes {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+        .badge-no {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+        .code-box {
+            background-color: var(--code-bg);
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 13.5px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <!-- 頂部資訊列：嚴格保留原連結與目標 -->
+            <div class="card-header">
+                <h1><span class="index-tag">#54</span> 202004<sub>A</sub>2-Treasure (分配寶物)</h1>
+                <div class="header-right">
+                    <a href="../questions/202004<sub>A</sub>2-Treasure.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202004<sub>A</sub>2-Treasure.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-54" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <!-- 題目重點摘要與規則 -->
+            <div class="section-path">
+                <h2 class="section-title">題目摘要與測資規格</h2>
+                <div class="analysis-box">
+                    <p><strong>情境敘述：</strong> Alice、Bob 和 Cindy 共同發現 <span style="font-style: italic;">N</span> 個不可分割的寶物，第 <span style="font-style: italic;">i</span> 個寶物價值為 <span style="font-style: italic;">V<sub>i</sub></span> 元。所有寶物皆必須分配給三人之一，且每個人獲得的總價值必須完全相同。請判斷是否能達成平分。</p>
+                    <p><strong>輸入格式：</strong> 第一行包含一個正整數 <span style="font-style: italic;">N</span> (<span style="font-style: italic;">3 ≤ N ≤ 16</span>)；第二行包含 <span style="font-style: italic;">N</span> 個正整數 <span style="font-style: italic;">V<sub>1</sub>, V<sub>2</sub>, …, V<sub>N</sub></span> (<span style="font-style: italic;">1 ≤ V<sub>i</sub> ≤ 10<sup>7</sup></span>)。</p>
+                    <p><strong>輸出格式：</strong> 若可完全平分輸出 <code>YES</code>，否則輸出 <code>NO</code>。</p>
+                    <p><strong>配分分段：</strong> 第一組 (20分)：<span style="font-style: italic;">N = 4</span>；第二組 (80分)：<span style="font-style: italic;">3 ≤ N ≤ 16</span>。</p>
+                </div>
+            </div>
+
+            <!-- 演算法決策結構與視覺化 -->
+            <div class="section-part">
+                <h2 class="section-title">演算法解析：深度優先搜尋 (DFS) 與雙重剪枝策略</h2>
+                <div class="analysis-box">
+                    <p>本題屬於經典的<strong>三等分子集和問題（3-Partition Problem）</strong>。由於每個寶物都有分配給 3 個人之一的決策，未剪枝前的狀態空間樹高達 <span style="font-style: italic;">3<sup>N</sup></span>（當 <span style="font-style: italic;">N=16</span> 時約 <span style="font-style: italic;">4.3 × 10<sup>7</sup></span> 種狀態）：</p>
+                    <ul>
+                        <li><strong>整除前置判定</strong>：計算所有寶物總和 <span style="font-style: italic;">Sum</span>。若 <span style="font-style: italic;">Sum ±od 3 ≠ 0</span>，在數學上絕對無法平分，立即輸出 <code>NO</code>。若可整除，平分目標為 <span style="font-style: italic;">Target = Sum / 3</span>。</li>
+                        <li><strong>溢位剪枝（Over-target Pruning）</strong>：因為所有寶物價值皆為正整數（<span style="font-style: italic;">V<sub>i</sub> ≥ 1</span>），一旦累積總額 <span style="font-style: italic;">p<sub>1</sub> > Target</span> 或 <span style="font-style: italic;">p<sub>2</sub> > Target</span> 或 <span style="font-style: italic;">p<sub>3</sub> > Target</span>，後續分支不可能減少，立刻中斷並回溯。</li>
+                        <li><strong>早停旗標剪枝（Early Stop）</strong>：只要任一遞迴分支抵達終點並發現 <span style="font-style: italic;">p<sub>1</sub> = p<sub>2</sub> = p<sub>3</sub> = Target</span>，全域旗標 <code>flag = true</code>，後續所有的 <code>dfs</code> 呼叫藉由 <code>if(!flag)</code> 全數阻斷，大幅省去多餘運算。</li>
+                    </ul>
+
+                    <!-- SVG 決策狀態圖示 -->
+                    <div class="svg-wrapper">
+                        <svg viewBox="0 0 760 240" width="100%" height="240" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Root -->
+                            <rect x="290" y="10" width="180" height="36" rx="6" fill="#1e40af" />
+                            <text x="380" y="33" fill="#ffffff" font-size="13" font-family="sans-serif" text-anchor="middle" font-weight="bold">Root: cur=0 (p1=0, p2=0, p3=0)</text>
+                            
+                            <!-- 分支線 -->
+                            <line x1="330" y1="46" x2="140" y2="95" stroke="#94a3b8" stroke-width="2" />
+                            <line x1="380" y1="46" x2="380" y2="95" stroke="#94a3b8" stroke-width="2" />
+                            <line x1="430" y1="46" x2="620" y2="95" stroke="#94a3b8" stroke-width="2" />
+
+                            <text x="210" y="70" fill="#475569" font-size="11" font-family="monospace">+a[cur] 給 Alice</text>
+                            <text x="390" y="70" fill="#475569" font-size="11" font-family="monospace">+a[cur] 給 Bob</text>
+                            <text x="540" y="70" fill="#475569" font-size="11" font-family="monospace">+a[cur] 給 Cindy</text>
+
+                            <!-- Level 1 Nodes -->
+                            <rect x="50" y="95" width="180" height="34" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" />
+                            <text x="140" y="117" fill="#1e3a8a" font-size="12" font-family="sans-serif" text-anchor="middle">cur=1 (a[0], 0, 0)</text>
+
+                            <rect x="290" y="95" width="180" height="34" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" />
+                            <text x="380" y="117" fill="#1e3a8a" font-size="12" font-family="sans-serif" text-anchor="middle">cur=1 (0, a[0], 0)</text>
+
+                            <rect x="530" y="95" width="180" height="34" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" />
+                            <text x="620" y="117" fill="#1e3a8a" font-size="12" font-family="sans-serif" text-anchor="middle">cur=1 (0, 0, a[0])</text>
+
+                            <!-- Pruning & Success branch -->
+                            <line x1="140" y1="129" x2="90" y2="175" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4" />
+                            <rect x="10" y="175" width="160" height="32" rx="6" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5" />
+                            <text x="90" y="196" fill="#991b1b" font-size="11" font-family="sans-serif" text-anchor="middle">p1 > Target (溢位剪枝)</text>
+
+                            <line x1="620" y1="129" x2="620" y2="175" stroke="#22c55e" stroke-width="2" />
+                            <rect x="510" y="175" width="220" height="32" rx="6" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5" />
+                            <text x="620" y="196" fill="#166534" font-size="11" font-family="sans-serif" text-anchor="middle">抵達 cur=n 且三者相等 (輸出 YES)</text>
+                        </svg>
+                        <div style="font-size: 12.5px; color: var(--text-muted); margin-top: 6px;">圖 1：DFS 狀態空間樹展開、三路分流與剪枝判斷流程</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 三大範例詳細運算推導過程 -->
+            <div class="section-part">
+                <h2 class="section-title">三大範例詳細運算推導與狀態追蹤</h2>
+                <div class="analysis-box">
+                    
+                    <!-- 範例 1 推導 -->
+                    <h3 style="font-size: 1.05rem; color: #1e3a8a; margin-bottom: 6px;">【輸入範例 1 運算推導】（無解驗證與單元素超額剪枝）</h3>
+                    <div class="math-block">
+                        輸入：N = 3，寶物清單 = { 1, 2, 3 }
+                    </div>
+                    <ul>
+                        <li><strong>第一步：總和與整除檢驗</strong>
+                            $<span style="font-style: italic;">Sum = 1 + 2 + 3 = 6 ⟹ 6 ±od 3 = 0   (通過)</span>$
+                            $<span style="font-style: italic;">每人平分目標 Target = 6 / 3 = 2</span>$
+                        </li>
+                        <li><strong>第二步：決策推導與溢位矛盾分析</strong>
+                            <p>依題目要求，每個寶物必須全額分給其中一人（不可分割）。檢視陣列中價值為 <code>3</code> 的寶物：</p>
+                            <p>不論將該寶物分給 Alice、Bob 或 Cindy，該名持有者的累積價值至少為 <span style="font-style: italic;">3</span>。由於 <span style="font-style: italic;">3 > Target (2)</span>，直接違反目標值，在 DFS 進入該狀態時立即觸發 <code>p > pans</code> 剪枝返回。因此狀態空間中不存在任何合法組合。</p>
+                        </li>
+                    </ul>
+                    <div class="table-responsive">
+                        <table class="calc-table">
+                            <thead>
+                                <tr>
+                                    <th>嘗試路徑步驟</th>
+                                    <th>目前累積 (p1, p2, p3)</th>
+                                    <th>正在分配寶物</th>
+                                    <th>剪枝檢查與狀態</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1. dfs(0, 0, 0, 0)</td>
+                                    <td>(0, 0, 0)</td>
+                                    <td>a[0] = 1 給 p1</td>
+                                    <td>合法，深入至 cur=1</td>
+                                </tr>
+                                <tr>
+                                    <td>2. dfs(1, 1, 0, 0)</td>
+                                    <td>(1, 0, 0)</td>
+                                    <td>a[1] = 2 給 p1</td>
+                                    <td><span style="font-style: italic;">1 + 2 = 3 > 2</span>，觸發剪枝返回</td>
+                                </tr>
+                                <tr>
+                                    <td>3. dfs(1, 1, 0, 0)</td>
+                                    <td>(1, 0, 0)</td>
+                                    <td>a[1] = 2 給 p2</td>
+                                    <td>合法，深入至 cur=2</td>
+                                </tr>
+                                <tr>
+                                    <td>4. dfs(2, 1, 2, 0)</td>
+                                    <td>(1, 2, 0)</td>
+                                    <td>a[2] = 3 分給任一人</td>
+                                    <td><span style="font-style: italic;">(4, 2, 0)</span> 或 <span style="font-style: italic;">(1, 5, 0)</span> 或 <span style="font-style: italic;">(1, 2, 3)</span>，全部 <span style="font-style: italic;">> 2</span>，全部剪枝</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <span class="badge badge-no">NO</span></p>
+
+                    <hr style="border: none; border-top: 1px dashed #cbd5e1; margin: 24px 0;">
+
+                    <!-- 範例 2 推導 -->
+                    <h3 style="font-size: 1.05rem; color: #1e3a8a; margin-bottom: 6px;">【輸入範例 2 運算推導】（有效解狀態堆疊追蹤）</h3>
+                    <div class="math-block">
+                        輸入：N = 4，寶物清單 = { 1, 2, 3, 3 }
+                    </div>
+                    <ul>
+                        <li><strong>第一步：總和與整除檢驗</strong>
+                            $<span style="font-style: italic;">Sum = 1 + 2 + 3 + 3 = 9 ⟹ 9 ±od 3 = 0   (通過)</span>$
+                            $<span style="font-style: italic;">每人平分目標 Target = 9 / 3 = 3</span>$
+                        </li>
+                        <li><strong>第二步：成功指派序列追蹤</strong>
+                            <p>DFS 依序對各個寶物做出以下指派決策：</p>
+                        </li>
+                    </ul>
+                    <div class="table-responsive">
+                        <table class="calc-table">
+                            <thead>
+                                <tr>
+                                    <th>DFS 遞迴深度</th>
+                                    <th>考慮寶物價值 a[cur]</th>
+                                    <th>分配決策對象</th>
+                                    <th>累積狀態 (p1, p2, p3)</th>
+                                    <th>狀態說明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>cur = 0</td>
+                                    <td>a[0] = 1</td>
+                                    <td>分配給 Alice (p1)</td>
+                                    <td>(1, 0, 0)</td>
+                                    <td><span style="font-style: italic;">1 ≤ 3</span>，繼續搜尋</td>
+                                </tr>
+                                <tr>
+                                    <td>cur = 1</td>
+                                    <td>a[1] = 2</td>
+                                    <td>分配給 Alice (p1)</td>
+                                    <td>(3, 0, 0)</td>
+                                    <td><span style="font-style: italic;">p<sub>1</sub> = 3</span>，剛好達標</td>
+                                </tr>
+                                <tr>
+                                    <td>cur = 2</td>
+                                    <td>a[2] = 3</td>
+                                    <td>分配給 Bob (p2)</td>
+                                    <td>(3, 3, 0)</td>
+                                    <td><span style="font-style: italic;">p<sub>2</sub> = 3</span>，剛好達標</td>
+                                </tr>
+                                <tr>
+                                    <td>cur = 3</td>
+                                    <td>a[3] = 3</td>
+                                    <td>分配給 Cindy (p3)</td>
+                                    <td>(3, 3, 3)</td>
+                                    <td><span style="font-style: italic;">p<sub>3</sub> = 3</span>，剛好達標</td>
+                                </tr>
+                                <tr>
+                                    <td>cur = 4 (終止)</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td><strong>(3, 3, 3)</strong></td>
+                                    <td><strong>滿足 <span style="font-style: italic;">p<sub>1</sub>=p<sub>2</sub>=p<sub>3</sub>=3</span>，觸發 flag = true</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <span class="badge badge-yes">YES</span></p>
+
+                    <hr style="border: none; border-top: 1px dashed #cbd5e1; margin: 24px 0;">
+
+                    <!-- 範例 3 推導 -->
+                    <h3 style="font-size: 1.05rem; color: #1e3a8a; margin-bottom: 6px;">【輸入範例 3 運算推導】（大測資 10 元素集合劃分分析）</h3>
+                    <div class="math-block">
+                        輸入：N = 10，寶物清單 = { 12, 53, 34, 23, 29, 26, 19, 10, 1, 6 }
+                    </div>
+                    <ul>
+                        <li><strong>第一步：計算全數值總和</strong>
+                            $<span style="font-style: italic;">Sum = 12 + 53 + 34 + 23 + 29 + 26 + 19 + 10 + 1 + 6 = 213</span>$
+                            $<span style="font-style: italic;">整除檢查：213 ±od 3 = 0 ⟹ Target = 213 / 3 = 71</span>$
+                        </li>
+                        <li><strong>第二步：三人分配組合拆解矩陣</strong>
+                            <p>DFS 深度探索成功尋獲之劃分組合（三組總和均精確等於 71）：</p>
+                        </li>
+                    </ul>
+                    <div class="table-responsive">
+                        <table class="calc-table">
+                            <thead>
+                                <tr>
+                                    <th>分配對象</th>
+                                    <th>分得之寶物集合</th>
+                                    <th>加總推算式</th>
+                                    <th>累積總額</th>
+                                    <th>驗證狀態</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Alice (p1)</strong></td>
+                                    <td>{ 53, 12, 6 }</td>
+                                    <td><span style="font-style: italic;">53 + 12 + 6</span></td>
+                                    <td><strong>71</strong></td>
+                                    <td><span class="badge badge-yes">吻合 Target</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Bob (p2)</strong></td>
+                                    <td>{ 34, 26, 10, 1 }</td>
+                                    <td><span style="font-style: italic;">34 + 26 + 10 + 1</span></td>
+                                    <td><strong>71</strong></td>
+                                    <td><span class="badge badge-yes">吻合 Target</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cindy (p3)</strong></td>
+                                    <td>{ 29, 23, 19 }</td>
+                                    <td><span style="font-style: italic;">29 + 23 + 19</span></td>
+                                    <td><strong>71</strong></td>
+                                    <td><span class="badge badge-yes">吻合 Target</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>👉 <strong>輸出範例 3 結果：</strong> <span class="badge badge-yes">YES</span></p>
+                </div>
+            </div>
+
+            <!-- C++ 完整程式碼與教學逐行註解 -->
+            <div class="section-part">
+                <h2 class="section-title">官方解答 C++ 原始碼（逐行繁體中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;stdio.h&gt;  // 引入標準輸入輸出函式庫 (scanf, puts)
+
+bool flag = false;   // 全域布林旗標：記錄是否成功找到三等分的分配方式，預設為 false
+int n;              // 寶物數量 N (3 <= N <= 16)
+int a[20];          // 存放各寶物價值的陣列
+int pans = 0;       // 累加所有寶物總價值 (後續轉為目標值 pans = pans / 3)
+
+/**
+ * 深度優先搜尋 (DFS) 函數
+ * @param cur 當前正在考慮分配的寶物索引 (0 到 n-1)
+ * @param p1  目前分配給第 1 個人 (Alice) 的累計價值
+ * @param p2  目前分配給第 2 個人 (Bob) 的累計價值
+ * @param p3  目前分配給第 3 個人 (Cindy) 的累計價值
+ */
+void dfs(int cur, int p1, int p2, int p3)
+{
+    // 【剪枝 1】：若任何一人的分配價值已經超過目標平分額 pans，因寶物價值皆為正數，後續無法減小，直接返回
+    if (p1 > pans || p2 > pans || p3 > pans) return;
+    
+    // 【遞迴終止條件】：當所有寶物 (0 到 n-1) 都已經分配給某人
+    if (cur == n)
+    {
+        // 檢查三個人分配到的寶物價值是否完全相等
+        if (p1 == p2 && p2 == p3) 
+        {
+            flag = true;  // 成功尋獲一組合法解
+        }
+        return;
+    }
+    
+    // 【剪枝 2】：只要找到解 (flag=true)，後續遞迴分支藉由 !flag 直接略過，不再浪費時間搜尋
+    if (!flag) dfs(cur + 1, p1 + a[cur], p2, p3);  // 決策 1：將第 cur 個寶物分配給 Alice (p1)
+    if (!flag) dfs(cur + 1, p1, p2 + a[cur], p3);  // 決策 2：將第 cur 個寶物分配給 Bob (p2)
+    if (!flag) dfs(cur + 1, p1, p2, p3 + a[cur]);  // 決策 3：將第 cur 個寶物分配給 Cindy (p3)
+}
+
+int main()
+{
+    // 讀入寶物數量 n
+    scanf("%d", &n);
+    
+    // 迴圈讀入每個寶物的價值並累計總和
+    for (int i = 0; i < n; ++i)
+    {
+        scanf("%d", &a[i]);
+        pans += a[i];      // 累加總金額
+    }
+    
+    // 【前置數學檢查】：若總金額無法被 3 整除，數學上必定無法平分
+    if (pans % 3 == 0)
+    {
+        pans /= 3;         // 計算每個人應得的目標平分價值 (目標值)
+        dfs(0, 0, 0, 0);   // 從第 0 個寶物開始搜尋，三人初始金額皆為 0
+    }
+    
+    // 根據旗標輸出最終結果：若為 true 輸出 YES，否則輸出 NO
+    puts(flag ? "YES" : "NO");
+    
+    return 0;  // 程式正常結束
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

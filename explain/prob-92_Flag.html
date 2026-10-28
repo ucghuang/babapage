@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#92 202012<sub>F</sub>lag - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#92</span> 202012<sub>F</sub>lag (舉旗遊戲)</h1>
+                <div class="header-right">
+                    <a href="../questions/202012<sub>F</sub>lag.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202012<sub>F</sub>lag.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-92" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong>營隊中玩舉旗遊戲，新規則為：每個人排成 <span style="font-style: italic;">R × C</span> 的矩陣並依喜好舉旗（1 代表紅旗，2 代表白旗）。如果某個學生的旗子顏色與其<strong>鄰近 8 個方向</strong>（左上、上、右上、右、右下、下、左下、左）中<strong>無一人相同</strong>，則該學生視為淘汰。若位在隊伍邊緣，則不需考慮不存在的鄰近者。請計算並輸出被淘汰的學生總人數。</p>
+                    <p><strong>輸入格式：</strong>第一列有兩個整數 <span style="font-style: italic;">R</span>、<span style="font-style: italic;">C</span> (<span style="font-style: italic;">3 ≤ R ≤ 100</span>, <span style="font-style: italic;">3 ≤ C ≤ 100</span>) 代表行列數。接下來 <span style="font-style: italic;">R</span> 列，每列有 <span style="font-style: italic;">C</span> 個數字表示旗子編號 <span style="font-style: italic;">S<sub>ij</sub></span> (<span style="font-style: italic;">1 ≤ S<sub>ij</sub> ≤ 2</span>)。</p>
+                    <p><strong>輸出格式：</strong>輸出被淘汰的學生人數。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【二維陣列與八方向偏移量檢測】</h2>
+                <div class="analysis-box">
+                    <p>本題屬於二維網格與鄰域搜尋問題：</p>
+                    <ul>
+                        <li><strong>方向陣列 (Direction Array)：</strong>利用 <code>dir[8][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}}</code> 分別對應上下左右及四個對角線共 8 個相鄰方向。</li>
+                        <li><strong>條件判定：</strong>對每一個學生位置 <span style="font-style: italic;">(x, y)</span>，遍歷其 8 個鄰居。若發現任何一個鄰居的旗子顏色與自己相同（即 <code>student[x][y] == student[x+dir[d][0]][y+dir[d][1]]</code>），則設定 <code>fail = false</code>（表示有同色鄰居，不淘汰）。若檢查完 8 個方向都沒有同色鄰居，則 <code>fail</code> 保持為 <code>true</code>，淘汰人數 <code>find<sub>s</sub> += 1</code>。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導（全部範例詳細推導）</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+3 4
+2 2 2 2
+2 1 2 1
+2 2 2 2
+輸出：
+2</pre>
+                    <ul>
+                        <li>矩陣大小為 <span style="font-style: italic;">3 × 4</span>。</li>
+                        <li>對每個位置進行 8 方向檢查，中心位於第 2 列第 2 行的元素（值為 1）四周皆為 2，無同色鄰居，符合淘汰條件；同理中心其他符合條件者共計 2 人遭到淘汰。</li>
+                    </ul>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+8 8
+2 1 1 1 1 1 1 1
+1 1 1 2 2 2 1 1
+1 2 2 2 1 2 1 1
+1 2 2 2 2 2 1 1
+1 1 1 1 1 1 1 1
+1 1 2 1 1 1 2 1
+1 1 1 1 1 2 1 1
+2 1 1 1 1 1 1 1
+輸出：
+4</pre>
+                    <ul>
+                        <li><span style="font-style: italic;">8 × 8</span> 的大型矩陣，經由 8 方向鄰居顏色比對掃描後，共有 4 位學生周遭無同色鄰居而淘汰。</li>
+                    </ul>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 3 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+2 7
+2 1 2 1 2 1 2
+1 2 1 2 1 2 1
+輸出：
+0</pre>
+                    <ul>
+                        <li>此矩陣中每個元素周圍皆有相同顏色的鄰居，因此沒有人被淘汰，輸出 <code>0</code>。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原檔邏輯與變數名稱，逐行中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;iostream&gt; // 引入標準輸入輸出標頭檔
+using namespace std; // 使用標準命名空間 std
+
+int main() // 主程式進入點
+{ // 主程式開始
+	int m, n; // 宣告整數 m 與 n，分別代表矩陣的列數與行數
+	int student[110][110]={}; // 宣告大小為 110x110 的二維整數陣列 student，並初始化為 0，用來儲存學生旗子編號
+	cin&gt;&gt;m&gt;&gt;n; // 讀入列數 m 與行數 n
+	for(int i=1;i&lt;=m;++i) // 迴圈遍歷每一列 (從第 1 列到第 m 列)
+	{ // 列迴圈開始
+		for(int j=1;j&lt;=n;++j) // 迴圈遍歷每一行 (從第 1 行到第 n 行)
+		{ // 行迴圈開始
+			cin&gt;&gt;student[i][j]; // 依序讀入位在 (i, j) 位置學生的旗子編號
+		} // 行迴圈結束
+	} // 列迴圈結束
+
+	int find<sub>s</sub>=0; // 宣告整數變數 find<sub>s</sub> 用來計算被淘汰的學生總人數，初始化為 0
+	int dir[8][2]={{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}}; // 宣告 8 個相鄰方向的座標偏移量陣列 (上下左右與四個對角線)
+	
+	for(int i=1;i&lt;=m;++i) // 遍歷矩陣中每一個學生的列位置
+	{ // 外層掃描列開始
+		for(int j=1;j&lt;=n;++j) // 遍歷矩陣中每一個學生的行位置
+		{ // 內層掃描行開始
+			int x = i, y = j; // 將目前學生的座標指定給 x 與 y
+			bool fail = true; // 宣告布林變數 fail 代表是否符合淘汰條件，預設為 true (假設四周無同色鄰居)
+			for(int d=0;d&lt;8;++d) // 迴圈檢查 8 個相鄰方向
+			{ // 8 方向迴圈開始
+                if(student[x][y]==student[x+dir[d][0]][y+dir[d][1]]) // 檢查當前學生的旗子顏色是否與某個鄰居相同
+                { // 若發現有相同顏色的鄰居
+                    fail=false; // 將 fail 設為 false，表示不符合淘汰條件
+                    break; // 跳出方向迴圈，無需再檢查其他方向
+                } // 條件結束
+            } // 8 方向迴圈結束
+            if(fail) // 若檢查完 8 個方向後 fail 仍為 true (即四周無任何一人與自己同色)
+            { // 淘汰條件成立
+                find<sub>s</sub>+=1; // 淘汰人數加 1
+            } // 淘汰判斷結束
+		} // 內層掃描行結束
+	} // 外層掃描列結束
+	cout&lt;&lt;find<sub>s</sub>&lt;&lt;endl; // 輸出最終被淘汰的學生總人數並換行
+} // 主程式結束</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

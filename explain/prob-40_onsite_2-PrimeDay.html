@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#40 201912-onsite_2-PrimeDay - TOI 題目詳解與 C++ 實作</title>
+    <title>#40 201912-onsite<sub>2</sub>-PrimeDay - TOI 題目詳解與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -121,10 +121,10 @@
     <div class="container">
         <div class="problem-card">
             <div class="card-header">
-                <h1><span class="index-tag">#40</span> 201912-onsite_2-PrimeDay (質數日)</h1>
+                <h1><span class="index-tag">#40</span> 201912-onsite<sub>2</sub>-PrimeDay (質數日)</h1>
                 <div class="header-right">
-                    <a href="../questions/201912-onsite_2-PrimeDay.pdf" class="file-name-meta" target="_blank">PDF: 201912-onsite_2-PrimeDay.pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-40" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                    <a href="../questions/201912-onsite<sub>2</sub>-PrimeDay.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201912-onsite<sub>2</sub>-PrimeDay.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-40" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
@@ -132,7 +132,7 @@
                 <h2 class="section-title">題目摘要</h2>
                 <div class="analysis-box">
                     <p><strong>問題敘述：</strong> 某些日期（如 20190823）除了本身是質數之外，把最左邊的數字依序去掉後剩下的數字（如 190823、90823、823、23、3）也全都是質數，這樣的日子被稱為「質數日」。給定多個 21~30 世紀中的日期，請撰寫程式判斷這些日期是否為質數日。</p>
-                    <p><strong>輸入格式：</strong> 第一行輸入一個正整數 $D$ ($1 \le D \le 10$) 代表有幾個日期；接下來 $D$ 行，每行一個正整數 $N$ ($20000101 \le N \le 29991231$) 表示日期。</p>
+                    <p><strong>輸入格式：</strong> 第一行輸入一個正整數 <span style="font-style: italic;">D</span> (<span style="font-style: italic;">1 ≤ D ≤ 10</span>) 代表有幾個日期；接下來 <span style="font-style: italic;">D</span> 行，每行一個正整數 <span style="font-style: italic;">N</span> (<span style="font-style: italic;">20000101 ≤ N ≤ 29991231</span>) 表示日期。</p>
                     <p><strong>輸出格式：</strong> 對於每個日期輸出一行文字：若是質數日輸出 <code>N is a Prime Day!</code>，否則輸出 <code>N isn't a Prime Day!</code>。</p>
                 </div>
             </div>
@@ -143,8 +143,8 @@
                     <p>本題採用<strong>質數試除法與模運算 (Modulo Operation)</strong>：</p>
                     <ul>
                         <li>質數定義：在大於 1 的自然數中，除了 1 和該數自身外，無法被其他自然數整除的數（最小的質數是 2，且 1 既不是質數也不是合數）。</li>
-                        <li>質數判定：對於任意數 $M$，我們利用迴圈從 2 測試到 $\sqrt{M}$，若能被整除則代表不是質數。</li>
-                        <li>位數剝離：透過連續對 $10^7, 10^6, \dots$ 取餘數（<code>% Digit</code>），每次去掉最左邊的一個數字，並依序檢查每一個截斷後的數是否皆為質數。若在剝離過程中剩下了 1，因 1 不是質數（最小的質數是 2），故不符合質數日定義。</li>
+                        <li>質數判定：對於任意數 <span style="font-style: italic;">M</span>，我們利用迴圈從 2 測試到 <span style="font-style: italic;">\sqrt{M}</span>，若能被整除則代表不是質數。</li>
+                        <li>位數剝離：透過連續對 <span style="font-style: italic;">10<sup>7</sup>, 10<sup>6</sup>, …</span> 取餘數（<code>% Digit</code>），每次去掉最左邊的一個數字，並依序檢查每一個截斷後的數是否皆為質數。若在剝離過程中剩下了 1，因 1 不是質數（最小的質數是 2），故不符合質數日定義。</li>
                     </ul>
                 </div>
             </div>
@@ -157,14 +157,14 @@
 1
 20190823</pre>
                     <ul>
-                        <li><strong>檢查完整數字：</strong> $20190823$ 經試除法判定是<strong>質數</strong>。</li>
+                        <li><strong>檢查完整數字：</strong> <span style="font-style: italic;">20190823</span> 經試除法判定是<strong>質數</strong>。</li>
                         <li><strong>剝離最左邊數字：</strong>
                             <ul>
-                                <li>去掉 '2' $\to 190823$（經試除法判定是<strong>質數</strong>）</li>
-                                <li>去掉 '1' $\to 90823$（經試除法判定是<strong>質數</strong>）</li>
-                                <li>去掉 '9' $\to 823$（經試除法判定是<strong>質數</strong>）</li>
-                                <li>去掉 '0' $\to 23$（經試除法判定是<strong>質數</strong>）</li>
-                                <li>去掉 '2' $\to 3$（經試除法判定是<strong>質數</strong>）</li>
+                                <li>去掉 '2' <span style="font-style: italic;">→ 190823</span>（經試除法判定是<strong>質數</strong>）</li>
+                                <li>去掉 '1' <span style="font-style: italic;">→ 90823</span>（經試除法判定是<strong>質數</strong>）</li>
+                                <li>去掉 '9' <span style="font-style: italic;">→ 823</span>（經試除法判定是<strong>質數</strong>）</li>
+                                <li>去掉 '0' <span style="font-style: italic;">→ 23</span>（經試除法判定是<strong>質數</strong>）</li>
+                                <li>去掉 '2' <span style="font-style: italic;">→ 3</span>（經試除法判定是<strong>質數</strong>）</li>
                             </ul>
                         </li>
                         <li>每一層截斷數字皆大於 1 且通過質數檢驗。</li>

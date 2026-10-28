@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#266 202410<sub>t</sub>rip (校外教學分組) - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#266</span> 202410<sub>t</sub>rip (校外教學分組)</h1>
+                <div class="header-right">
+                    <a href="../questions/202410<sub>t</sub>rip.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202410<sub>t</sub>rip.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-266" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 校外教學要將 <span style="font-style: italic;">N</span> 位學生分成 3 組行動。老師認為如果組內有學生彼此是朋友的話可能會因為聊天導致秩序不好，因此<strong>同一組內不能存在有兩位學生彼此是朋友關係</strong>。</p>
+                    <p>同時，為了使每一組的導遊負擔儘量一樣，老師也希望<strong>「最多人的組」和「最少人的組」人數的差值越小越好</strong>。</p>
+                    <p>給定 <span style="font-style: italic;">M</span> 筆學生間的朋友關係，請幫老師計算出分組後「最多人的組」和「最少人的組」人數的最小差值；如果無法分組，請輸出 <code>-1</code>。</p>
+                    <p><strong>輸入格式：</strong> 第一列有兩個正整數 <span style="font-style: italic;">N</span> 與 <span style="font-style: italic;">M</span> (<span style="font-style: italic;">3 ≤ N ≤ 16, M ≤ N × (N-1)/2</span>)，表示有 <span style="font-style: italic;">N</span> 位學生和 <span style="font-style: italic;">M</span> 筆學生們的朋友關係。接下來 <span style="font-style: italic;">M</span> 列，每列有兩個相異正整數 <span style="font-style: italic;">X</span> 與 <span style="font-style: italic;">Y</span> (<span style="font-style: italic;">1 ≤ X, Y ≤ N</span>)，代表學生 <span style="font-style: italic;">X</span> 和學生 <span style="font-style: italic;">Y</span> 互相是朋友。</p>
+                    <p><strong>輸出格式：</strong> 輸出一個整數，表示分組後「最多人的組」和「最少人的組」人數的最小差值，如果無法分組，輸出 <code>-1</code>。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【深度優先搜尋 (DFS) / 狀態窮舉與回溯法】</h2>
+                <div class="analysis-box">
+                    <p>本題資料規模限制為 <span style="font-style: italic;">N ≤ 16</span>：</p>
+                    <ul>
+                        <li><strong>狀態枚舉：</strong> 由於 <span style="font-style: italic;">N</span> 很小（最多 16 個人），每一位學生可以獨立選擇分配到第 0、1 或 2 組，總共的可能分配組合為 <span style="font-style: italic;">3<sup>16</sup> ≈ 4.3 × 10<sup>7</sup></span> 種。透過深度優先搜尋 (DFS) 遞迴枚舉所有學生的分組狀態。</li>
+                        <li><strong>合法性檢查：</strong> 當所有學生的分組決定後（到達遞迴終止條件 <code>cur == n</code>），檢查每一條朋友關係 <span style="font-style: italic;">(X, Y)</span>，若兩者被分在同一組（即 <code>group[X] == group[Y]</code>），則此分組方案非法，予以捨棄。</li>
+                        <li><strong>最佳化求解：</strong> 對於所有合法的分組方案，統計三組的人數，計算「最多人數組 - 最少人數組」的差值，並更新全域的最小值。若找不到任何合法方案則輸出 <code>-1</code>。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+5 5
+1 2
+2 3
+3 4
+4 5
+1 5</pre>
+                    <ul>
+                        <li><span style="font-style: italic;">N = 5</span> 位學生，<span style="font-style: italic;">M = 5</span> 筆朋友關係：(1,2), (2,3), (3,4), (4,5), (1,5) 形成一個五邊形環。</li>
+                        <li>透過 DFS 尋找合法分組方案。例如將學生 1、4 分成一組（2人），學生 2、5 分成一組（2人），學生 3 獨立成一組（1人）。</li>
+                        <li>檢查各組朋友關係：1 和 4 不同組，2 和 5 不同組，均合法。</li>
+                        <li>此時三組人數分別為 2、2、1。最多人組 = 2，最少人組 = 1，差值 = <span style="font-style: italic;">2 - 1 = 1</span>。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>1</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+4 6
+1 2
+1 3
+1 4
+2 3
+2 4
+3 4</pre>
+                    <ul>
+                        <li><span style="font-style: italic;">N = 4</span>，<span style="font-style: italic;">M = 6</span>。這代表 4 個人兩兩互為朋友（完全圖 <span style="font-style: italic;">K<sub>4</sub></span>）。</li>
+                        <li>因為任兩個人都是朋友，所以無論怎麼分成 3 組，總會有一組裡面包含兩個人且這兩個人互相是朋友，違反「同一組內不能有朋友」的規則。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>-1</code>（無法分組）</p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 3 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+6 1
+1 2</pre>
+                    <ul>
+                        <li><span style="font-style: italic;">N = 6</span>，<span style="font-style: italic;">M = 1</span>，只有學生 1 和 2 是朋友。</li>
+                        <li>可以將學生 1 和其他非朋友分開，例如將 1 分到組 0，2 分到組 1，其餘 3、4、5、6 分別合理分配，使得三組人數盡可能均勻（例如 2 人、2 人、2 人）。</li>
+                        <li>此時最多人組 = 2，最少人組 = 2，差值 = <span style="font-style: italic;">2 - 2 = 0</span>。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 3 結果：</strong> <code>0</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;cstdio&gt;    // 引入標準輸入輸出標頭檔，以便使用 scanf 與 printf
+#include&lt;algorithm&gt; // 引入演算法標頭檔，以便使用 min 與 max 函數
+using namespace std;
+
+const int maxn = 16 + 1; // 定義學生人數最大常數
+const int maxm = maxn * (maxn - 1) / 2; // 定義朋友關係邊的最大數量
+const int inf = 2147483647; // 定義無窮大初始值
+
+// 深度優先搜尋 (DFS) 枚舉每個學生的分組狀態
+void dfs(int cur, int n, int m, int *group, const int f[maxm][2], int& ans)
+{
+	if (cur == n) // 若所有學生的分組已決定完成（遞迴終止條件）
+	{
+		bool flag = true; // 旗標用來記錄當前分組是否合法
+		for (int i = 0; i &lt; m; ++i) // 檢查所有朋友關係
+		{
+			// 若互為朋友的兩位學生被分配到同一組
+			if (group[f[i][0]] == group[f[i][1]])
+			{
+				flag = false; // 違反規定，標記為不合法
+				break;
+			}
+		}
+		if (flag == true) // 若分組方案合法
+		{
+			int cnt[3] = {0}; // 統計三組各自的人數
+			for (int i = 0; i &lt; n; ++i)
+			{
+				++cnt[group[i]];
+			}
+			// 計算最多人數組與最少人數組的差值，並更新全域最小差值 ans
+			ans = min(ans, max({cnt[0], cnt[1], cnt[2]}) - min({cnt[0], cnt[1], cnt[2]}));
+		}
+		return;
+	}
+	// 對當前學生 cur 嘗試分配到 0, 1, 2 三組中的其中一組
+	for (int i = 0; i &lt; 3; ++i)
+	{
+		group[cur] = i; // 將學生 cur 放入第 i 組
+		dfs(cur + 1, n, m, group, f, ans); // 遞迴決定下一位學生
+	}
+	return;
+}
+
+int solve(int n, int m, int f[maxm][2])
+{
+	int group[maxn]; // 儲存每位學生的分組編號 (0, 1, 2)
+	int ans = inf;   // 初始化最小差值為無窮大
+	dfs(0, n, m, group, f, ans); // 從第 0 位學生開始進行 DFS 搜尋
+	if (ans == inf)  // 若無窮大未被更新，代表找不到任何合法分組方案
+	{
+		return -1;   // 回傳 -1
+	}
+	return ans;      // 回傳最小差值
+}
+
+int main()
+{
+	int n, m;
+	int f[maxm][2];
+	scanf(&quot;%d%d&quot;, &amp;n, &amp;m); // 讀入學生人數 n 與朋友關係數 m
+	for (int i = 0; i &lt; m; ++i)
+	{
+		scanf(&quot;%d%d&quot;, &amp;f[i][0], &amp;f[i][1]); // 讀入互為朋友的兩位學生編號
+		--f[i][0]; // 將學生編號轉換為 0 起始索引
+		--f[i][1];
+	}
+	printf(&quot;%d\n&quot;, solve(n, m, f)); // 執行求解並輸出結果
+	return 0; // 程式正常結束
+}
+</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

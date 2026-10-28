@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#216 202308-OFFLINE<sub>T</sub>reasure - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#216</span> 202308-OFFLINE<sub>T</sub>reasure (搜集寶藏)</h1>
+                <div class="header-right">
+                    <a href="../questions/202308-OFFLINE<sub>T</sub>reasure.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202308-OFFLINE<sub>T</sub>reasure.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-216" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-path">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 遊戲中控制角色通過一個 <span style="font-style: italic;">N × M</span> 的網格區域，從左上角進入，從右下角離開。只能向下或向右移動，總步數固定為 <span style="font-style: italic;">(N + M - 2)</span> 步。每個格子內有不定數量的寶藏，請計算通過並獲取<strong>最大量寶藏</strong>的最佳路徑。</p>
+                    <p><strong>輸入格式：</strong> 第一列輸入兩個正整數 <span style="font-style: italic;">N</span> 和 <span style="font-style: italic;">M</span> (<span style="font-style: italic;">1 ≤ N, M ≤ 2000</span>)。接下來有 <span style="font-style: italic;">N</span> 列，每列有 <span style="font-style: italic;">M</span> 個非負整數 <span style="font-style: italic;">X</span> (<span style="font-style: italic;">0 ≤ X ≤ 1000</span>) 表示該格的寶藏數量。</p>
+                    <p><strong>輸出格式：</strong> 輸出一個數字，表示成功離開時能獲取的最大寶藏總量。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【動態規劃 (DP) / 網格路徑最大權重和】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>經典的二維動態規劃 (2D DP) 解決網格最大路徑和問題</strong>：</p>
+                    <ul>
+                        <li><strong>狀態定義</strong>：令 <span style="font-style: italic;">v[i][j]</span> 表示從起點 <span style="font-style: italic;">(0, 0)</span> 移動到格子 <span style="font-style: italic;">(i, j)</span> 所能收集到的最大寶藏總量。</li>
+                        <li><strong>狀態轉移方程</strong>：因為只能從上方 <span style="font-style: italic;">(i-1, j)</span> 或左方 <span style="font-style: italic;">(i, j-1)</span> 移動到當前格子 <span style="font-style: italic;">(i, j)</span>，所以轉移方程為：
+                            $<span style="font-style: italic;">v[i][j] = v[i][j] + max(v[i-1][j], v[i][j-1])</span>$
+                        </li>
+                        <li><strong>邊界條件</strong>：
+                            <ul>
+                                <li>第一欄（<span style="font-style: italic;">j = 0</span>）只能由上方累積下來：<code>v[i][0] += v[i-1][0]</code>。</li>
+                                <li>第一列（<span style="font-style: italic;">i = 0</span>）只能由左方累積下來：<code>v[0][j] += v[0][j-1]</code>。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 2 詳細拆解 (<span style="font-style: italic;">2 × 2</span> 網格)】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+2 2
+1 2
+8 9</pre>
+                    <ul>
+                        <li><strong>步驟一：初始化第一列與第一欄</strong>
+                            <ul>
+                                <li><code>v[0][0] = 1</code></li>
+                                <li><code>v[0][1] = v[0][0] + 2 = 1 + 2 = 3</code>（第一列只能從左到右）</li>
+                                <li><code>v[1][0] = v[0][0] + 8 = 1 + 8 = 9</code>（第一欄只能從上到下）</li>
+                            </ul>
+                        </li>
+                        <li><strong>步驟二：計算右下角終點 <code>v[1][1]</code></strong>
+                            <ul>
+                                <li><code>v[1][1] = v[1][1] + max(v[1][0], v[0][1]) = 9 + max(9, 3) = 9 + 9 = 18</code>。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>18</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（100% 取自官方解答，逐行繁體中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;iostream&gt;   // 引入 C++ 標準輸入輸出串流函式庫 (如 cin, cout, endl)
+#include &lt;vector&gt;     // 引入 C++ 動態陣列容器 (vector) 函式庫
+using namespace std;  // 使用標準命名空間 std
+
+int main()            // 主程式起點
+{
+	cin.sync<sub>w</sub>ith<sub>s</sub>tdio(0);  // 解除 C 與 C++ 的 I/O 同步，加速輸入輸出
+	cin.tie(0);              // 解除 cin 與 cout 的繫結，進一步提升執行效能
+	
+	int n, m;                // 宣告整數 n 與 m，分別代表網格的列數與行數
+	cin &gt;&gt; n &gt;&gt; m;           // 輸入 n 與 m
+	
+	vector&lt;vector&lt;int&gt;&gt; v(n, vector&lt;int&gt;(m));  // 宣告大小為 n x m 的二維向量 v，用來儲存每個格子的寶藏數量
+	for(int i = 0; i &lt; n; ++i)                // 迴圈讀入每一列
+	{
+		for(int j= 0; j &lt; m; ++j)             // 迴圈讀入每一行
+		{
+			cin &gt;&gt; v[i][j];                   // 輸入格子 (i, j) 的寶藏數量
+		}
+	}
+	
+	for(int i = 1; i &lt; n; ++i)                // 初始化第一欄 (j = 0)：只能從上方走下來
+	{
+		v[i][0] += v[i-1][0];                 // 當前格子的最大寶藏量 = 上方格子的累積寶藏量 + 當前格子寶藏量
+	}
+
+	for(int j = 1; j &lt; m; ++j)                // 初始化第一列 (i = 0)：只能從左方走過來
+	{
+		v[0][j] += v[0][j-1];                 // 當前格子的最大寶藏量 = 左方格子的累積寶藏量 + 當前格子寶藏量
+	}
+
+	for(int i = 1; i &lt; n; ++i)                // 巢狀迴圈遍歷其餘內部格子 (從第二列、第二行開始)
+	{
+		for(int j= 1; j &lt; m; ++j)
+		{
+			// 狀態轉移方程：到達當前格子 (i, j) 的最大寶藏量 = 從左方過來 v[i][j-1] 或從上方過來 v[i-1][j] 的最大值 + 當前格子寶藏量
+			v[i][j] += max(v[i][j-1], v[i-1][j]); 
+		}
+	}
+
+	cout &lt;&lt; v[n-1][m-1] &lt;&lt; endl;              // 輸出到達右下角終點 (n-1, m-1) 時所能獲取的最大寶藏量
+	return 0;                                 // 程式正常結束
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

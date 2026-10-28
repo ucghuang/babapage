@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#16 201905<sub>B</sub>1-Currency (貨幣轉換) - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#16</span> 201905<sub>B</sub>1-Currency (貨幣轉換)</h1>
+                <div class="header-right">
+                    <a href="../questions/201905<sub>B</sub>1-Currency(Q).pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201905<sub>B</sub>1-Currency(Q).pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-16" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 協助學生小品進行出國旅遊的貨幣換算。給定初始台幣預算 <span style="font-style: italic;">n</span>，以及一筆花費金額 <span style="font-style: italic;">m</span> 與目的地幣制代號（T: 台幣、U: 美元、J: 日元、E: 歐元）。已知匯率如下：</p>
+                    <ul>
+                        <li>台幣 (T)：1.0</li>
+                        <li>美元 (U)：30.9（30.9 元台幣 = 1 美元）</li>
+                        <li>日元 (J)：0.28（0.28 元台幣 = 1 日元）</li>
+                        <li>歐元 (E)：34.5（34.5 元台幣 = 1 歐元）</li>
+                    </ul>
+                    <p>請計算預算扣除花費後的該幣制剩餘金額。若餘額不足則輸出 <code>No Money</code>，否則輸出幣制代號與四捨五入至小數點後兩位的餘額。</p>
+                    <p><strong>輸入格式：</strong> 第一行輸入一個正整數 <span style="font-style: italic;">n</span>（台幣預算）。第二行輸入一個正整數 <span style="font-style: italic;">m</span> 與一個英文字母（T, U, J 或 E），代表花費金額與幣制。</p>
+                    <p><strong>輸出格式：</strong> 輸出幣制代號與剩餘金額（小數點後兩位），或當資金不足時輸出 <code>No Money</code>。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【基礎條件判斷與浮點數算術】</h2>
+                <div class="analysis-box">
+                    <p>本題為基礎的算術模擬題，核心步驟：</p>
+                    <ul>
+                        <li><strong>讀入資料：</strong> 分別讀入初始預算 <span style="font-style: italic;">n</span>、花費金額 <span style="font-style: italic;">m</span> 以及幣制字元 `cur`。</li>
+                        <li><strong>匯率換算：</strong> 根據 `cur` 的種類（T、U、J、E），將台幣預算 <span style="font-style: italic;">n</span> 除以對應匯率換算成目標幣制的總資產 <code>HaveMoney</code>。</li>
+                        <li><strong>餘額檢查：</strong> 比較 <code>HaveMoney</code> 與花費 <span style="font-style: italic;">m</span>。若 <code>HaveMoney < m</code>，表示金額不足，輸出 <code>No Money</code>；否則計算 <code>remain = HaveMoney - m</code>，並以 <code>printf("%.2f")</code> 格式化輸出小數點後兩位。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+50000
+200 U</pre>
+                    <ul>
+                        <li>初始預算 <span style="font-style: italic;">n = 50000</span> 台幣，花費 <span style="font-style: italic;">m = 200</span> 美元（`U`）。</li>
+                        <li>轉換為美元：<span style="font-style: italic;">HaveMoney = 50000 / 30.9 ≈ 1618.122977</span> 美元。</li>
+                        <li>扣除花費：<span style="font-style: italic;">remain = 1618.122977 - 200 = 1418.122977</span> 美元。</li>
+                        <li>格式化輸出（小數點後兩位）：<code>U 1418.12</code></li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>U 1418.12</code></p>
+
+                    <p style="margin-top: 15px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+15000
+800 E</pre>
+                    <ul>
+                        <li>初始預算 <span style="font-style: italic;">n = 15000</span> 台幣，花費 <span style="font-style: italic;">m = 800</span> 歐元（`E`）。</li>
+                        <li>轉換為歐元：<span style="font-style: italic;">HaveMoney = 15000 / 34.5 ≈ 434.78</span> 歐元。</li>
+                        <li>因為 <span style="font-style: italic;">434.78 < 800</span>，資金不足。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>No Money</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;stdio.h&gt; // 引入標準輸入輸出標頭檔，以便使用 scanf 與 printf
+#include&lt;string.h&gt; // 引入字串處理標頭檔
+
+int main()
+{
+	int n = 0, m = 0; // 宣告整數 n（初始預算，台幣）與 m（花費金額），初始化為 0
+	char cur = &#x27;\0&#x27;; // 宣告字元 cur，用來儲存目的地幣制代號（T, U, J, E）
+	scanf(&quot;%d&quot;,&amp;n); // 讀入初始預算 n
+	scanf(&quot;%d %c&quot;, &amp;m, &amp;cur); // 讀入花費金額 m 與幣制代號 cur
+
+	double HaveMoney = 0; // 宣告倍精確浮點數 HaveMoney，用來儲存換算後的目標幣制總金額
+	if( cur == &#x27;T&#x27;){ // 若幣制為台幣 T
+		HaveMoney = n * 1.0; // 匯率為 1.0，直接乘以 1.0
+	}
+	else if( cur == &#x27;U&#x27; ){ // 若幣制為美元 U
+		HaveMoney = n / 30.9; // 以 30.9 進行匯率換算
+	}
+	else if( cur == &#x27;J&#x27; ){ // 若幣制為日元 J
+		HaveMoney = n / 0.28; // 以 0.28 進行匯率換算
+	}
+	else if( cur == &#x27;E&#x27; ){ // 若幣制為歐元 E
+		HaveMoney = n / 34.5; // 以 34.5 進行匯率換算
+	}
+
+	if(HaveMoney &lt; m) // 若換算後的總金額小於花費金額 m
+		printf(&quot;No Money\n&quot;); // 資金不足，輸出 No Money 並換行
+	else // 否則（資金足夠）
+	{
+		double remain = HaveMoney - m; // 計算扣除花費後的剩餘金額 remain
+		printf(&quot;%c %.2f\n&quot;, cur, remain); // 格式化輸出幣制代號與四捨五入至小數點後兩位的剩餘金額
+	}
+} // 主程式結束</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#29 201910_A3-Typing - TOI 題目詳解與 C++ 實作</title>
+    <title>#29 201910<sub>A</sub>3-Typing - TOI 題目詳解與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -13,6 +13,8 @@
             --bg-main: #f8fafc;
             --card-bg: #ffffff;
             --border-color: #e2e8f0;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -20,10 +22,10 @@
             background-color: var(--bg-main);
             color: var(--text-main);
             line-height: 1.6;
-            padding: 40px;
+            padding: 30px 20px;
         }
         .container {
-            max-width: 900px;
+            max-width: 960px;
             margin: 0 auto;
         }
         .problem-card {
@@ -31,7 +33,8 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 32px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            margin-bottom: 30px;
         }
         .card-header {
             border-bottom: 2px solid var(--border-color);
@@ -84,9 +87,9 @@
             background: #dbeafe;
         }
         .section-title {
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             color: #334155;
-            margin: 24px 0 12px 0;
+            margin: 28px 0 14px 0;
             border-left: 4px solid var(--primary);
             padding-left: 10px;
         }
@@ -115,130 +118,331 @@
             font-family: Consolas, Monaco, "Courier New", monospace;
             line-height: 1.6;
         }
+        .highlight-calc {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #92400e;
+        }
+        table.dp-table {
+            border-collapse: collapse;
+            margin: 15px 0;
+            width: 100%;
+            max-width: 650px;
+            background: #ffffff;
+            font-family: Consolas, Monaco, monospace;
+            text-align: center;
+        }
+        table.dp-table th, table.dp-table td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+        table.dp-table th {
+            background: #e2e8f0;
+            color: #334155;
+        }
+        table.dp-table td.match {
+            background: #dcfce7;
+            font-weight: bold;
+            color: #166534;
+        }
+        table.dp-table td.final-cell {
+            background: #fef08a;
+            font-weight: bold;
+            color: #854d0e;
+            border: 2px solid #ca8a04;
+        }
+        .badge-op {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 4px;
+        }
+        .op-del { background: #fee2e2; color: #991b1b; }
+        .op-ins { background: #e0e7ff; color: #3730a3; }
+        .op-sub { background: #ffedd5; color: #9a3412; }
+        .op-keep { background: #dcfce7; color: #166534; }
+        .note-callout {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 14px 0;
+            font-size: 14px;
+        }
+        .alert-box {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 14px 0;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="problem-card">
             <div class="card-header">
-                <h1><span class="index-tag">#29</span> 201910_A3-Typing (猴子打字遊戲)</h1>
+                <h1><span class="index-tag">#29</span> 201910<sub>A</sub>3-Typing (猴子打字遊戲)</h1>
                 <div class="header-right">
-                    <a href="../questions/201910_A3-Typing.pdf" class="file-name-meta" target="_blank">PDF: 201910_A3-Typing.pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-29" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                    <a href="../questions/201910<sub>A</sub>3-Typing.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201910<sub>A</sub>3-Typing.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-29" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
             <div class="section-part">
                 <h2 class="section-title">題目摘要</h2>
                 <div class="analysis-box">
-                    <p><strong>問題敘述：</strong> 三隻猴子在打字機上各自輸入了一段字串。給定一段目標字串，以及三隻猴子輸入的字串，請計算並找出哪隻猴子的字串與目標字若要透過「編輯距離 (Edit Distance)」轉換成目標字串時成本最小。編輯距離規則如下：新增一個字元成本為 2、刪除一個字元成本為 2、取代一個字元成本為 3（若字元相同則成本為 0）。</p>
-                    <p><strong>輸入格式：</strong> 共四列，每列包含一個不含空格的字串。第一列為目標字串，後三列分別為第一、二、三隻猴子所輸入的字串。</p>
-                    <p><strong>輸出格式：</strong> 輸出兩個數字 $N$ 與 $K$，中間以空白隔開。$N$ 為三隻猴子當中編輯距離最小的猴子編號（1、2 或 3，若編輯距離相同則輸出編號最大者），$K$ 為其最小編輯距離。</p>
+                    <p><strong>問題敘述：</strong> 三隻猴子在打字機上各自輸入了一段字串。給定目標字串與三隻猴子輸入的字串，請計算哪隻猴子的字串與目標字串的「最小編輯成本」最低。計費規則如下：</p>
+                    <ul>
+                        <li><span class="badge-op op-ins">新增</span> 一個字元：成本 <strong>+2</strong>（允許在字串任意位置插入）</li>
+                        <li><span class="badge-op op-del">刪除</span> 一個字元：成本 <strong>+2</strong></li>
+                        <li><span class="badge-op op-sub">取代</span> 一個字元：成本 <strong>+3</strong></li>
+                        <li><span class="badge-op op-keep">保留</span> 字元完全相同：成本 <strong>+0</strong></li>
+                    </ul>
+                    <p style="margin-top: 8px;"><strong>輸出規定：</strong> 輸出 <code>N K</code>，其中 <code>N</code> 為最小編輯距離的猴子編號（1、2 或 3），若距離平手則輸出<strong>編號最大者</strong>；<code>K</code> 為其最小編輯距離數值。</p>
                 </div>
             </div>
 
             <div class="section-part">
-                <h2 class="section-title">演算法使用解析：【動態規劃 (DP) / 編輯距離 (Levenshtein Distance) 變形】</h2>
+                <h2 class="section-title">兩大範例精確演算與邏輯解析</h2>
                 <div class="analysis-box">
-                    <p>本題採用經典的<strong>動態規劃編輯距離演算法</strong>：</p>
+                    <h3 style="color: #1e3a8a; margin-bottom: 8px;">【範例 1 深度解析】目標字串：<code>abc</code></h3>
                     <ul>
-                        <li>這是著名的字串相似度與最小編輯距離問題（類似 Levenshtein Distance）。我們針對每一隻猴子的字串與目標字串建立二維 DP 表格， $DP[i][j]$ 代表將猴子字串的前 $i$ 個字元變成目標字串前 $j$ 個字元的最小編輯成本。</li>
-                        <li><strong>狀態轉移方程式：</strong>
-                            <ul>
-                                <li>若字元相同 ($s[0][i-1] == s[t][j-1]$)：$DP[i][j] = \min(\text{斜上方}, \text{上方}+2, \text{左方}+2)$。</li>
-                                <li>若字元不同：$DP[i][j] = \min(\text{斜上方}+3, \text{上方}+2, \text{左方}+2)$（其中 3 代表取代成本，2 代表新增或刪除成本）。</li>
-                            </ul>
+                        <li><strong>猴子 1：<code>bcd</code></strong>
+                            <br>• 最優操作：<strong>保留</strong> 中間的 <code>bc</code> (成本 0)，<strong>刪除</strong> 尾端的 <code>d</code> (+2)，並在最前面 <strong>新增</strong> <code>a</code> (+2)。
+                            <br>• 總成本：<span class="highlight-calc">2 + 2 = 4</span>。
                         </li>
-                        <li>對三隻猴子分別計算出最佳編輯距離，並利用貪心比較選出距離最小的優勝者。</li>
+                        <li style="margin-top: 8px;"><strong>猴子 2：<code>cde</code></strong>
+                            <br>• 最優操作：字串順序不可任意對調。最佳方式為<strong>保留相同的 <code>c</code></strong> (成本 0)，<strong>刪除</strong> 猴子後續的 <code>d, e</code> (成本 <span style="font-style: italic;">2+2=4</span>)，並在 <code>c</code> 前方<strong>插入</strong>目標所需的 <code>a, b</code> (成本 <span style="font-style: italic;">2+2=4</span>)。
+                            <br>• 總成本：<span class="highlight-calc">4 + 4 = 8</span>。
+                            <br>• <em>（若不保留 <code>c</code> 而把 3 個字元全部取代，成本為 <span style="font-style: italic;">3 × 3 = 9</span>，故 DP 最優值為 8）。</em>
+                        </li>
+                        <li style="margin-top: 8px;"><strong>猴子 3：<code>efg</code></strong>
+                            <br>• 完全無重疊字元，3 個字元全數取代成本為 <span style="font-style: italic;">3 × 3 =</span> <span class="highlight-calc">9</span>。
+                        </li>
+                        <li style="margin-top: 8px;"><strong>判定：</strong> 猴子 1 成本 4 最低 👉 <strong>輸出：<code>1 4</code></strong></li>
+                    </ul>
+
+                    <hr style="margin: 16px 0; border: none; border-top: 1px dashed #cbd5e1;">
+
+                    <h3 style="color: #1e3a8a; margin-bottom: 8px;">【範例 2 深度解析】目標字串：<code>abcd</code></h3>
+                    <ul>
+                        <li><strong>猴子 1：<code>abcde</code></strong> <span style="font-style: italic;">→</span> 刪除尾端 <code>e</code>，成本為 <span class="highlight-calc">2</span>。</li>
+                        <li><strong>猴子 2：<code>abc</code></strong> <span style="font-style: italic;">→</span> 尾端補上 <code>d</code>，成本為 <span class="highlight-calc">2</span>。</li>
+                        <li><strong>猴子 3：<code>bcd</code></strong> <span style="font-style: italic;">→</span> 前端補上 <code>a</code>，成本為 <span class="highlight-calc">2</span>。</li>
+                        <li><strong>平手判定：</strong> 三隻猴子成本皆為 2。依規定平手時取編號最大者（<span style="font-style: italic;">3 ≥ 2 ≥ 1</span>）👉 <strong>輸出：<code>3 2</code></strong></li>
                     </ul>
                 </div>
             </div>
 
             <div class="section-part">
-                <h2 class="section-title">課堂黑板板書推導</h2>
+                <h2 class="section-title">核心概念：編輯距離的「任意位置插入」vs「尾端操作」</h2>
                 <div class="analysis-box">
-                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
-                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
-abc
-bcd
-cde
-efg</pre>
-                    <ul>
-                        <li><strong>目標字串：</strong> <code>abc</code> ($L_1 = 3$)</li>
-                        <li><strong>猴子 1 字串：</strong> <code>bcd</code> ($L_2 = 3$)
-                            <ul>
-                                <li>計算將 <code>bcd</code> 變成 <code>abc</code> 的最小編輯距離：</li>
-                                <li>可以將 <code>b</code> 取代為 <code>a</code> (成本 3)，保留 <code>c</code> (成本 0)，並刪除 <code>d</code> 或藉由其他對應操作，總編輯距離計算結果為 4。</li>
-                            </ul>
-                        </li>
-                        <li><strong>猴子 2 與猴子 3：</strong> 分別計算出對應的編輯距離。</li>
-                        <li>三者比較後，猴子 1 的編輯距離最小（為 4）。</li>
-                    </ul>
-                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>1 4</code></p>
+                    <div class="alert-box">
+                        <strong>💡 觀念澄清：為什麼 <code>ab</code> 變成 <code>axb</code> 成本是 2，而不是 5 或 6？</strong>
+                        <br>• <strong>常見直覺盲點</strong>：誤以為輸入是單向的，必須「把 <code>b</code> 刪掉、插入 <code>x</code>、再把 <code>b</code> 打回來」（成本 6），或是「把 <code>b</code> 改成 <code>x</code>、再插入 <code>b</code>」（成本 5）。
+                        <br>• <strong>編輯距離（Levenshtein Distance）真實定義</strong>：允許在<strong>字串的中間任意位置</strong>直接插入字元！因此 <code>ab</code> 只需要在 <code>a</code> 與 <code>b</code> 之間插入一個 <code>x</code>，<code>a</code> 與 <code>b</code> 兩者都<strong>免費保留</strong>，總成本僅為 <strong>2</strong>。
+                    </div>
 
-                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
-                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
-abcd
-abcde
-abc
-bcd</pre>
+                    <p>在二維陣列 <code>DP[i][j]</code> 中：</p>
                     <ul>
-                        <li><strong>目標字串：</strong> <code>abcd</code></li>
-                        <li>分別計算三隻猴子字串與目標字串的編輯距離，猴子 3 的編輯距離為最小的 2。</li>
+                        <li><strong>列 (<span style="font-style: italic;">i</span>)</strong>：代表目標字串的前 <span style="font-style: italic;">i</span> 個字元。</li>
+                        <li><strong>行 (<span style="font-style: italic;">j</span>)</strong>：代表猴子字串的前 <span style="font-style: italic;">j</span> 個字元。</li>
+                        <li><strong>格子內的數值</strong>：代表將<strong>猴子前 <span style="font-style: italic;">j</span> 個字元轉換成目標前 <span style="font-style: italic;">i</span> 個字元所需的最小累積成本</strong>。</li>
                     </ul>
-                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>3 2</code></p>
+
+                    <div class="note-callout">
+                        <strong>三向決策轉移規則：</strong>
+                        <br>1. <strong>從左邊來 (<span style="font-style: italic;">j-1 → j</span>)</strong>：<code>DP[i][j-1] + 2</code> <span style="font-style: italic;">→</span> 代表猴子字串執行<strong>「刪除」</strong>。
+                        <br>2. <strong>從上面來 (<span style="font-style: italic;">i-1 → i</span>)</strong>：<code>DP[i-1][j] + 2</code> <span style="font-style: italic;">→</span> 代表猴子字串執行<strong>「新增（插入）」</strong>。
+                        <br>3. <strong>從左上方對角線來 (<span style="font-style: italic;">i-1, j-1 → i, j</span>)</strong>：
+                        <br> • 若字元相同：<code>DP[i-1][j-1] + 0</code> <span style="font-style: italic;">→</span> <strong>「保留」</strong>，免費對齊。
+                        <br> • 若字元不同：<code>DP[i-1][j-1] + 3</code> <span style="font-style: italic;">→</span> 執行<strong>「取代」</strong>。
+                    </div>
+
+                    <h4 style="margin-top: 16px; color: #1e3a8a;">【案例 1】目標：<code>axb</code> vs 猴子：<code>ab</code> 的逐格數值變化</h4>
+                    <table class="dp-table">
+                        <thead>
+                            <tr>
+                                <th>DP[i][j]</th>
+                                <th>∅ (j=0)</th>
+                                <th>'a' (j=1)</th>
+                                <th>'b' (j=2)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>∅ (i=0)</th>
+                                <td>0</td>
+                                <td>2 (猴刪a)</td>
+                                <td>4 (猴刪a,b)</td>
+                            </tr>
+                            <tr>
+                                <th>'a' (i=1)</th>
+                                <td>2 (猴補a)</td>
+                                <td class="match">0 (a與a對齊保留)</td>
+                                <td>2 (配對a並刪b)</td>
+                            </tr>
+                            <tr>
+                                <th>'x' (i=2)</th>
+                                <td>4 (猴補a,x)</td>
+                                <td>2 (在a後插入x)</td>
+                                <td>3 (把b改成x)</td>
+                            </tr>
+                            <tr>
+                                <th>'b' (i=3)</th>
+                                <td>6 (全補)</td>
+                                <td>4 (補x,b)</td>
+                                <td class="final-cell">2 (最佳解)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="font-size: 14px; color: #475569;">
+                        👉 <strong>解讀 <code>DP[3][2] = 2</code></strong>：目標第 3 字元 <code>'b'</code> 與猴子第 2 字元 <code>'b'</code> 相同，程式直接取斜上方 <code>DP[2][1]</code> 的數值 2（即目標 <code>ax</code> 與猴子 <code>a</code> 配對的成本），加上 0。這代表 <code>b</code> 完全沒有被動到，只有在中間插入了 <code>x</code>！
+                    </p>
                 </div>
             </div>
 
             <div class="section-part">
-                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
-                <pre class="code-box"><code>#include&lt;bits/stdc++.h&gt;  // 引入常用 C++ 標頭檔
-#define infinity 999999  // 定義一個無限大常數，用來初始化最小值比較
+                <h2 class="section-title">進階案例：字元倒置與跳字配對</h2>
+                <div class="analysis-box">
+                    <p><strong>目標字串：<code>abc</code> (<span style="font-style: italic;">L<sub>1</sub>=3</span>)</strong> ； <strong>猴子字串：<code>bacd</code> (<span style="font-style: italic;">L<sub>2</sub>=4</span>)</strong></p>
+                    <p>這個例子猴子輸入了顛倒的 <code>ba</code>，且結尾多出了 <code>d</code>。我們觀察 DP 如何自動找出最划算的編輯策略：</p>
 
-int DP[10005][10005];  // 宣告二維全域 DP 陣列，DP[i][j] 代表字串轉換的最小編輯距離
+                    <table class="dp-table">
+                        <thead>
+                            <tr>
+                                <th>DP[i][j]</th>
+                                <th>∅ (j=0)</th>
+                                <th>'b' (j=1)</th>
+                                <th>'a' (j=2)</th>
+                                <th>'c' (j=3)</th>
+                                <th>'d' (j=4)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>∅ (i=0)</th>
+                                <td>0</td>
+                                <td>2</td>
+                                <td>4</td>
+                                <td>6</td>
+                                <td>8</td>
+                            </tr>
+                            <tr>
+                                <th>'a' (i=1)</th>
+                                <td>2</td>
+                                <td>3</td>
+                                <td class="match">2</td>
+                                <td>4</td>
+                                <td>6</td>
+                            </tr>
+                            <tr>
+                                <th>'b' (i=2)</th>
+                                <td>4</td>
+                                <td class="match">2</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>7</td>
+                            </tr>
+                            <tr>
+                                <th>'c' (i=3)</th>
+                                <td>6</td>
+                                <td>4</td>
+                                <td>4</td>
+                                <td class="match">4</td>
+                                <td class="final-cell">6</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p><strong>逐步決策軌跡追蹤：</strong></p>
+                    <ul>
+                        <li><strong><code>DP[1][2] = 2</code>（目標 <code>a</code> vs 猴子 <code>ba</code>）：</strong>
+                            <br>猴子刪除開頭的 <code>b</code>（成本 2），並保留 <code>a</code>（成本 0），故成本為 2。
+                        </li>
+                        <li><strong><code>DP[2][2] = 4</code>（目標 <code>ab</code> vs 猴子 <code>ba</code>）：</strong>
+                            <br>編輯距離不允許直接無成本對調字元位置，只能「刪除 <code>b</code>、保留 <code>a</code>、再補插入 <code>b</code>」，成本為 <span style="font-style: italic;">2 + 0 + 2 = 4</span>；或是兩字元皆替換（<span style="font-style: italic;">3+3=6</span>）。DP 取最小值 <strong>4</strong>。
+                        </li>
+                        <li><strong><code>DP[3][3] = 4</code>（目標 <code>abc</code> vs 猴子 <code>bac</code>）：</strong>
+                            <br>兩者結尾皆為 <code>'c'</code>，直接承接 <code>DP[2][2] + 0 = 4</code>。
+                        </li>
+                        <li><strong><code>DP[3][4] = 6</code>（終點：目標 <code>abc</code> vs 猴子 <code>bacd</code>）：</strong>
+                            <br>猴子多了一個尾端字元 <code>d</code>，執行刪除，取左邊 <code>DP[3][3] + 2 = 6</code>。
+                        </li>
+                    </ul>
+                    <p style="font-weight: 600; color: #1e3a8a; margin-top: 8px;">
+                        👉 總結最優操作：刪除前端 <code>b</code> (+2)、保留 <code>a</code> (0)、插入 <code>b</code> (+2)、保留 <code>c</code> (0)、刪除 <code>d</code> (+2)，總成本為 6！
+                    </p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">完整註解 C++ 實作程式碼</h2>
+                <pre class="code-box"><code>#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+#define infinity 999999
+
+// DP[i][j] 代表：目標字串前 i 個字元，與猴子字串前 j 個字元的最小編輯成本
+int DP[10005][10005];
 
 int main()
 {
-    char s[4][10001];  // 宣告字元陣列儲存 4 個字串（s[0] 為目標字串，s[1]~s[3] 為三隻猴子輸入的字串）
-    for(int i=0; i&lt;4; i++)
-        scanf("%s", s[i]);  // 依序讀入目標字串與三隻猴子的字串
+    // s[0] 存目標字串，s[1]~s[3] 存三隻猴子打出來的字串
+    char s[4][10001];
+    for(int i = 0; i &lt; 4; i++) {
+        scanf("%s", s[i]);
+    }
         
-    int L1 = strlen(s[0]);  // 取得目標字串的長度
-    int win = 1;  // 記錄最佳猴子的編號，預設為第 1 隻
-    int min_d = infinity;  // 記錄最小的編輯距離，初始設為無限大
+    int L1 = strlen(s[0]);   // 目標字串長度
+    int win = 1;             // 優勝猴子編號，預設 1
+    int min<sub>d</sub> = infinity;    // 紀錄全局最小成本，初始為無限大
     
-    // 依序對三隻猴子（索引 1 到 3）進行編輯距離 DP 計算
-    for(int t=1; t&lt;=3; t++)
+    // 依序處理猴子 1、猴子 2、猴子 3
+    for(int t = 1; t &lt;= 3; t++)
     {
-        int L2 = strlen(s[t]);  // 取得當前第 t 隻猴子字串的長度
+        int L2 = strlen(s[t]);  // 當前猴子的字串長度
         
-        // 初始化 DP 表格的邊界條件（新增或刪除字元的成本每字元為 2）
-        for(int i=0; i&lt;=L1||i&lt;=L2; i++)
-            DP[i][0] = DP[0][i] = i * 2;
+        // 邊界初始化：空字串對齊長度為 i 的字串，成本就是連續新增或刪除 (每步 +2)
+        for(int i = 0; i &lt;= L1 || i &lt;= L2; i++) {
+            DP[i][0] = i * 2;
+            DP[0][i] = i * 2;
+        }
             
-        // 填滿二維 DP 表格
-        for(int i=1; i&lt;=L1; i++)
+        // 動態規劃填表：i 代表目標字串索引 (1~L1)，j 代表猴子字串索引 (1~L2)
+        for(int i = 1; i &lt;= L1; i++)
         {
-            for(int j=1; j&lt;=L2; j++)
+            for(int j = 1; j &lt;= L2; j++)
             {
-                // 若當前字元相同，不需取代，成本取斜上方(皆匹配)、或上方/左方 (+2) 的最小值
-                if(s[0][i-1] == s[t][j-1])
-                    DP[i][j] = std::min(DP[i-1][j-1], std::min(DP[i][j-1]+2, DP[i-1][j]+2));
-                else
-                    // 若字元不同，取代成本為 3 (斜上方+3)，或者新增/刪除成本為 2 (上方/左方+2)
-                    DP[i][j] = std::min(DP[i-1][j-1]+3, std::min(DP[i][j-1]+2, DP[i-1][j]+2));
+                if(s[0][i-1] == s[t][j-1]) {
+                    // 情況 A：兩字元匹配相同，不需額外替換成本 (+0)
+                    DP[i][j] = min(DP[i-1][j-1], min(DP[i][j-1] + 2, DP[i-1][j] + 2));
+                } else {
+                    // 情況 B：兩字元不同，可選擇：
+                    // 1. 取代操作：斜角 DP[i-1][j-1] + 3
+                    // 2. 插入/刪除：左方或上方 + 2
+                    DP[i][j] = min(DP[i-1][j-1] + 3, min(DP[i][j-1] + 2, DP[i-1][j] + 2));
+                }
             }
         }
         
-        // 比較並找出編輯距離最小的猴子（題目要求若距離相同則輸出編號最大者，故使用 &lt;=）
-        if (DP[L1][L2] &lt;= min_d)
-        {
-            min_d = DP[L1][L2];  // 更新最小編輯距離
-            win = t;  // 更新贏家猴子編號
+        // 更新優勝者：若成本更小，或成本相同但編號更大 (<= 確保相同時取後者)
+        if (DP[L1][L2] &lt;= min<sub>d</sub>) {
+            min<sub>d</sub> = DP[L1][L2];
+            win = t;
         }
     }
     
-    printf("%d %d\n", win, min_d);  // 輸出表現最佳的猴子編號與其最小編輯距離
+    // 輸出最終優勝猴子編號及最小編輯距離
+    printf("%d %d\n", win, min<sub>d</sub>);
+    return 0;
 }</code></pre>
             </div>
         </div>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#78 202008<sub>T</sub>etris (俄羅斯方塊) - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#78</span> 202008<sub>T</sub>etris (俄羅斯方塊)</h1>
+                <div class="header-right">
+                    <a href="../questions/202008<sub>T</sub>etris.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202008<sub>T</sub>etris.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-78" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 模擬俄羅斯方塊遊戲中 T 型方塊的移動與旋轉。給定畫面大小 <span style="font-style: italic;">x × y</span>，起始時方塊錨點位於 <span style="font-style: italic;">(\lceil x/2 \rceil, y)</span>。遊戲中有 5 種指令（代號 0 到 4）：</p>
+                    <ul>
+                        <li><strong>0：</strong> 無指令（維持方向）</li>
+                        <li><strong>1：</strong> 右移</li>
+                        <li><strong>2：</strong> 左移</li>
+                        <li><strong>3：</strong> 置底</li>
+                        <li><strong>4：</strong> 右旋</li>
+                    </ul>
+                    <p>每送出一個指令，方塊會<strong>先向下移動一格</strong>，再執行指令效果。若指令執行後超出邊界（不合法），則該指令必須視為 0 號指令（即只往下移一格而不做額外平移或旋轉）。請輸出方塊執行完所有指令後的最終畫面矩陣（1 代表有方塊，0 代表無方塊）。</p>
+                    <p><strong>輸入格式：</strong> 第一行有兩個整數 <span style="font-style: italic;">x, y</span> (<span style="font-style: italic;">3 ≤ x, y ≤ 100</span>)。第二行有一個整數 <span style="font-style: italic;">n</span> (<span style="font-style: italic;">1 ≤ n < y</span>) 代表指令數。第三行有 <span style="font-style: italic;">n</span> 個整數代表各個指令。</p>
+                    <p><strong>輸出格式：</strong> 輸出遊戲執行完所有指令後的 <span style="font-style: italic;">y × x</span> 畫面。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【幾何模擬與狀態追蹤】</h2>
+                <div class="analysis-box">
+                    <p>本題為座標幾何與狀態模擬題，核心實作重點如下：</p>
+                    <ul>
+                        <li><strong>方塊建模：</strong> 以錨點 <span style="font-style: italic;">(c<sub>x</sub>, c<sub>y</sub>)</span> 與旋轉方向 <span style="font-style: italic;">c<sub>ori</sub></span>（0~3）來完整描述 T 型方塊的狀態。透過相對座標偏移量陣列 <code>t<sub>b</sub>ias</code> 計算 4 個組成方格的絕對座標。</li>
+                        <li><strong>防呆與邊界檢查：</strong> 每次移動或旋轉前，使用 <code>check<sub>t</sub></code> 檢查 4 個方格是否完全落在遊戲區範圍內（<span style="font-style: italic;">1 ≤ x' ≤ x</span> 且 <span style="font-style: italic;">1 ≤ y' ≤ y</span>）。</li>
+                        <li><strong>防呆降級機制：</strong> 若帶有平移或旋轉的指令導致超出邊界，程式會自動將其降級為 0 號指令（即僅向下移動一格）。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+6 6
+3
+0 1 3</pre>
+                    <ul>
+                        <li>畫面大小 <span style="font-style: italic;">6 × 6</span>，初始錨點為 <span style="font-style: italic;">( (6+1)/2, 6 ) = (3, 6)</span>。</li>
+                        <li>依序執行指令 `0`、`1`、`3`，每次移動前先下移一格，並進行邊界檢驗與防呆降級。</li>
+                        <li>最終計算出方塊落下的 4 個格子位置，並由上到下輸出 <span style="font-style: italic;">6 × 6</span> 矩陣畫面。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;iostream&gt; // 引入標準輸入輸出標頭檔，以便使用 cin 與 cout
+#include &lt;assert.h&gt; // 引入斷言標頭檔，用於防呆與除錯
+
+using namespace std; // 使用標準命名空間 std
+
+/*
+    T 型方塊在 4 種不同旋轉方向 (0~3) 下，相對於錨點 (center) 的 4 個方格相對座標偏移量
+*/
+int t<sub>b</sub>ias[4][4][2]={
+    {{ 0, 0},{ 0,-1},{-1, 0},{ 1, 0}},
+    {{ 0, 0},{-1, 0},{ 0, 1},{ 0,-1}},
+    {{ 0, 0},{ 0, 1},{-1, 0},{ 1, 0}},
+    {{ 0, 0},{ 1, 0},{ 0, 1},{ 0,-1}}
+};
+
+// 檢查某個座標 (c<sub>x</sub>, c<sub>y</sub>) 是否落在遊戲格子範圍 (1~x, 1~y) 內
+bool check<sub>g</sub>rid(int c<sub>x</sub>,int c<sub>y</sub>,int x,int y)
+{
+    return 0&lt;c<sub>x</sub> &amp;&amp; c<sub>x</sub>&lt;=x &amp;&amp; 0&lt;c<sub>y</sub> &amp;&amp; c<sub>y</sub>&lt;=y;
+}
+
+// 檢查在給定錨點與旋轉方向下，T 型方塊的 4 個格子是否全部合法（未超出邊界）
+int check<sub>t</sub>(int c<sub>x</sub>,int c<sub>y</sub>,int c<sub>o</sub>ri,int x,int y)
+{
+    for(int i=0;i!=4;i++)
+        if(!check<sub>g</sub>rid(c<sub>x</sub> + t<sub>b</sub>ias[c<sub>o</sub>ri][i][0],c<sub>y</sub> + t<sub>b</sub>ias[c<sub>o</sub>ri][i][1],x,y))
+            return false;
+    return true;
+}
+
+// 執行安全移動：方塊先嘗試下移並套用指令動作；若超出邊界則退回僅向下移動一格
+void safe<sub>m</sub>ove(int &amp;c<sub>x</sub>,int &amp;c<sub>y</sub>,int &amp;c<sub>o</sub>ri,int x,int y,int move)
+{
+    // 5 種指令對應的 (x 軸偏移, y 軸偏移, 旋轉角度改變)
+    int bias[5][3] = {
+        { 0,-1, 0}, // 0: 無指令（僅下移）
+        { 1,-1, 0}, // 1: 右移一格並下移
+        {-1,-1, 0}, // 2: 左移一格並下移
+        { 0,(c<sub>o</sub>ri==2)? -c<sub>y</sub>+1:-c<sub>y</sub>+2, 0}, // 3: 置底
+        { 0,-1, 1}  // 4: 右旋 90 度並下移
+    };
+    // 嘗試執行指令後的完整移動
+    if(check<sub>t</sub>(c<sub>x</sub> + bias[move][0],c<sub>y</sub>+ bias[move][1],(c<sub>o</sub>ri+ bias[move][2])%4,x,y))
+    {
+        c<sub>x</sub> += bias[move][0];
+        c<sub>y</sub> += bias[move][1];
+        c<sub>o</sub>ri=(c<sub>o</sub>ri+ bias[move][2])%4;
+    }
+    else if(check<sub>t</sub>(c<sub>x</sub>,c<sub>y</sub>-1,c<sub>o</sub>ri,x,y)) // 若指令不合法（超出邊界），則視為 0 號指令（僅向下移動一格）
+    {
+        c<sub>y</sub> --;
+    }
+    else
+    {
+        assert(false); // 若連單純下移都不合法，觸發斷言
+    }
+}
+
+int main()
+{
+    int x,y,csize; // 宣告 x（橫軸寬度）、y（縱軸高度）、csize（指令總數）
+    cin &gt;&gt; x &gt;&gt; y; // 讀入畫面大小 x 與 y
+    cin &gt;&gt; csize; // 讀入指令數目 csize
+    int cs[csize]; // 宣告儲存指令的陣列 cs
+    for(int i=0;i!=csize;i++)
+        cin&gt;&gt;cs[i]; // 依序讀取所有指令
+    
+    int s<sub>x</sub> = (x+1)/2 , s<sub>y</sub> = y ,s<sub>o</sub>ri=0; // 初始化方塊錨點與方向：起始 x 向上取整 (x+1)/2，起始 y 頂端 y，初始方向 0
+    for(int i=0;i!=csize;i++)
+        safe<sub>m</sub>ove(s<sub>x</sub> ,s<sub>y</sub>,s<sub>o</sub>ri,x,y,cs[i]); // 依序執行每一個指令
+
+    int maps[y][x]; // 宣告 y×x 的二維陣列 maps 代表最終遊戲畫面
+    for(int i=0;i!=y;i++)
+        for(int j=0;j!=x;j++)
+            maps[i][j] = 0; // 初始化所有格子為 0（無方塊）
+
+    for(int i=0;i!=4;i++) // 根據最終錨點與旋轉方向，將 T 型方塊的 4 個格子標記為 1
+    {
+        int tar<sub>x</sub> = s<sub>x</sub>+t<sub>b</sub>ias[s<sub>o</sub>ri][i][0];
+        int tar<sub>y</sub> = s<sub>y</sub>+t<sub>b</sub>ias[s<sub>o</sub>ri][i][1];
+        maps[tar<sub>y</sub>-1][tar<sub>x</sub>-1] = 1;
+    }
+
+    // 由上到下（y-1 到 0）輸出最終遊戲畫面矩陣
+    for(int i=y-1;i&gt;=0;i--)
+    {
+        for(int j=0;j!=x;j++)
+            cout&lt;&lt; maps[i][j];
+        cout &lt;&lt; &#x27;\n&#x27;;
+    }
+
+    return 0; // 程式正常結束
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#26 201908-onsite<sub>8</sub>-Treasure - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#26</span> 201908-onsite<sub>8</sub>-Treasure (幽靈寶藏)</h1>
+                <div class="header-right">
+                    <a href="../questions/201908-onsite<sub>8</sub>-Treasure.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201908-onsite<sub>8</sub>-Treasure.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-26" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 幽靈變出了 N 個空的藏寶箱（編號 1 至 N），並進行 M 次操作。操作分為兩種：</p>
+                    <ul>
+                        <li><strong>類型 1 (<span style="font-style: italic;">R=1</span>)：</strong> 在第 <span style="font-style: italic;">P</span> 至 <span style="font-style: italic;">Q</span> 個藏寶箱內放入 <span style="font-style: italic;">S</span> 枚硬幣（加法區間更新）。</li>
+                        <li><strong>類型 2 (<span style="font-style: italic;">R=2</span>)：</strong> 使第 <span style="font-style: italic;">P</span> 至 <span style="font-style: italic;">Q</span> 個藏寶箱內的硬幣價值變為 <span style="font-style: italic;">S</span> 倍，包括事後放入的硬幣（乘法區間更新）。</li>
+                    </ul>
+                    <p>當完成所有操作後，探險隊要挑選一個寶箱帶走。請找出價值最高的寶箱，若有多個價值相等，輸出編號最小者。</p>
+                    <ul>
+                        <li><strong>輸入格式：</strong> 第一列有兩個正整數 <span style="font-style: italic;">N, M</span>（<span style="font-style: italic;">1 ≤ N, M ≤ 10<sup>6</sup></span>）。接著 <span style="font-style: italic;">M</span> 列，每列四個正整數 <span style="font-style: italic;">P, Q, R, S</span>（<span style="font-style: italic;">1 ≤ P, Q ≤ N</span>，<span style="font-style: italic;">R ∈ \{1, 2\}</span>）。</li>
+                        <li><strong>輸出格式：</strong> 輸出一列共兩個數字：最高價值寶箱的編號及其價值。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【差分陣列與區間倍率維護 (Difference Array &amp; Range Multiplier Maintenance)】</h2>
+                <div class="analysis-box">
+                    <p>本題涉及區間加法與區間乘法（包含對未來放入硬幣的影響），若直接對每個寶箱進行暴力修改，時間複雜度為 <span style="font-style: italic;">O(N × M)</span>，在 <span style="font-style: italic;">N, M ≤ 10<sup>6</sup></span> 時會超時。</p>
+                    <ul>
+                        <li><strong>加法差分 (<span style="font-style: italic;">R=1</span>)：</strong> 利用差分陣列技巧，在起點 <span style="font-style: italic;">P</span> 加上 <span style="font-style: italic;">S</span>（<code>add[p] += s</code>），並在終點後一個位置 <span style="font-style: italic;">Q+1</span> 減去 <span style="font-style: italic;">S</span>（<code>add[q+1] -= s</code>）。最後透過前綴和即可還原每個寶箱獲得的總硬幣數 <span style="font-style: italic;">x</span>。</li>
+                        <li><strong>乘法區間 (<span style="font-style: italic;">R=2</span>)：</strong> 為了讓區間 <span style="font-style: italic;">[P, Q]</span> 內的硬幣價值乘以 <span style="font-style: italic;">S</span>，且不影響區間外、同時能正確套用到後來才加進去的硬幣，我們可以使用類似差分的技巧維護乘數與除數：在起點 <span style="font-style: italic;">P</span> 乘上 <span style="font-style: italic;">S</span>（<code>multi[p] *= s</code>），並在終點後一個位置 <span style="font-style: italic;">Q+1</span> 除以 <span style="font-style: italic;">S</span>（<code>divi[q+1] *= s</code>，程式中以維護 <code>divi</code> 陣列來抵銷超出範圍的倍率）。</li>
+                        <li>透過依序掃描，利用 <code>base</code> 維護當前位置的累积倍率（<code>base *= multi[i]; base /= divi[i];</code>），結合硬幣數 <span style="font-style: italic;">x</span>，就能在 <span style="font-style: italic;">O(N + M)</span> 時間內高效求出每個寶箱的最終價值。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+5 4
+3 5 2 2
+1 4 1 2
+5 5 2 2
+2 5 1 3</pre>
+                    <ul>
+                        <li><strong>步驟 1：依序處理 4 個操作</strong>
+                            <ul>
+                                <li>操作 1 (3 5 2 2)：<span style="font-style: italic;">R=2</span>（乘法），第 3 到 5 個寶箱乘 2。<code>multi[3] *= 2</code>, <code>divi[6] *= 2</code>。</li>
+                                <li>操作 2 (1 4 1 2)：<span style="font-style: italic;">R=1</span>（加法），第 1 到 4 個寶箱加 2 枚硬幣。<code>add[1] += 2</code>, <code>add[5] -= 2</code>。</li>
+                                <li>操作 3 (5 5 2 2)：<span style="font-style: italic;">R=2</span>（乘法），第 5 到 5 個寶箱乘 2。<code>multi[5] *= 2</code>, <code>divi[6] *= 2</code>。</li>
+                                <li>操作 4 (2 5 1 3)：<span style="font-style: italic;">R=1</span>（加法），第 2 到 5 個寶箱加 3 枚硬幣。<code>add[2] += 3</code>, <code>add[6] -= 3</code>。</li>
+                            </ul>
+                        </li>
+                        <li><strong>步驟 2：從 1 到 N 掃描計算每個寶箱的最終價值</strong>
+                            <ul>
+                                <li>寶箱 1：base = 1, x = 2 ⇒ 價值 = 2</li>
+                                <li>寶箱 2：base = 1, x = 5 ⇒ 價值 = 5</li>
+                                <li>寶箱 3：base = 2, x = 5 ⇒ 價值 = 10</li>
+                                <li>寶箱 4：base = 2, x = 5 ⇒ 價值 = 10</li>
+                                <li>寶箱 5：base = 4, x = 3 ⇒ 價值 = 12</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>5 12</code>（最高價值為 12，位於編號 5 的寶箱）</p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+6 5
+1 6 1 1
+2 3 1 2
+3 5 2 2
+2 2 1 3
+4 5 1 2</pre>
+                    <ul>
+                        <li>經過 5 次操作後，各寶箱價值分別計算為：1, 6, 6, 6, 6, 1。</li>
+                        <li>其中最高價值為 6，有多個寶箱符合（編號 2, 3, 4, 5）。依照題目要求「若有數個寶箱價值相等，請輸出編號最小者」，故選擇編號 2。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>2 6</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;bits/stdc++.h&gt; // 引入 C++ 標準函式庫
+
+int multi[10000005]={}; // 宣告全域乘法倍率陣列，記錄每個區間起點的乘數
+int add[10000005]={};   // 宣告全域加法差分陣列，記錄硬幣數量的差分變化
+int divi[10000005]={};  // 宣告全域除法陣列，用來在區間終點後抵銷乘法倍率
+
+int main()
+{
+    // 初始化 multi 與 divi 陣列的所有元素為 1（因為乘除法預設倍率為 1）
+    for(int i=0;i&lt;10000005;i+=1)
+    {
+        multi[i]=1;
+        divi[i]=1;
+    }
+    
+    int N,M; // 宣告寶箱總數 N 與操作次數 M
+    scanf("%d%d",&amp;N,&amp;M); // 讀入 N 與 M
+    
+    for(int i=0;i&lt;M;i+=1) // 迴圈讀入 M 個操作指令
+    {
+        int p,q,r,s; // p: 起始寶箱編號, q: 結束寶箱編號, r: 操作類型(1或2), s: 數值(硬幣數或倍率)
+        scanf("%d%d%d%d",&amp;p,&amp;q,&amp;r,&amp;s); // 讀入四個參數
+        
+        if(r==1) // 若 r == 1 代表區間加法操作（放入 s 枚硬幣）
+        {
+            add[p]+=s; // 在起始位置 p 加上 s
+            add[q+1]-=s; // 在結束位置的下一個位置 q+1 減去 s（差分陣列維護）
+        }
+        else if(r==2) // 若 r == 2 代表區間乘法操作（價值變為 s 倍）
+        {
+            multi[p]*=s; // 在起始位置 p 乘上倍率 s
+            divi[q+1]*=s; // 在結束位置的下一個位置 q+1 記錄除數 s，以在區間外恢復原倍率
+        }
+    }
+    
+    int big=0,bigind=1; // big 記錄最高價值（初始化為 0），bigind 記錄對應的寶箱編號（預設為 1）
+    int base=1,x=0;     // base 記錄當前寶箱的累計倍率，x 記錄當前寶箱的硬幣總數
+    
+    for(int i=1;i&lt;=N;i+=1) // 從編號 1 到 N 依序走訪每個寶箱
+    {
+        base*=multi[i]; // 累乘當前位置的倍率
+        base/=divi[i];  // 除以超出區間範圍的倍率，精準維護區間乘法
+        x+=add[i];      // 透過前綴和累加差分陣列，計算當前寶箱的硬幣總數 x
+        
+        // 若當前寶箱的總價值 (x * base) 大於目前記錄的最高價值 big
+        if(big&lt;x*base)
+        {
+            big=x*base;   // 更新最高價值
+            bigind=i;     // 更新對應的寶箱編號
+        }
+    }
+    
+    printf("%d %d\n",bigind,big); // 輸出最高價值的寶箱編號與其對應價值
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

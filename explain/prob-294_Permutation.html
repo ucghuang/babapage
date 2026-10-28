@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#294 202506<sub>P</sub>ermutation - TOI 題目詳解、數學推導與 C++ 實作</title>
+    <!-- MathJax 數學公式渲染 -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --accent-green: #059669;
+            --accent-amber: #d97706;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.65;
+            padding: 30px 15px;
+        }
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 36px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 18px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .card-header h1 {
+            font-size: 1.6rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 5px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.25rem;
+            color: #1e293b;
+            margin: 28px 0 14px 0;
+            border-left: 5px solid var(--primary);
+            padding-left: 12px;
+        }
+        .sub-title {
+            font-size: 1.08rem;
+            color: #334155;
+            margin: 18px 0 8px 0;
+            font-weight: 700;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 22px;
+            font-size: 15px;
+            margin-bottom: 22px;
+        }
+        .analysis-box ul, .analysis-box ol {
+            margin-left: 22px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0 20px 0;
+            font-size: 14px;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .data-table th, .data-table td {
+            border: 1px solid var(--border-color);
+            padding: 9px 12px;
+            text-align: center;
+        }
+        .data-table th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+        }
+        .data-table tr.highlight-row {
+            background-color: #fef3c7;
+            font-weight: 700;
+            color: #92400e;
+        }
+        .formula-card {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 14px 0;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 22px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.65;
+        }
+        .tag-badge {
+            display: inline-block;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            color: #475569;
+            font-weight: 600;
+        }
+        .step-tag {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#294</span> 202506<sub>P</sub>ermutation (排列順序)</h1>
+                <div class="header-right">
+                    <a href="../questions/202506<sub>P</sub>ermutation.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202506<sub>P</sub>ermutation.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-294" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <!-- 題目完整規格與原 PDF 表一 -->
+            <div class="section-part">
+                <h2 class="section-title">題目摘要與全貌</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 小明從數字 $1 ∼ M$ 中取 $N$ 個相異數字 $a<sub>1</sub>, a<sub>2</sub>, …, a<sub>N</sub>$ 形成一個數列，求該數列在所有由「$1 ∼ M$ 取 $N$ 個相異數字」所構成的數列中，依照字典序排好的編號（編號從 0 開始）。</p>
+                    <p><strong>輸入格式：</strong><br>
+                    第一列有兩個正整數 $N$ 和 $M$ ($N ≤ M ≤ 2 × 10<sup>5</sup>$)。<br>
+                    第二列有 $N$ 個正整數 $a<sub>1</sub>, a<sub>2</sub>, …, a<sub>N</sub>$（所有數值不重複且 $1 ≤ a<sub>i</sub> ≤ M$），相鄰兩數以空格隔開。</p>
+                    <p><strong>輸出格式：</strong> 輸出一個整數，代表字典序編號對 $1,000,000,007$ ($10<sup>9</sup> + 7$) 取餘數的結果。</p>
+                    
+                    <div class="sub-title">PDF 原始對照表：表一 ($N=3, M=4$ 共 $P(4, 3) = 24$ 種排列)</div>
+                    <div style="max-height: 260px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; padding: 0 10px; background: #fff;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>字典序編號</th>
+                                    <th>排列 $(a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub>)$</th>
+                                    <th>字典序編號</th>
+                                    <th>排列 $(a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub>)$</th>
+                                    <th>字典序編號</th>
+                                    <th>排列 $(a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub>)$</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>0</td><td>1, 2, 3</td><td>8</td><td>2, 3, 1</td><td>16</td><td>3, 4, 1</td></tr>
+                                <tr><td>1</td><td>1, 2, 4</td><td>9</td><td>2, 3, 4</td><td style="background:#fef3c7; font-weight:bold;">17 (範例1)</td><td style="background:#fef3c7; font-weight:bold;">3, 4, 2</td></tr>
+                                <tr><td>2</td><td>1, 3, 2</td><td>10</td><td>2, 4, 1</td><td>18</td><td>4, 1, 2</td></tr>
+                                <tr><td>3</td><td>1, 3, 4</td><td>11</td><td>2, 4, 3</td><td>19</td><td>4, 1, 3</td></tr>
+                                <tr><td>4</td><td>1, 4, 2</td><td>12</td><td>3, 1, 2</td><td>20</td><td>4, 2, 1</td></tr>
+                                <tr><td>5</td><td>1, 4, 3</td><td>13</td><td>3, 1, 4</td><td>21</td><td>4, 2, 3</td></tr>
+                                <tr><td>6</td><td>2, 1, 3</td><td>14</td><td>3, 2, 1</td><td>22</td><td>4, 3, 1</td></tr>
+                                <tr><td>7</td><td>2, 1, 4</td><td>15</td><td>3, 2, 4</td><td>23</td><td>4, 3, 2</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 演算法與數學架構 -->
+            <div class="section-part">
+                <h2 class="section-title">演算法核心結構：廣義康托展開與樹狀陣列</h2>
+                <div class="analysis-box">
+                    <div class="formula-card">
+                        <strong>通用推導公式：</strong><br>
+                        設數列索引為 $i$（$0 ≤ i ≤ N-1$），當前挑選的數字為 $a<sub>i</sub>$：
+                        $$Index = ∑<sub>i=0</sub><sup>N-1</sup> cnt<sub>i</sub> × P(M - 1 - i,\, N - 1 - i) ±od{10<sup>9</sup>+7}$$
+                        其中：
+                        <ul>
+                            <li>$cnt<sub>i</sub>$：在集合 $\{1, …, M\}$ 中，數值<strong>嚴格小於 $a<sub>i</sub>$ 且未在前面出現過</strong>的數字總數。</li>
+                            <li>$P(n, k) = \frac{n!}{(n-k)!}$：在剩餘未使用的 $n = M - 1 - i$ 個數字中，任意填滿剩下 $k = N - 1 - i$ 個位置的所有排列數。</li>
+                        </ul>
+                    </div>
+
+                    <div class="grid-2">
+                        <div style="background: #ffffff; padding: 14px; border: 1px solid var(--border-color); border-radius: 6px;">
+                            <strong>1. 為什麼需要樹狀陣列 (BIT)？</strong>
+                            <p style="font-size: 13.5px; color: var(--text-muted); margin-top: 6px;">
+                                若直接遍歷尋找小於 $a<sub>i</sub>$ 的未使用個數，單次複雜度為 $O(M)$，總花費為 $O(NM) ≈ 4 × 10<sup>10</sup>$ 會導致 TLE。透過樹狀陣列動態維護已被選走的數字：
+                                $$cnt<sub>i</sub> = (a<sub>i</sub> - 1) - fenwick\<sub>s</sub>um(a<sub>i</sub>)$$
+                                單次查詢與加入皆為 $O(log M)$，總時間降至 $O(N log M)$。
+                            </p>
+                        </div>
+                        <div style="background: #ffffff; padding: 14px; border: 1px solid var(--border-color); border-radius: 6px;">
+                            <strong>2. 模反元素 (Modular Inverse)</strong>
+                            <p style="font-size: 13.5px; color: var(--text-muted); margin-top: 6px;">
+                                計算 $P(n, k) = \frac{n!}{(n-k)!} ±od{MOD}$ 時，除法轉換為乘法逆元。由費馬小定理（因為 $MOD = 10<sup>9</sup>+7$ 為質數）：
+                                $$\frac{1}{(n-k)!} ≡ ((n-k)!)<sup>MOD-2</sup> ±od{MOD}$$
+                                利用快速冪在 $O(log MOD)$ 完成計算。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PDF 三個範例詳細推導與表格追蹤 -->
+            <div class="section-part">
+                <h2 class="section-title">PDF 範例詳細逐步推導與追蹤</h2>
+
+                <!-- 範例 1 -->
+                <div class="analysis-box">
+                    <span class="tag-badge step-tag">範例 1</span> <strong>$N = 3, M = 4$，數列：$[3, 4, 2]$</strong>
+                    <p style="margin-top: 6px;">總池為 $\{1, 2, 3, 4\}$。共需填入 3 個位置：</p>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>步數 $i$</th>
+                                <th>目前數字 $a<sub>i</sub>$</th>
+                                <th>已選用過的數字</th>
+                                <th>比 $a<sub>i</sub>$ 小且未用的集合</th>
+                                <th>可用量 $cnt<sub>i</sub>$</th>
+                                <th>剩餘候選 $M-1-i$ / 剩餘空位 $N-1-i$</th>
+                                <th>該步排列組合貢獻</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>$i = 0$</td>
+                                <td><strong>3</strong></td>
+                                <td>$∅$</td>
+                                <td>$\{1, 2\}$</td>
+                                <td><strong>2</strong></td>
+                                <td>選 $3-0-1 = 2$ 個，池中剩 $4-0-1 = 3$ 個</td>
+                                <td>$2 × P(3, 2) = 2 × 6 = <strong>12</strong>$</td>
+                            </tr>
+                            <tr>
+                                <td>$i = 1$</td>
+                                <td><strong>4</strong></td>
+                                <td>$\{3\}$</td>
+                                <td>$\{1, 2\}$</td>
+                                <td><strong>2</strong></td>
+                                <td>選 $3-1-1 = 1$ 個，池中剩 $4-1-1 = 2$ 個</td>
+                                <td>$2 × P(2, 1) = 2 × 2 = <strong>4</strong>$</td>
+                            </tr>
+                            <tr>
+                                <td>$i = 2$</td>
+                                <td><strong>2</strong></td>
+                                <td>$\{3, 4\}$</td>
+                                <td>$\{1\}$</td>
+                                <td><strong>1</strong></td>
+                                <td>選 $3-2-1 = 0$ 個，池中剩 $4-2-1 = 1$ 個</td>
+                                <td>$1 × P(1, 0) = 1 × 1 = <strong>1</strong>$</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>👉 <strong>累計總和：</strong> $12 + 4 + 1 = <strong>17</strong>$（與表一中編號 17 完全吻合）。</p>
+                </div>
+
+                <!-- 範例 2 -->
+                <div class="analysis-box">
+                    <span class="tag-badge step-tag">範例 2</span> <strong>$N = 3, M = 3$，數列：$[1, 3, 2]$</strong>
+                    <p style="margin-top: 6px;">此為全排列情況（$N=M$）：</p>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>步數 $i$</th>
+                                <th>目前數字 $a<sub>i</sub>$</th>
+                                <th>已選用過的數字</th>
+                                <th>可用數字量 $cnt<sub>i</sub>$</th>
+                                <th>排列計算式 $P(M-1-i, N-1-i)$</th>
+                                <th>該步排列組合貢獻</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>$i = 0$</td>
+                                <td><strong>1</strong></td>
+                                <td>$∅$</td>
+                                <td>小於 1 者無，即 <strong>0</strong></td>
+                                <td>$P(2, 2) = 2! = 2$</td>
+                                <td>$0 × 2 = <strong>0</strong>$</td>
+                            </tr>
+                            <tr>
+                                <td>$i = 1$</td>
+                                <td><strong>3</strong></td>
+                                <td>$\{1\}$</td>
+                                <td>未用且小於 3 者為 $\{2\}$，共 <strong>1</strong></td>
+                                <td>$P(1, 1) = 1! = 1$</td>
+                                <td>$1 × 1 = <strong>1</strong>$</td>
+                            </tr>
+                            <tr>
+                                <td>$i = 2$</td>
+                                <td><strong>2</strong></td>
+                                <td>$\{1, 3\}$</td>
+                                <td>小於 2 的數字 1 已被選走，共 <strong>0</strong></td>
+                                <td>$P(0, 0) = 0! = 1$</td>
+                                <td>$0 × 1 = <strong>0</strong>$</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>👉 <strong>累計總和：</strong> $0 + 1 + 0 = <strong>1</strong>$（在 $[1,2,3], [1,3,2], …$ 中，第 0 個為 $[1,2,3]$，故 $[1,3,2]$ 為編號 1，輸出 <code>1</code>）。</p>
+                </div>
+
+                <!-- 範例 3 -->
+                <div class="analysis-box">
+                    <span class="tag-badge step-tag">範例 3</span> <strong>$N = 5, M = 9$，數列：$[3, 2, 5, 7, 4]$</strong>
+                    <p style="margin-top: 6px;">從 9 個數字中挑選 5 個數字，依序追蹤五個位置：</p>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>位置 $i$</th>
+                                <th>$a<sub>i</sub>$</th>
+                                <th>小於 $a<sub>i</sub>$ 且未被選用數字</th>
+                                <th>$cnt<sub>i</sub>$</th>
+                                <th>$P(9-1-i, 5-1-i)$</th>
+                                <th>單步貢獻值</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>$i = 0$</td>
+                                <td>3</td>
+                                <td>$\{1, 2\}$</td>
+                                <td><strong>2</strong></td>
+                                <td>$P(8, 4) = 8 × 7 × 6 × 5 = 1680$</td>
+                                <td>$2 × 1680 = <strong>3360</strong>$</td>
+                            </tr>
+                            <tr>
+                                <td>$i = 1$</td>
+                                <td>2</td>
+                                <td>$\{1\}$（3 已被使用）</td>
+                                <td><strong>1</strong></td>
+                                <td>$P(7, 3) = 7 × 6 × 5 = 210$</td>
+                                <td>$1 × 210 = <strong>210</strong>$</td>
+                            </tr>
+                            <tr>
+                                <td>$i = 2$</td>
+                                <td>5</td>
+                                <td>$\{1, 4\}$（2, 3 已被使用）</td>
+                                <td><strong>2</strong></td>
+                                <td>$P(6, 2) = 6 × 5 = 30$</td>
+                                <td>$2 × 30 = <strong>60</strong>$</td>
+                            </tr>
+                            <tr>
+                                <td>$i = 3$</td>
+                                <td>7</td>
+                                <td>$\{1, 4, 6\}$（2, 3, 5 已被使用）</td>
+                                <td><strong>3</strong></td>
+                                <td>$P(5, 1) = 5$</td>
+                                <td>$3 × 5 = <strong>15</strong>$</td>
+                            </tr>
+                            <tr>
+                                <td>$i = 4$</td>
+                                <td>4</td>
+                                <td>$\{1\}$（2, 3 已被使用）</td>
+                                <td><strong>1</strong></td>
+                                <td>$P(4, 0) = 1$</td>
+                                <td>$1 × 1 = <strong>1</strong>$</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>👉 <strong>累計總和：</strong> $3360 + 210 + 60 + 15 + 1 = <strong>3646</strong>$。<br>
+                    <em style="color: var(--text-muted); font-size: 13.5px;">註：PDF 範例 3 題目若輸入為「5 9 \n 3 2 5 7 4」，依此標準推導驗證邏輯即為 3646。</em></p>
+                </div>
+            </div>
+
+            <!-- 教學反思與延伸思考 (班級/競賽教學視角) -->
+            <div class="section-part">
+                <h2 class="section-title">教學核心思維與模組拆解</h2>
+                <div class="analysis-box">
+                    <ul>
+                        <li><strong>結構拆解（高內聚、低耦合）</strong>：
+                            本程式由三個完全獨立的積木組成：
+                            <ol>
+                                <li><strong>數論模組</strong>：階乘預處理與快速冪逆元計算 $P(n, k)$。</li>
+                                <li><strong>資料結構模組</strong>：Fenwick Tree（樹狀陣列），負責區間計數與單點標記。</li>
+                                <li><strong>業務邏輯模組</strong>：康托展開迴圈，串接上述兩者進行權重疊加。</li>
+                            </ol>
+                        </li>
+                        <li><strong>延伸思考與問題改造</strong>：
+                            <ul>
+                                <li><strong>逆向問題（逆康托展開）</strong>：如果題目反過來給定 $M, N$ 與字典序編號 $K$，如何還原出原始數列？（可引導學生思考使用二分搜尋結合樹狀陣列尋找第 $k$ 小未用元素）。</li>
+                                <li><strong>重複元素的排列</strong>：若 $a<sub>i</sub>$ 中允許出現重複元素，公式該如何調整分母？（多重集的排列計數）。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 官方 C++ 原始碼與逐行註解 -->
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（附詳細繁體中文逐行架構註解）</h2>
+                <pre class="code-box"><code>#include &lt;cstdio&gt;      // 引入標準 C 輸入輸出 (scanf, printf)
+#include &lt;cstring&gt;     // 引入記憶體配置與操作工具 (memset)
+#include &lt;vector&gt;      // 引入 vector 容器
+#include &lt;algorithm&gt;   // 引入演算法函式庫
+using namespace std;
+
+typedef long long ll;           // 定義長整數，防止乘法運算溢位
+const ll MOD = 1000000007;     // 模數常數 10<sup>9</sup> + 7
+const int maxn = 200005;       // 最大數字範圍常數 200,005
+
+ll fact[maxn];                  // 階乘快取陣列：fact[i] = i! % MOD
+
+// 階乘預處理：以 O(N) 預先建表，避免後續重複計算
+void init(ll n)
+{
+    fact[0] = fact[1] = 1;
+    for (ll i = 2; i &lt;= n; ++i)
+    {
+        fact[i] = (fact[i - 1] * i) % MOD;
+    }
+}
+
+// 快速冪運算：在 O(log n) 時間內計算 (a<sup>n</sup>) % MOD
+ll powmod(ll a, ll n)
+{
+    ll ret = 1;
+    for (ll base = a; n; base = (base * base) % MOD, n &gt;&gt;= 1)
+    {
+        if (n &amp; 1)
+        {
+            ret = (ret * base) % MOD;
+        }
+    }
+    return ret;
+}
+
+// 排列數 P(n, m) = n! / (n-m)! % MOD
+// 藉由費馬小定理：(n-m)! 的模反元素為 (fact[n-m])^(MOD-2)
+ll P(ll n, ll m)
+{
+    if (m &lt; 0 || n &lt; m) return 0;
+    return fact[n] * powmod(fact[n - m], MOD - 2) % MOD;
+}
+
+// 樹狀陣列 (Fenwick Tree)：單點更新，將數字 pos 的使用狀態標記為 1
+void fenwick<sub>a</sub>dd(ll *tree, ll m, ll pos)
+{
+    while (pos &lt;= m)
+    {
+        ++tree[pos];
+        pos += pos &amp; -pos;  // 移動至父節點 (加上 lowbit)
+    }
+}
+
+// 樹狀陣列 (Fenwick Tree)：區間查詢 1 ~ pos 的總合（即小於等於 pos 且已被使用的數字個數）
+ll fenwick<sub>s</sub>um(ll *tree, ll pos)
+{
+    ll ret = 0;
+    while (pos &gt; 0)
+    {
+        ret += tree[pos];
+        pos -= pos &amp; -pos;  // 移動至相鄰前綴區間 (減去 lowbit)
+    }
+    return ret;
+}
+
+// 核心解題函式：計算排列在字典序中的編號
+ll solve(ll *perm, ll n, ll m)
+{
+    ll ret = 0;
+    ll *tree = new ll[m + 1];               // 動態配置樹狀陣列空間
+    memset(tree, 0, sizeof(ll) * (m + 1));  // 初始化為 0
+
+    for (ll i = 0; i &lt; n; ++i)
+    {
+        // 小於 perm[i] 的原始數字總數為 perm[i] - 1
+        // 減去前面已經被選用過的數量 fenwick<sub>s</sub>um(tree, perm[i])，即為當前可用且比 perm[i] 小的個數
+        ll cnt = (perm[i] - 1) - fenwick<sub>s</sub>um(tree, perm[i]);
+
+        // 該位置替換為較小數字時，後續位置能形成的總排列數貢獻
+        ll ways = (cnt * P(m - i - 1, n - i - 1)) % MOD;
+        ret = (ret + ways) % MOD;
+
+        // 將當前數字標記進樹狀陣列，表示未來不能再重複使用
+        fenwick<sub>a</sub>dd(tree, m, perm[i]);
+    }
+
+    delete[] tree;  // 釋放動態記憶體
+    return ret;
+}
+
+int main()
+{
+    ll n, m;
+    if (scanf("%lld%lld", &amp;n, &amp;m) != 2) return 0;
+
+    ll *perm = new ll[n];
+    for (ll i = 0; i &lt; n; ++i)
+    {
+        scanf("%lld", &amp;perm[i]);
+    }
+
+    init(m);                             // 初始化階乘表至 m!
+    printf("%lld\n", solve(perm, n, m)); // 輸出字典序計算結果
+
+    delete[] perm;
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

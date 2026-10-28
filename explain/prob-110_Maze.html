@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#110 202105<sub>M</sub>aze - TOI 迷宮演算法深度推導與圖解</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --primary-dark: #1d4ed8;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --wall-color: #334155;
+            --path-color: #dbeafe;
+            --path-text: #1d4ed8;
+            --start-color: #10b981;
+            --end-color: #ef4444;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 30px 20px;
+        }
+        .container {
+            max-width: 1040px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 36px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            margin-bottom: 30px;
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 18px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .card-header h1 {
+            font-size: 1.6rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            border: 1px solid var(--border-color);
+        }
+        .section-title {
+            font-size: 1.25rem;
+            color: #1e293b;
+            margin: 28px 0 16px 0;
+            border-left: 5px solid var(--primary);
+            padding-left: 12px;
+            font-weight: 700;
+        }
+        .sub-title {
+            font-size: 1.05rem;
+            color: #334155;
+            margin: 18px 0 10px 0;
+            font-weight: 600;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul, .analysis-box ol {
+            margin-left: 24px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 8px;
+        }
+        /* 迷宮網格與視覺化表格 */
+        .maze-board-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            align-items: flex-start;
+            margin: 16px 0 24px 0;
+        }
+        .maze-table {
+            border-collapse: collapse;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .maze-table td, .maze-table th {
+            width: 38px;
+            height: 38px;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid #cbd5e1;
+            position: relative;
+        }
+        .maze-table th {
+            background-color: #f1f5f9;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .cell-wall {
+            background-color: var(--wall-color);
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .cell-start {
+            background-color: var(--start-color);
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .cell-end {
+            background-color: var(--end-color);
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .cell-path {
+            background-color: var(--path-color);
+            color: var(--path-text);
+            font-weight: bold;
+        }
+        .cell-dist {
+            font-size: 10px;
+            color: #475569;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+        }
+        /* 追蹤推導表格 */
+        .trace-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0;
+            font-size: 13.5px;
+            background: #fff;
+        }
+        .trace-table th, .trace-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .trace-table th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+        }
+        .trace-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .tag-pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .tag-success { background: #dcfce7; color: #166534; }
+        .tag-fail { background: #fee2e2; color: #991b1b; }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 13.5px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+        .legend {
+            display: flex;
+            gap: 16px;
+            margin-top: 8px;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .legend-box {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#110</span> 202105<sub>M</sub>aze (走迷宮) 演算法詳解</h1>
+                <div class="header-right">
+                    <span class="file-name-meta">PDF 題本：202105<sub>M</sub>aze.pdf</span>
+                </div>
+            </div>
+
+            <!-- 題目重點結構與模型解析 -->
+            <div class="section-part">
+                <h2 class="section-title">一、 題目模型與規則解析</h2>
+                <div class="analysis-box">
+                    <p><strong>1. 問題定義：</strong> 給定一個 <span style="font-style: italic;">N × N</span> 的二維網格空間，最左上角座標 <span style="font-style: italic;">(0, 0)</span> 為起點 <span style="font-style: italic;">S</span>，最右下角座標 <span style="font-style: italic;">(N-1, N-1)</span> 為終點 <span style="font-style: italic;">E</span>。空格以 <code>0</code> 表示，障礙物以 <code>#</code> 表示。</p>
+                    <p><strong>2. 移動限制：</strong> 只能朝「東（右）、西（左）、南（下）、北（上）」四個相鄰方向移動，不能走出邊界且不可經過障礙物。</p>
+                    <p><strong>3. 最優化目標：</strong> 每移動 1 格耗費 1 單位時間。求從起點至終點的<strong>最少單位時間（最短路徑長度）</strong>；若被障礙物隔絕無法抵達，則輸出 <code>-1</code>。</p>
+                    <p><strong>4. 圖論抽象化：</strong> 本題等價於「無權重無向網格圖（Unweighted Grid Graph）的最短路徑問題」。</p>
+                </div>
+            </div>
+
+            <!-- 演算法核心架構 -->
+            <div class="section-part">
+                <h2 class="section-title">二、 演算法理論推導：廣度優先搜尋 (BFS)</h2>
+                <div class="analysis-box">
+                    <p>在所有相鄰邊權重均為常數 <span style="font-style: italic;">1</span> 的圖形中，<strong>廣度優先搜尋 (Breadth-First Search, BFS)</strong> 具備以下嚴謹的數學特性：</p>
+                    <ul>
+                        <li><strong>波前擴散性（Wavefront Expansion）：</strong> BFS 按照距離起點的步數（<span style="font-style: italic;">d = 0, 1, 2, …</span>）層層向外搜尋。同一層的所有節點必定比下一層的節點先被走訪。</li>
+                        <li><strong>最短步數保證：</strong> 透過先進先出（FIFO）的 <code>std::queue</code> 控制，當終點座標 <span style="font-style: italic;">(N-1, N-1)</span> 第一次出現在隊列前端時，所記錄的步數必定是全域最小值。</li>
+                        <li><strong>造訪標記與無窮迴圈防範：</strong> 建立二維距離陣列 <code>dis[N][N]</code>，全部初始化為 <code>-1</code>。
+                            <ul>
+                                <li><code>dis[r][c] == -1</code>：表示尚未拜訪。</li>
+                                <li><code>dis[r][c] &gt;= 0</code>：表示已拜訪過，且數值即為從起點出發的最短步數，後續到達的分支將被剪枝（Pruning），避免重複走訪。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 範例一詳細推導 -->
+            <div class="section-part">
+                <h2 class="section-title">三、 範例一 (<span style="font-style: italic;">N=9</span>)：PDF 原始題圖完整還原與推導</h2>
+                <div class="analysis-box">
+                    <p>此範例即為 PDF 題本中的<strong>圖（一）</strong>。迷宮中設有錯落的障礙牆，迫使路徑無法僅靠向東與向南前進，中途必須<strong>轉向北（向上回溯）</strong>繞過障礙牆才能到達終點。</p>
+                    
+                    <div class="legend">
+                        <div class="legend-item"><div class="legend-box cell-start"></div> 起點 S (0,0)</div>
+                        <div class="legend-item"><div class="legend-box cell-end"></div> 終點 E (8,8)</div>
+                        <div class="legend-item"><div class="legend-box cell-path"></div> 最短路徑軌跡 (數字為距離)</div>
+                        <div class="legend-item"><div class="legend-box cell-wall"></div> 障礙物 #</div>
+                    </div>
+
+                    <div class="maze-board-container">
+                        <!-- 9x9 Grid Table -->
+                        <table class="maze-table">
+                            <thead>
+                                <tr><th>r\c</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><th>0</th><td class="cell-start">S<span class="cell-dist">0</span></td><td class="cell-path">→<span class="cell-dist">1</span></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                                <tr><th>1</th><td>0</td><td class="cell-path">↓<span class="cell-dist">2</span></td><td class="cell-wall">#</td><td>0</td><td class="cell-wall">#</td><td class="cell-wall">#</td><td>0</td><td class="cell-wall">#</td><td>0</td></tr>
+                                <tr><th>2</th><td>0</td><td class="cell-path">↓<span class="cell-dist">3</span></td><td>0</td><td>0</td><td class="cell-wall">#</td><td>0</td><td class="cell-wall">#</td><td>0</td><td>0</td></tr>
+                                <tr><th>3</th><td class="cell-wall">#</td><td class="cell-path">↓<span class="cell-dist">4</span></td><td class="cell-wall">#</td><td class="cell-wall">#</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="cell-wall">#</td></tr>
+                                <tr><th>4</th><td>0</td><td class="cell-path">↓<span class="cell-dist">5</span></td><td class="cell-wall">#</td><td>0</td><td class="cell-path">→<span class="cell-dist">9</span></td><td class="cell-path">→<span class="cell-dist">10</span></td><td class="cell-wall">#</td><td class="cell-wall">#</td><td>0</td></tr>
+                                <tr><th>5</th><td>0</td><td class="cell-path">↓<span class="cell-dist">6</span></td><td class="cell-path">→<span class="cell-dist">7</span></td><td class="cell-path">→<span class="cell-dist">8</span></td><td class="cell-path">↑<span class="cell-dist"></span></td><td class="cell-path">↓<span class="cell-dist">11</span></td><td class="cell-wall">#</td><td>0</td><td>0</td></tr>
+                                <tr><th>6</th><td>0</td><td>0</td><td>0</td><td>0</td><td class="cell-wall">#</td><td class="cell-path">↓<span class="cell-dist">12</span></td><td>0</td><td class="cell-wall">#</td><td>0</td></tr>
+                                <tr><th>7</th><td>0</td><td class="cell-wall">#</td><td class="cell-wall">#</td><td class="cell-wall">#</td><td class="cell-wall">#</td><td class="cell-path">↓<span class="cell-dist">13</span></td><td>0</td><td>0</td><td>0</td></tr>
+                                <tr><th>8</th><td>0</td><td>0</td><td>0</td><td class="cell-wall">#</td><td>0</td><td class="cell-path">↓<span class="cell-dist">14</span></td><td class="cell-path">→<span class="cell-dist">15</span></td><td class="cell-path">→<span class="cell-dist">16</span></td><td class="cell-path">→<span class="cell-dist">17</span></td><td class="cell-end">E<span class="cell-dist">18</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p class="sub-title">關鍵路徑節點追蹤序列：</p>
+                    <table class="trace-table">
+                        <thead>
+                            <tr>
+                                <th>步數 (d)</th>
+                                <th>目前座標 (r, c)</th>
+                                <th>行進方向</th>
+                                <th>幾何與演算法決策說明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>0</td><td>(0, 0)</td><td>起點</td><td>起點推入隊列，<code>dis[0][0] = 0</code></td></tr>
+                            <tr><td>1</td><td>(0, 1)</td><td>向東 (右)</td><td>避開直接向下的擁塞，探索右方通道</td></tr>
+                            <tr><td>2 ~ 6</td><td>(1,1) → (5,1)</td><td>連續向南 (下)</td><td>沿著 column 1 的直型走廊向下推進</td></tr>
+                            <tr><td>7 ~ 8</td><td>(5,2) → (5,3)</td><td>向東 (右)</td><td>避開下方 row 7 的一整排橫向障礙壁</td></tr>
+                            <tr><td>9</td><td>(4, 3)</td><td>向北 (上)</td><td><strong>核心關鍵轉折：</strong>下方被 <code>(6,4)</code> 的牆體阻擋，BFS 展開向上探索</td></tr>
+                            <tr><td>10</td><td>(4, 4)</td><td>向東 (右)</td><td>越過中間立柱障礙物上方走廊</td></tr>
+                            <tr><td>11 ~ 14</td><td>(5,4) → (8,4)</td><td>連續向南 (下)</td><td>通過中央隘口後向下穿透至底部邊界</td></tr>
+                            <tr><td>15 ~ 18</td><td>(8,5) → (8,8)</td><td>連續向東 (右)</td><td>直奔右下角終點，初次抵達 <code>(8,8)</code>，累計耗時 <strong>18</strong> 單位時間</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 範例二詳細推導 -->
+            <div class="section-part">
+                <h2 class="section-title">四、 範例二 (<span style="font-style: italic;">N=5</span>)：S 型長迴廊推導</h2>
+                <div class="analysis-box">
+                    <p>此範例展示了障礙物迫使路徑形成蛇形（S型）完全繞行的情況，屬於第二組評分條件的延伸概念。</p>
+
+                    <div class="maze-board-container">
+                        <table class="maze-table">
+                            <thead>
+                                <tr><th>r\c</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><th>0</th><td class="cell-start">S<span class="cell-dist">0</span></td><td class="cell-path">→<span class="cell-dist">1</span></td><td class="cell-path">→<span class="cell-dist">2</span></td><td class="cell-path">→<span class="cell-dist">3</span></td><td class="cell-path">↓<span class="cell-dist">4</span></td></tr>
+                                <tr><th>1</th><td class="cell-wall">#</td><td class="cell-wall">#</td><td class="cell-wall">#</td><td class="cell-wall">#</td><td class="cell-path">↓<span class="cell-dist">5</span></td></tr>
+                                <tr><th>2</th><td class="cell-path">↓<span class="cell-dist">10</span></td><td class="cell-path">←<span class="cell-dist">9</span></td><td class="cell-path">←<span class="cell-dist">8</span></td><td class="cell-path">←<span class="cell-dist">7</span></td><td class="cell-path">←<span class="cell-dist">6</span></td></tr>
+                                <tr><th>3</th><td class="cell-path">↓<span class="cell-dist">11</span></td><td class="cell-wall">#</td><td class="cell-wall">#</td><td class="cell-wall">#</td><td class="cell-wall">#</td></tr>
+                                <tr><th>4</th><td class="cell-path">→<span class="cell-dist">12</span></td><td class="cell-path">→<span class="cell-dist">13</span></td><td class="cell-path">→<span class="cell-dist">14</span></td><td class="cell-path">→<span class="cell-dist">15</span></td><td class="cell-end">E<span class="cell-dist">16</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p><strong>走訪歷程與距離推導：</strong></p>
+                    <ol>
+                        <li>第 1 列障礙物 <code>####0</code> 封鎖了除了最右側以外的所有下行通道，強迫路徑向東移動到 <code>(0, 4)</code>（耗時 4），再向南到達 <code>(1, 4)</code>（耗時 5）與 <code>(2, 4)</code>（耗時 6）。</li>
+                        <li>第 3 列障礙物 <code>0####</code> 封鎖了除了最左側以外的所有下行通道，強迫路徑從 <code>(2, 4)</code> 向西折返直到 <code>(2, 0)</code>（耗時 10）。</li>
+                        <li>向下走到 <code>(3, 0)</code>（耗時 11）與 <code>(4, 0)</code>（耗時 12）。</li>
+                        <li>在第 4 列一路向東直達 <code>(4, 4)</code> 終點，總耗時為 <strong>16</strong> 單位時間。</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- 範例三詳細推導 -->
+            <div class="section-part">
+                <h2 class="section-title">五、 範例三 (<span style="font-style: italic;">N=3</span>)：無解阻斷 vs 單點障礙環繞</h2>
+                <div class="analysis-box">
+                    <p>本組範例涵蓋了題本中的邊界測試，包含<strong>完全阻隔無解</strong>與<strong>障礙繞行</strong>兩種典型情境：</p>
+                    
+                    <div style="display: flex; gap: 40px; flex-wrap: wrap;">
+                        <!-- 狀況 A: 無解 -->
+                        <div>
+                            <p class="sub-title">情況 A：完全橫向阻隔（輸出 <code>-1</code>）</p>
+                            <table class="maze-table">
+                                <thead><tr><th>r\c</th><th>0</th><th>1</th><th>2</th></tr></thead>
+                                <tbody>
+                                    <tr><th>0</th><td class="cell-start">S<span class="cell-dist">0</span></td><td class="cell-path">1</td><td class="cell-path">2</td></tr>
+                                    <tr><th>1</th><td class="cell-wall">#</td><td class="cell-wall">#</td><td class="cell-wall">#</td></tr>
+                                    <tr><th>2</th><td>0</td><td>0</td><td class="cell-end">E</td></tr>
+                                </tbody>
+                            </table>
+                            <p style="margin-top: 8px; font-size: 13.5px; color: #475569;">
+                                <strong>演算法狀態：</strong>第 1 列整列為 <code>###</code>。佇列在走訪完 <code>(0,0), (0,1), (0,2)</code> 後無任何合法的相鄰格子可推入，<code>queue.empty() == true</code>，觸發 <code>flag == false</code>，輸出 <code>-1</code>。
+                            </p>
+                        </div>
+
+                        <!-- 狀況 B: 繞行有解 -->
+                        <div>
+                            <p class="sub-title">情況 B：中心單點障礙（輸出 <code>4</code>）</p>
+                            <table class="maze-table">
+                                <thead><tr><th>r\c</th><th>0</th><th>1</th><th>2</th></tr></thead>
+                                <tbody>
+                                    <tr><th>0</th><td class="cell-start">S<span class="cell-dist">0</span></td><td class="cell-path">→<span class="cell-dist">1</span></td><td class="cell-path">↓<span class="cell-dist">2</span></td></tr>
+                                    <tr><th>1</th><td>0</td><td class="cell-wall">#</td><td class="cell-path">↓<span class="cell-dist">3</span></td></tr>
+                                    <tr><th>2</th><td>0</td><td>0</td><td class="cell-end">E<span class="cell-dist">4</span></td></tr>
+                                </tbody>
+                            </table>
+                            <p style="margin-top: 8px; font-size: 13.5px; color: #475569;">
+                                <strong>演算法狀態：</strong>曼哈頓距離最短走法為 4 步。路徑對稱存在兩條：<code>S → 右 → 右 → 下 → 下</code> 或 <code>S → 下 → 下 → 右 → 右</code>，均能在第 4 層步數抵達終點，輸出 <code>4</code>。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 完整解答 C++ 程式碼 -->
+            <div class="section-part">
+                <h2 class="section-title">六、 完整 C++ 官方解答原始碼（逐行繁體中文註解）</h2>
+                <div class="analysis-box">
+                    <p>以下程式碼完整保留官方原始演算法邏輯，針對國中生與演算法初學者加入完整的變數說明與邊界判斷註釋：</p>
+                </div>
+                <pre class="code-box"><code>#include &lt;cstdio&gt;      // 引入標準 I/O 函式庫 (scanf, printf)
+#include &lt;cstring&gt;     // 引入記憶體配置函式庫 (memset)
+#include &lt;queue&gt;       // 引入佇列容器 (std::queue) 用於 BFS
+#include &lt;utility&gt;     // 引入 pair 結構體 (std::pair)
+
+#define pii pair&lt;int, int&gt;       // 將 pair&lt;int, int&gt; 簡寫為 pii，表示座標 (row, col)
+#define mp(a, b) make<sub>p</sub>air(a, b)  // 快速建立坐標 pair
+
+using namespace std;
+
+const int N = 500 + 5;           // 支援最大地圖維度 (500) 加上安全緩衝區
+
+int dis[N][N];        // 距離陣列：記錄起點到該座標的最少步數，-1 代表尚未走過
+char maze[N][N];      // 地圖矩陣：儲存迷宮字元 ('0', '#', 'S', 'E')
+
+int main()
+{
+    // dh 與 dw 分別代表垂直方向與水平方向的位移向量：{-1:上, 1:下, 0:左, 0:右}
+    int n, dh[4] = {-1, 1, 0, 0}, dw[4] = {0, 0, -1, 1};
+    bool flag = false;   // 標記是否成功抵達終點
+    queue&lt;pii&gt; q;        // 宣告 BFS 擴散隊列
+
+    // 初始化距離陣列全部為 -1
+    memset(dis, -1, sizeof(dis));
+
+    // 讀取迷宮維度 n
+    if (scanf("%d", &n) != 1) return 0;
+
+    // 逐列讀入地圖字串
+    for (int i = 0; i &lt; n; ++i)
+    {
+        scanf("%s", maze[i]);
+    }
+
+    // 設定起點 (0, 0) 距離為 0，並推入搜尋隊列
+    dis[0][0] = 0;
+    q.push(mp(0, 0));
+
+    // 開始進行廣度優先搜尋 (BFS)
+    while (!q.empty())
+    {
+        pii u = q.front(); q.pop();   // 取出隊列中最前端的節點
+
+        // 檢查當前節點是否已經抵達右下角終點 (n-1, n-1)
+        if (u.first == n - 1 && u.second == n - 1)
+        {
+            printf("%d\n", dis[u.first][u.second]); // 輸出最短步數
+            flag = true;
+            break;                                  // 最短路徑已確定，結束搜尋
+        }
+
+        // 展開相鄰的 4 個方向 (上、下、左、右)
+        for (int i = 0; i &lt; 4; ++i)
+        {
+            int nh = u.first + dh[i];   // 下一個座標的 row
+            int nw = u.second + dw[i];  // 下一個座標的 col
+
+            // 邊界條件檢查：
+            // 1. 0 &lt;= nh &lt; n 且 0 &lt;= nw &lt; n (不得越出迷宮範圍)
+            // 2. maze[nh][nw] != '#' (不得撞入障礙物)
+            // 3. dis[nh][nw] == -1 (必須是尚未被造訪過的節點)
+            if (0 &lt;= nh && nh &lt; n && 0 &lt;= nw && nw &lt; n && maze[nh][nw] != '#' && dis[nh][nw] == -1)
+            {
+                dis[nh][nw] = dis[u.first][u.second] + 1; // 記錄距離 = 前一步 + 1
+                q.push(mp(nh, nw));                       // 將新座標推入隊列尾端
+            }
+        }
+    }
+
+    // 若搜尋完整個連通分量皆無法抵達終點，則輸出 -1
+    if (!flag)
+    {
+        printf("-1\n");
+    }
+
+    return 0;
+}</code></pre>
+            </div>
+
+            <!-- 教學反思與架構擴充 -->
+            <div class="section-part">
+                <h2 class="section-title">七、 模組化結構與複雜度分析</h2>
+                <div class="analysis-box">
+                    <ul>
+                        <li><strong>時間複雜度：<span style="font-style: italic;">O(N<sup>2</sup>)</span></strong>。迷宮共有 <span style="font-style: italic;">N × N</span> 個格子，每個格子最多只會進出隊列一次，每個狀態常數展開 4 個方向，在 <span style="font-style: italic;">N ≤ 500</span> 時運算次數約 <span style="font-style: italic;">2.5 × 10<sup>5</sup></span> 次，執行時間遠小於 0.05 秒。</li>
+                        <li><strong>空間複雜度：<span style="font-style: italic;">O(N<sup>2</sup>)</span></strong>。<code>maze</code> 與 <code>dis</code> 陣列大小為 <span style="font-style: italic;">505 × 505 × 4</span> Bytes <span style="font-style: italic;">≈ 1</span> MB，隊列最多容納約 <span style="font-style: italic;">4N</span> 個節點，符合記憶體嚴格限制。</li>
+                        <li><strong>教學延展思考：</strong>
+                            <ul>
+                                <li>若題目要求<strong>印出完整走法座標</strong>：可建立 <code>pii parent[N][N]</code> 記錄每格是從哪個座標轉移而來，抵達終點時透過回溯法（Backtracking）印出路徑。</li>
+                                <li>若經過不同格子需要不同體力消耗（帶權重迷宮）：則須由 BFS 升級為<strong>戴克斯特拉演算法 (Dijkstra's Algorithm)</strong> 或 <strong>A* 啟發式搜尋演算法</strong>。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

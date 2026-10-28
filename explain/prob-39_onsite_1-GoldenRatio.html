@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#39 201912-onsite_1-GoldenRatio - TOI 題目詳解與 C++ 實作</title>
+    <title>#39 201912-onsite<sub>1</sub>-GoldenRatio - TOI 題目詳解與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -122,18 +122,18 @@
     <div class="container">
         <div class="problem-card">
             <div class="card-header">
-                <h1><span class="index-tag">#39</span> 201912-onsite_1-GoldenRatio (黃金比例)</h1>
+                <h1><span class="index-tag">#39</span> 201912-onsite<sub>1</sub>-GoldenRatio (黃金比例)</h1>
                 <div class="header-right">
-                    <a href="../questions/201912-onsite_1-GoldenRatio.pdf" class="file-name-meta" target="_blank">PDF: 201912-onsite_1-GoldenRatio.pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-39" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                    <a href="../questions/201912-onsite<sub>1</sub>-GoldenRatio.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201912-onsite<sub>1</sub>-GoldenRatio.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-39" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
             <div class="section-part">
                 <h2 class="section-title">題目摘要</h2>
                 <div class="analysis-box">
-                    <p><strong>問題敘述：</strong> 費氏數列（Fibonacci sequence）可以用來組成黃金比例螺線。若將以費氏數列前 $n$ 項為邊長的正方形組合成一個長方形，其長寬比會對應到費氏數列的相鄰項。給定一個正整數 $n$ ($1 \le n \le 45$)，代表作品是以費氏數列第 1 至 $n$ 項為邊長的正方形來組成，請根據費氏數列求出該作品的「長：寬」比例。</p>
-                    <p><strong>輸入格式：</strong> 輸入僅有一個正整數 $n$ ($1 \le n \le 45$)。</p>
+                    <p><strong>問題敘述：</strong> 費氏數列（Fibonacci sequence）可以用來組成黃金比例螺線。若將以費氏數列前 <span style="font-style: italic;">n</span> 項為邊長的正方形組合成一個長方形，其長寬比會對應到費氏數列的相鄰項。給定一個正整數 <span style="font-style: italic;">n</span> (<span style="font-style: italic;">1 ≤ n ≤ 45</span>)，代表作品是以費氏數列第 1 至 <span style="font-style: italic;">n</span> 項為邊長的正方形來組成，請根據費氏數列求出該作品的「長：寬」比例。</p>
+                    <p><strong>輸入格式：</strong> 輸入僅有一個正整數 <span style="font-style: italic;">n</span> (<span style="font-style: italic;">1 ≤ n ≤ 45</span>)。</p>
                     <p><strong>輸出格式：</strong> 輸出長寬比格式為 <code>h:w</code>（數字與冒號之間沒有空白）。</p>
                 </div>
             </div>
@@ -143,8 +143,8 @@
                 <div class="analysis-box">
                     <p>本題採用<strong>費氏數列遞推性質</strong>：</p>
                     <ul>
-                        <li>費氏數列的定義為前兩項相加等於第三項（$F_1=1, F_2=1, F_3=2, F_4=3 \dots$）。</li>
-                        <li>當組合到第 $n$ 項時，所形成的長方形長寬剛好對應到費氏數列的特定項。例如當 $n=1$ 時長寬比為 $1:1$；當 $n \ge 2$ 時，長與寬分別對應到 $F_n$ 與 $F_n + F_{n-1}$（或相鄰的費氏數列數值）。</li>
+                        <li>費氏數列的定義為前兩項相加等於第三項（<span style="font-style: italic;">F<sub>1</sub>=1, F<sub>2</sub>=1, F<sub>3</sub>=2, F<sub>4</sub>=3 …</span>）。</li>
+                        <li>當組合到第 <span style="font-style: italic;">n</span> 項時，所形成的長方形長寬剛好對應到費氏數列的特定項。例如當 <span style="font-style: italic;">n=1</span> 時長寬比為 <span style="font-style: italic;">1:1</span>；當 <span style="font-style: italic;">n ≥ 2</span> 時，長與寬分別對應到 <span style="font-style: italic;">F<sub>n</sub></span> 與 <span style="font-style: italic;">F<sub>n</sub> + F<sub>n-1</sub></span>（或相鄰的費氏數列數值）。</li>
                         <li>透過迴圈預先算出對應的費氏數列數值，即可直接印出格式化的比例。</li>
                     </ul>
                 </div>
@@ -159,10 +159,10 @@
                     <ul>
                         <li><strong>計算費氏數列直到第 6 項：</strong>
                             <ul>
-                                <li>$F_1 = 1, F_2 = 1, F_3 = 2, F_4 = 3, F_5 = 5, F_6 = 8$。</li>
+                                <li><span style="font-style: italic;">F<sub>1</sub> = 1, F<sub>2</sub> = 1, F<sub>3</sub> = 2, F<sub>4</sub> = 3, F<sub>5</sub> = 5, F<sub>6</sub> = 8</span>。</li>
                             </ul>
                         </li>
-                        <li><strong>對應長寬比：</strong> 當 $n = 6$ 時，對應的邊長組合數值為 $8$ 與 $(8 + 5 = 13)$。</li>
+                        <li><strong>對應長寬比：</strong> 當 <span style="font-style: italic;">n = 6</span> 時，對應的邊長組合數值為 <span style="font-style: italic;">8</span> 與 <span style="font-style: italic;">(8 + 5 = 13)</span>。</li>
                         <li><strong>輸出格式化：</strong> <code>8:13</code>。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 1 結果：</strong> <code>8:13</code></p>
@@ -173,10 +173,10 @@
                     <ul>
                         <li><strong>計算費氏數列直到第 8 項：</strong>
                             <ul>
-                                <li>$F_7 = 13, F_8 = 21$。</li>
+                                <li><span style="font-style: italic;">F<sub>7</sub> = 13, F<sub>8</sub> = 21</span>。</li>
                             </ul>
                         </li>
-                        <li><strong>對應長寬比：</strong> 當 $n = 8$ 時，對應數值為 $21$ 與 $(21 + 13 = 34)$。</li>
+                        <li><strong>對應長寬比：</strong> 當 <span style="font-style: italic;">n = 8</span> 時，對應數值為 <span style="font-style: italic;">21</span> 與 <span style="font-style: italic;">(21 + 13 = 34)</span>。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 2 結果：</strong> <code>21:34</code></p>
                 </div>

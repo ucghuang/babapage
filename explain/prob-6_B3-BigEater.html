@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#6 201903_B3-BigEater - TOI 題目詳解與 C++ 實作</title>
+    <title>#6 201903<sub>B</sub>3-BigEater - TOI 題目詳解與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -121,10 +121,10 @@
     <div class="container">
         <div class="problem-card">
             <div class="card-header">
-                <h1><span class="index-tag">#6</span> 201903_B3-BigEater (大吃大喝)</h1>
+                <h1><span class="index-tag">#6</span> 201903<sub>B</sub>3-BigEater (大吃大喝)</h1>
                 <div class="header-right">
-                    <a href="../questions/201903_B3-BigEater(Q).pdf" class="file-name-meta" target="_blank">PDF: 201903_B3-BigEater(Q).pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-6" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                    <a href="../questions/201903<sub>B</sub>3-BigEater(Q).pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201903<sub>B</sub>3-BigEater(Q).pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-6" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
@@ -133,11 +133,11 @@
                 <div class="analysis-box">
                     <p><strong>問題敘述：</strong> Wayne 想要將身上所有的錢拿來買 32 元的蘋果派和 55 元的大杯玉米濃湯。他的堅持是必須「蘋果派與玉米濃湯交替著吃」，若無法形成交替則停止進食。請寫一個程式列印出他大吃大喝的過程。</p>
                     <ul>
-                        <li><strong>輸入格式：</strong> 三個整數 $N$、$M$、$K$，以空白隔開。
+                        <li><strong>輸入格式：</strong> 三個整數 <span style="font-style: italic;">N</span>、<span style="font-style: italic;">M</span>、<span style="font-style: italic;">K</span>，以空白隔開。
                             <ul>
-                                <li>$N$：總共帶了多少錢（$0 \le N \le 500$）</li>
-                                <li>$M$：每隔幾分鐘進食一次（$0 < M \le 60$）</li>
-                                <li>$K$：起始食物種類（$K=0$ 代表從蘋果派開始吃，$K=1$ 代表從玉米濃湯開始）</li>
+                                <li><span style="font-style: italic;">N</span>：總共帶了多少錢（<span style="font-style: italic;">0 ≤ N ≤ 500</span>）</li>
+                                <li><span style="font-style: italic;">M</span>：每隔幾分鐘進食一次（<span style="font-style: italic;">0 < M ≤ 60</span>）</li>
+                                <li><span style="font-style: italic;">K</span>：起始食物種類（<span style="font-style: italic;">K=0</span> 代表從蘋果派開始吃，<span style="font-style: italic;">K=1</span> 代表從玉米濃湯開始）</li>
                             </ul>
                         </li>
                         <li><strong>輸出格式：</strong> 依序輸出經過的時間、吃的食物與剩餘金額，或是在一開始無法進食時輸出特定訊息。</li>
@@ -150,9 +150,9 @@
                 <div class="analysis-box">
                     <p>本題屬於經典的<strong>模擬題（Simulation）</strong>。程式核心邏輯包含：</p>
                     <ul>
-                        <li><strong>初始條件檢查：</strong> 若初始金額小於 32 元，或選擇從玉米濃湯開始 ($K=1$) 但金額小於 55 元，則無法進行任何消費，直接輸出 <code>Wayne can't eat and drink.</code>。</li>
-                        <li><strong>交替進食迴圈：</strong> 利用 <code>while</code> 迴圈模擬時間推進與金錢扣除。透過變數 $K$ 的值（0 或 1）來決定當前該買蘋果派還是玉米濃湯。</li>
-                        <li><strong>狀態切換：</strong> 每次成功購買後，金額扣除對應品項價格（32 或 55），印出對應的時間點、食物名稱與剩餘金額文字（注意零錢單複數的英文文法細節：<code>dollar</code> vs <code>dollars</code> vs <code>doesn't have money</code>），並將 $K$ 的值在 0 與 1 之間切換以達到交替效果，同時將時間累加 $M$ 分鐘。</li>
+                        <li><strong>初始條件檢查：</strong> 若初始金額小於 32 元，或選擇從玉米濃湯開始 (<span style="font-style: italic;">K=1</span>) 但金額小於 55 元，則無法進行任何消費，直接輸出 <code>Wayne can't eat and drink.</code>。</li>
+                        <li><strong>交替進食迴圈：</strong> 利用 <code>while</code> 迴圈模擬時間推進與金錢扣除。透過變數 <span style="font-style: italic;">K</span> 的值（0 或 1）來決定當前該買蘋果派還是玉米濃湯。</li>
+                        <li><strong>狀態切換：</strong> 每次成功購買後，金額扣除對應品項價格（32 或 55），印出對應的時間點、食物名稱與剩餘金額文字（注意零錢單複數的英文文法細節：<code>dollar</code> vs <code>dollars</code> vs <code>doesn't have money</code>），並將 <span style="font-style: italic;">K</span> 的值在 0 與 1 之間切換以達到交替效果，同時將時間累加 <span style="font-style: italic;">M</span> 分鐘。</li>
                     </ul>
                 </div>
             </div>
@@ -164,20 +164,20 @@
                     <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
 65 5 0</pre>
                     <ul>
-                        <li><strong>初始狀態：</strong> $N = 65$（元）, $M = 5$（分鐘）, $K = 0$（從蘋果派開始）, <code>time = 0</code>。</li>
+                        <li><strong>初始狀態：</strong> <span style="font-style: italic;">N = 65</span>（元）, <span style="font-style: italic;">M = 5</span>（分鐘）, <span style="font-style: italic;">K = 0</span>（從蘋果派開始）, <code>time = 0</code>。</li>
                         <li><strong>迴圈第 1 次：</strong>
                             <ul>
-                                <li>$K = 0$，檢查 $N \ge 32$（$65 \ge 32$ 成立）。</li>
-                                <li>$N$ 扣除 32：$65 - 32 = 33$。</li>
+                                <li><span style="font-style: italic;">K = 0</span>，檢查 <span style="font-style: italic;">N ≥ 32</span>（<span style="font-style: italic;">65 ≥ 32</span> 成立）。</li>
+                                <li><span style="font-style: italic;">N</span> 扣除 32：<span style="font-style: italic;">65 - 32 = 33</span>。</li>
                                 <li>輸出時間 0：<code>0: Wayne eats an Apple pie, </code></li>
-                                <li>切換 $K = 1$。</li>
-                                <li>檢查剩餘金額 $N = 33$，印出：<code>and now he has 33 dollars.</code></li>
+                                <li>切換 <span style="font-style: italic;">K = 1</span>。</li>
+                                <li>檢查剩餘金額 <span style="font-style: italic;">N = 33</span>，印出：<code>and now he has 33 dollars.</code></li>
                                 <li>時間推進：<code>time = 0 + 5 = 5</code>。</li>
                             </ul>
                         </li>
                         <li><strong>迴圈第 2 次：</strong>
                             <ul>
-                                <li>$K = 1$，檢查 $N \ge 55$（$33 \ge 55$ 不成立！無法買玉米濃湯）。</li>
+                                <li><span style="font-style: italic;">K = 1</span>，檢查 <span style="font-style: italic;">N ≥ 55</span>（<span style="font-style: italic;">33 ≥ 55</span> 不成立！無法買玉米濃湯）。</li>
                                 <li>觸發 <code>break</code> 跳出迴圈。</li>
                             </ul>
                         </li>
@@ -188,11 +188,11 @@
                     <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
 143 18 1</pre>
                     <ul>
-                        <li><strong>初始狀態：</strong> $N = 143, M = 18, K = 1, \text{time} = 0$。</li>
-                        <li><strong>迴圈第 1 次 ($K = 1$)：</strong> $143 \ge 55$ 成立 $\rightarrow$ 買玉米濃湯，花費 55 $\rightarrow$ 剩餘 $143 - 55 = 88$ $\rightarrow$ 切換 $K = 0$。<br>輸出：<code>0: Wayne drinks a Corn soup, and now he has 88 dollars.</code><br>$\text{time} = 0 + 18 = 18$。</li>
-                        <li><strong>迴圈第 2 次 ($K = 0$)：</strong> $88 \ge 32$ 成立 $\rightarrow$ 買蘋果派，花費 32 $\rightarrow$ 剩餘 $88 - 32 = 56$ $\rightarrow$ 切換 $K = 1$。<br>輸出：<code>18: Wayne eats an Apple pie, and now he has 56 dollars.</code><br>$\text{time} = 18 + 18 = 36$。</li>
-                        <li><strong>迴圈第 3 次 ($K = 1$)：</strong> $56 \ge 55$ 成立 $\rightarrow$ 買玉米濃湯，花費 55 $\rightarrow$ 剩餘 $56 - 55 = 1$ $\rightarrow$ 切換 $K = 0$。<br>輸出：<code>36: Wayne drinks a Corn soup, and now he has 1 dollar.</code><br>$\text{time} = 36 + 18 = 54$。</li>
-                        <li><strong>迴圈第 4 次 ($K = 0$)：</strong> $1 \ge 32$ 不成立 $\rightarrow$ <code>break</code> 結束。</li>
+                        <li><strong>初始狀態：</strong> <span style="font-style: italic;">N = 143, M = 18, K = 1, time = 0</span>。</li>
+                        <li><strong>迴圈第 1 次 (<span style="font-style: italic;">K = 1</span>)：</strong> <span style="font-style: italic;">143 ≥ 55</span> 成立 <span style="font-style: italic;">→</span> 買玉米濃湯，花費 55 <span style="font-style: italic;">→</span> 剩餘 <span style="font-style: italic;">143 - 55 = 88</span> <span style="font-style: italic;">→</span> 切換 <span style="font-style: italic;">K = 0</span>。<br>輸出：<code>0: Wayne drinks a Corn soup, and now he has 88 dollars.</code><br><span style="font-style: italic;">time = 0 + 18 = 18</span>。</li>
+                        <li><strong>迴圈第 2 次 (<span style="font-style: italic;">K = 0</span>)：</strong> <span style="font-style: italic;">88 ≥ 32</span> 成立 <span style="font-style: italic;">→</span> 買蘋果派，花費 32 <span style="font-style: italic;">→</span> 剩餘 <span style="font-style: italic;">88 - 32 = 56</span> <span style="font-style: italic;">→</span> 切換 <span style="font-style: italic;">K = 1</span>。<br>輸出：<code>18: Wayne eats an Apple pie, and now he has 56 dollars.</code><br><span style="font-style: italic;">time = 18 + 18 = 36</span>。</li>
+                        <li><strong>迴圈第 3 次 (<span style="font-style: italic;">K = 1</span>)：</strong> <span style="font-style: italic;">56 ≥ 55</span> 成立 <span style="font-style: italic;">→</span> 買玉米濃湯，花費 55 <span style="font-style: italic;">→</span> 剩餘 <span style="font-style: italic;">56 - 55 = 1</span> <span style="font-style: italic;">→</span> 切換 <span style="font-style: italic;">K = 0</span>。<br>輸出：<code>36: Wayne drinks a Corn soup, and now he has 1 dollar.</code><br><span style="font-style: italic;">time = 36 + 18 = 54</span>。</li>
+                        <li><strong>迴圈第 4 次 (<span style="font-style: italic;">K = 0</span>)：</strong> <span style="font-style: italic;">1 ≥ 32</span> 不成立 <span style="font-style: italic;">→</span> <code>break</code> 結束。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 2 結果：</strong><br>0: Wayne drinks a Corn soup, and now he has 88 dollars.<br>18: Wayne eats an Apple pie, and now he has 56 dollars.<br>36: Wayne drinks a Corn soup, and now he has 1 dollar.</p>
 
@@ -200,7 +200,7 @@
                     <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
 55 1 1</pre>
                     <ul>
-                        <li>初始金額 $N = 55, K = 1$。購買玉米濃湯剛好花完 55 元，剩餘金額為 0。</li>
+                        <li>初始金額 <span style="font-style: italic;">N = 55, K = 1</span>。購買玉米濃湯剛好花完 55 元，剩餘金額為 0。</li>
                         <li>輸出金額時特別處理 <code>and now he doesn’t have money.</code>。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 3 結果：</strong><br>0: Wayne drinks a Corn soup, and now he doesn’t have money.</p>
@@ -209,7 +209,7 @@
                     <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
 31 10 0</pre>
                     <ul>
-                        <li>初始金額 $N = 31$ 小於蘋果派價格 32，直接進入初始條件檢查，判定無法進食。</li>
+                        <li>初始金額 <span style="font-style: italic;">N = 31</span> 小於蘋果派價格 32，直接進入初始條件檢查，判定無法進食。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 4 結果：</strong><br>Wayne can’t eat and drink.</p>
                 </div>

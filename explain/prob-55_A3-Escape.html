@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#55 202004_A3-Escape - TOI 題目詳解與 C++ 實作</title>
+    <title>#55 202004<sub>A</sub>3-Escape (迷宮逃離) - TOI 題目詳解與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -121,29 +121,41 @@
     <div class="container">
         <div class="problem-card">
             <div class="card-header">
-                <h1><span class="index-tag">#55</span> 202004_A3-Escape (迷宮逃離)</h1>
+                <h1><span class="index-tag">#55</span> 202004<sub>A</sub>3-Escape (迷宮逃離)</h1>
                 <div class="header-right">
-                    <a href="../questions/202004_A3-Escape.pdf" class="file-name-meta" target="_blank">PDF: 202004_A3-Escape.pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-55" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
-                </div>
-            </div>
-
-            <div class="section-path">
-                <h2 class="section-title">題目摘要</h2>
-                <div class="analysis-box">
-                    <p><strong>問題敘述：</strong> 主角受困於一個 $R \times C$ 的網格迷宮中，迷宮內包含通道、牆壁、以及具有特定傳送機制的傳送門。主角需要從指定的起點出發，尋找一條最短的路徑逃離到迷宮的出口。若無法逃離則輸出對應的失敗或不可能訊息。</p>
-                    <p><strong>輸入格式：</strong> 第一行包含兩個整數 $R$ 與 $C$ 代表迷宮的列數與行數；隨後輸入 $R$ 行代表整個迷宮的地圖結構。</p>
-                    <p><strong>輸出格式：</strong> 輸出從起點到終點的最短移動步數；若無法到達則輸出特定錯誤代碼或 -1。</p>
+                    <a href="../questions/202004<sub>A</sub>3-Escape.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202004<sub>A</sub>3-Escape.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-55" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
             <div class="section-part">
-                <h2 class="section-title">演算法使用解析：【廣度優先搜尋 (BFS) / 最短路徑擴散】</h2>
+                <h2 class="section-title">題目摘要</h2>
                 <div class="analysis-box">
-                    <p>本題採用<strong>廣度優先搜尋 (BFS) 尋找無權圖的最短路徑</strong>：</p>
+                    <p><strong>問題敘述：</strong> 迷宮總共分為 <span style="font-style: italic;">N</span> 個房間，每個房間的左側和右側各有一個雕像。玩家必須依照給定的 <span style="font-style: italic;">T</span> 條線索，破壞每個房間中的其中一個雕像（即每個房間二選一），才能成功逃離迷宮。</p>
+                    <p>每條線索包含兩個雕像位置（例如 <code>1L</code>、<code>2R</code>）以及一個關係字元：</p>
                     <ul>
-                        <li>在網格圖中，每一步移動的權重相同（皆為 1 步），因此利用 Queue 進行層層向外擴散的 BFS 可以確保第一次抵達終點時即為最短路徑。</li>
-                        <li>我們維護一個距離陣列（<code>dist</code>），記錄起點到每個點的最短步數，避免重複造訪並有效掌控狀態轉移。</li>
+                        <li><code>S</code> (Same)：代表兩個雕像的狀態相同（即同時保留或同時破壞）。</li>
+                        <li><code>D</code> (Different)：代表兩個雕像的狀態不同（即一個保留、一個破壞）。</li>
+                    </ul>
+                    <p>已知所有線索，請判斷是否有辦法找到一種符合所有線索的雕像破壞方式。若存在則輸出 <code>Easy Peasy</code>，否則輸出 <code>Impossible</code>。</p>
+                    <p><strong>輸入格式：</strong> 第一行有兩個正整數 <span style="font-style: italic;">N</span> 與 <span style="font-style: italic;">T</span> (<span style="font-style: italic;">1 ≤ N ≤ 2000, 1 ≤ T ≤ N<sup>2</sup></span>)。接下來 <span style="font-style: italic;">T</span> 行每行包含兩個雕像字串與一個關係字元 ('S' 或 'D')。</p>
+                    <p><strong>輸出格式：</strong> 若存在符合所有線索的破壞方式，輸出 <code>Easy Peasy</code>，否則輸出 <code>Impossible</code>。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【2-SAT (2-可滿足性問題) 與 Tarjan 強連通分量演算法】</h2>
+                <div class="analysis-box">
+                    <p>本題可轉化為經典的 <strong>2-SAT 問題</strong>：</p>
+                    <ul>
+                        <li><strong>變數定義：</strong> 對於每個房間 <span style="font-style: italic;">i</span> (<span style="font-style: italic;">1 ≤ i ≤ N</span>)，設布林變數 <span style="font-style: italic;">x<sub>i</sub></span> 代表房間 <span style="font-style: italic;">i</span> 選擇破壞左側雕像 (<span style="font-style: italic;">iL</span>)。因為每個房間必須破壞一個雕像，故選擇左側 (<span style="font-style: italic;">iL</span>) 破壞即代表右側 (<span style="font-style: italic;">iR</span>) 保留，反之亦然。因此 <span style="font-style: italic;">iL</span> 與 <span style="font-style: italic;">iR</span> 狀態互為否定。</li>
+                        <li><strong>子句轉換 (Implications)：</strong> 
+                            <ul>
+                                <li>若線索為 <span style="font-style: italic;">A</span> 與 <span style="font-style: italic;">B</span> 狀態<strong>相同 (S)</strong>，代表 <span style="font-style: italic;">A ≤ftrightarrow B</span>，可拆為 <span style="font-style: italic;">(A → B) ∧ (B → A)</span> 以及 <span style="font-style: italic;">(≠g A → ≠g B) ∧ (≠g B → ≠g A)</span>。</li>
+                                <li>若線索為 <span style="font-style: italic;">A</span> 與 <span style="font-style: italic;">B</span> 狀態<strong>不同 (D)</strong>，代表 <span style="font-style: italic;">A ≤ftrightarrow ≠g B</span>，可拆為 <span style="font-style: italic;">(A → ≠g B) ∧ (B → ≠g A)</span> 以及 <span style="font-style: italic;">(≠g A → B) ∧ (≠g B → A)</span>。</li>
+                            </ul>
+                        </li>
+                        <li><strong>求解與判定：</strong> 透過建構蘊含圖 (Implication Graph) 並使用 <strong>Tarjan 演算法</strong>計算強連通分量 (SCC)。若任意房間變數 <span style="font-style: italic;">i</span> 與其否定 <span style="font-style: italic;">≠g i</span> 落在同一個 SCC 中，代表發生矛盾，無解（輸出 <code>Impossible</code>）；否則代表有解（輸出 <code>Easy Peasy</code>）。</li>
                     </ul>
                 </div>
             </div>
@@ -152,130 +164,168 @@
                 <h2 class="section-title">課堂黑板板書推導</h2>
                 <div class="analysis-box">
                     <p><strong>【輸入範例 1 實際運作推導】</strong></p>
-                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">迷宮範例 1 示意圖：
-3 3
-S . #
-. . E
-# . .</pre>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+3 2
+1L 2L S
+2L 3R S</pre>
                     <ul>
-                        <li><strong>步驟一：起點定位與初始化</strong>
-                            <ul>
-                                <li>地圖大小 $R = 3, C = 3$，起點 <code>S</code> 位於 <code>(0, 0)</code>，終點 <code>E</code> 位於 <code>(1, 2)</code>。</li>
-                                <li>將起點 <code>(0, 0)</code> 放入佇列 <code>q</code> 中，設定其最短步數 <code>dist[0][0] = 0</code>。</li>
-                            </ul>
-                        </li>
-                        <li><strong>步驟二：層層向外擴散 (BFS 佇列運作)</strong>
-                            <ul>
-                                <li><strong>第 0 層（距離 0）：</strong> 取出 <code>(0, 0)</code>，探索上下左右 4 個鄰居：
-                                    <ul>
-                                        <li>往下 <code>(1, 0)</code>（值為 <code>.</code>）：未造訪過，設 <code>dist[1][0] = 1</code>，推入佇列。</li>
-                                        <li>往右 <code>(0, 1)</code>（值為 <code>.</code>）：未造訪過，設 <code>dist[0][1] = 1</code>，推入佇列。</li>
-                                    </ul>
-                                </li>
-                                <li><strong>第 1 層（距離 1）：</strong> 依序取出 <code>(1, 0)</code> 與 <code>(0, 1)</code> 繼續向外擴散：
-                                    <ul>
-                                        <li>從 <code>(0, 1)</code> 往右走到 <code>(0, 2)</code>（值為 <code>#</code> 牆壁，略過）。</li>
-                                        <li>從 <code>(0, 1)</code> 往下走到 <code>(1, 1)</code>（值為 <code>.</code>），設 <code>dist[1][1] = 2</code>，推入佇列。</li>
-                                    </ul>
-                                </li>
-                                <li><strong>第 2 層（距離 2）：</strong> 從 <code>(1, 1)</code> 往右走到 <code>(1, 2)</code>，發現正是終點 <code>E</code>！</li>
-                            </ul>
-                        </li>
-                        <li><strong>步驟三：回傳結果</strong>
-                            <ul>
-                                <li>當首度抵達終點 <code>E</code> 時，對應的最小步數為 <code>2 + 1 = 3</code> 步。</li>
-                            </ul>
-                        </li>
+                        <li><span style="font-style: italic;">N = 3</span> 個房間，<span style="font-style: italic;">T = 2</span> 條線索。</li>
+                        <li>線索 1：<code>1L 2L S</code> <span style="font-style: italic;">→</span> 房間 1 左側與房間 2 左側狀態相同 (<span style="font-style: italic;">x<sub>1</sub> ≤ftrightarrow x<sub>2</sub></span>)。</li>
+                        <li>線索 2：<code>2L 3R S</code> <span style="font-style: italic;">→</span> 房間 2 左側與房間 3 右側狀態相同 (<span style="font-style: italic;">x<sub>2</sub> ≤ftrightarrow ≠g x<sub>3</sub></span>)。</li>
+                        <li>透過 2-SAT 邊連接建立蘊含關係，執行 Tarjan 演算法檢查 SCC。無矛盾發生。</li>
                     </ul>
-                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>3</code></p>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>Easy Peasy</code></p>
 
                     <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
-                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">迷宮範例 2 示意圖（死路無法到達）：
-2 2
-S #
-# E</pre>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+3 3
+1L 2L S
+2L 3R S
+3L 1R D</pre>
                     <ul>
-                        <li><strong>步驟一：起點定位</strong> 起點 <code>S</code> 在 <code>(0, 0)</code>，四周被牆壁 <code>#</code> 包圍。</li>
-                        <li><strong>步驟二：BFS 擴散受阻</strong> 由於起點的上下左右鄰居全部都是牆壁 <code>#</code>，佇列在放入起點後無法向外擴散任何新格子，隨即變空。</li>
-                        <li><strong>步驟三：結束迴圈</strong> 佇列清空且未碰到終點 <code>E</code>，迴圈結束，回傳預設的無法到達標記 <code>-1</code>。</li>
+                        <li><span style="font-style: italic;">N = 3</span>，<span style="font-style: italic;">T = 3</span>。</li>
+                        <li>加入線索 3：<code>3L 1R D</code> <span style="font-style: italic;">→</span> 房間 3 左側與房間 1 右側狀態不同 (<span style="font-style: italic;">x<sub>3</sub> ≤ftrightarrow ≠g (≠g x<sub>1</sub>) ⟺ x<sub>3</sub> ≤ftrightarrow x<sub>1</sub></span>)。</li>
+                        <li>綜合三條線索會導致 <span style="font-style: italic;">x<sub>1</sub></span> 必須同時等於與不等於某個狀態，形成循環矛盾（變數與其否定在同一個強連通分量中）。</li>
                     </ul>
-                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>-1</code></p>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>Impossible</code></p>
                 </div>
             </div>
 
             <div class="section-part">
-                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
-                <pre class="code-box"><code>#include &lt;bits/stdc++.h&gt;  // 引入常用 C++ 標頭檔
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;cstdio&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;algorithm&gt;
+#include &lt;stack&gt;
 using namespace std;
 
-int main()
-{
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);  // 加速輸入輸出
+const int MAXN = 4005; // 2 * N (N <= 2000，每個房間有正負兩種狀態)
 
-    int R, C;
-    if (!(cin &gt;&gt; R &gt;&gt; C)) return 0;  // 讀入迷宮的列數 R 與行數 C
+int n, t;
+vector&lt;int&gt; adj[MAXN]; // 2-SAT 蘊含圖的鄰接串列
+int dfn[MAXN], low[MAXN], timer; // Tarjan 演算法的時間戳記與追蹤變數
+int scc<sub>c</sub>nt, scc<sub>i</sub>d[MAXN];      // 強連通分量計數與各節點所屬的 SCC 編號
+bool in<sub>s</sub>tack[MAXN];            // 記錄節點是否目前在堆疊中
+stack&lt;int&gt; st;                  // Tarjan 演算法專用堆疊
 
-    vector&lt;string&gt; maze(R);
-    int sr = -1, sc = -1;  // 記錄起點座標 (sr, sc)
-    for (int i = 0; i &lt; R; i++)
-    {
-        cin &gt;&gt; maze[i];  // 讀入每一列迷宮地圖
-        for (int j = 0; j &lt; C; j++)
-        {
-            if (maze[i][j] == 'S')  // 假設 'S' 代表起點
-            {
-                sr = i;
-                sc = j;
-            }
+// 取得變數在 2-SAT 圖中的節點編號
+// 變數 x (1 &lt;= x &lt;= n) 對應正 literal，若 x 為負代表否命題 (negation)
+int get<sub>n</sub>ode(int x) {
+    if (x &gt; 0) return 2 * x;       // 正 literal (例如 1L): 對應 2 * x
+    else return 2 * (-x) + 1;      // 負 literal (例如 1R): 對應 2 * (-x) + 1
+}
+
+// 取得某個 literal 的否定 (negation)
+int negate<sub>n</sub>ode(int u) {
+    return u ^ 1; // 偶數與奇數互為 XOR 1，可快速取得否定節點
+}
+
+// 加入蘊含關係 u -&gt; v (等價於 ¬u ∨ v)
+void add<sub>c</sub>lause(int u, int v) {
+    adj[u].push<sub>b</sub>ack(v);
+}
+
+// Tarjan 演算法尋找強連通分量 (SCC)
+void tarjan(int u) {
+    dfn[u] = low[u] = ++timer;
+    st.push(u);
+    in<sub>s</sub>tack[u] = true;
+
+    for (int v : adj[u]) {
+        if (!dfn[v]) {
+            tarjan(v);
+            low[u] = min(low[u], low[v]);
+        } else if (in<sub>s</sub>tack[v]) {
+            low[u] = min(low[u], dfn[v]);
         }
     }
 
-    // 宣告距離陣列，記錄從起點到各點的最短步數，初始設為 -1
-    vector&lt;vector&lt;int&gt;&gt; dist(R, vector&lt;int&gt;(C, -1));
-    queue&lt;pair&lt;int, int&gt;&gt; q;  // 宣告 BFS 用的座標佇列
+    if (dfn[u] == low[u]) {
+        scc<sub>c</sub>nt++;
+        while (true) {
+            int v = st.top();
+            st.pop();
+            in<sub>s</sub>tack[v] = false;
+            scc<sub>i</sub>d[v] = scc<sub>c</sub>nt;
+            if (u == v) break;
+        }
+    }
+}
 
-    if (sr != -1)
-    {
-        q.push({sr, sc});  // 將起點放入佇列
-        dist[sr][sc] = 0;   // 起點到起點的距離為 0
+// 解析字串如 &quot;1L&quot; 或 &quot;2R&quot; 為 2-SAT 的 literal 編號
+int parse<sub>s</sub>tatue(const string&amp; s) {
+    int room = 0;
+    int i = 0;
+    while (i &lt; s.size() &amp;&amp; s[i] &gt;= '0' &amp;&amp; s[i] &lt;= '9') {
+        room = room * 10 + (s[i] - '0');
+        i++;
+    }
+    char side = s[i]; // 'L' 或 'R'
+    // 如果是 'L'，變數為 room；如果是 'R'，變數為 -room (代表選擇右側，即左側的否定)
+    if (side == 'L') return get<sub>n</sub>ode(room);
+    else return get<sub>n</sub>ode(-room);
+}
+
+void solve() {
+    // 初始化圖形與變數
+    for (int i = 0; i &lt;= 2 * n + 1; ++i) {
+        adj[i].clear();
+        dfn[i] = low[i] = scc<sub>i</sub>d[i] = 0;
+        in<sub>s</sub>tack[i] = false;
+    }
+    timer = scc<sub>c</sub>nt = 0;
+
+    for (int i = 0; i &lt; t; ++i) {
+        char s1[10], s2[10], op[5];
+        scanf(&quot;%s %s %s&quot;, s1, s2, op);
+        int u = parse<sub>s</sub>tatue(s1);
+        int v = parse<sub>s</sub>tatue(s2);
+
+        if (op[0] == 'S') { // 狀態相同 (u &lt;-&gt; v)
+            // (u -&gt; v) 且 (v -&gt; u) 以及 (¬u -&gt; ¬v) 且 (¬v -&gt; ¬u)
+            add<sub>c</sub>lause(u, v);
+            add<sub>c</sub>lause(negate<sub>n</sub>ode(u), negate<sub>n</sub>ode(v));
+            add<sub>c</sub>lause(v, u);
+            add<sub>c</sub>lause(negate<sub>n</sub>ode(v), negate<sub>n</sub>ode(u));
+        } else { // 狀態不同 (u &lt;-&gt; ¬v)
+            // (u -&gt; ¬v) 且 (v -&gt; ¬u) 以及 (¬u -&gt; v) 且 (¬v -&gt; u)
+            add<sub>c</sub>lause(u, negate<sub>n</sub>ode(v));
+            add<sub>c</sub>lause(v, negate<sub>n</sub>ode(u));
+            add<sub>c</sub>lause(negate<sub>n</sub>ode(u), v);
+            add<sub>c</sub>lause(negate<sub>n</sub>ode(v), u);
+        }
     }
 
-    // 定義上下左右 4 個移動方向
-    int dr[] = {-1, 1, 0, 0};
-    int dc[] = {0, 0, -1, 1};
-    int ans = -1;  // 記錄最終的最短逃離步數
+    // 執行 Tarjan 演算法尋找全圖的強連通分量
+    for (int i = 2; i &lt;= 2 * n + 1; ++i) {
+        if (!dfn[i]) {
+            tarjan(i);
+        }
+    }
 
-    while (!q.empty())
-    {
-        auto [r, c] = q.front();
-        q.pop();
-
-        // 若抵達終點（假設終點為 'E'）
-        if (maze[r][c] == 'E')
-        {
-            ans = dist[r][c];
+    // 檢查是否有變數和其否定在同一個 SCC 中，若有則代表矛盾無解
+    bool possible = true;
+    for (int i = 1; i &lt;= n; ++i) {
+        int u = get<sub>n</sub>ode(i);
+        int neg<sub>u</sub> = negate<sub>n</sub>ode(u);
+        if (scc<sub>i</sub>d[u] == scc<sub>i</sub>d[neg<sub>u</sub>]) {
+            possible = false;
             break;
         }
-
-        // 走訪 4 個相鄰方向
-        for (int i = 0; i &lt; 4; i++)
-        {
-            int nr = r + dr[i];
-            int nc = c + dc[i];
-
-            // 檢查是否在迷宮範圍內、不是牆壁且尚未被造訪過
-            if (nr &gt;= 0 &amp;&amp; nr &lt; R &amp;&amp; nc &gt;= 0 &amp;&amp; nc &lt; C &amp;&amp; maze[nr][nc] != '#' &amp;&amp; dist[nr][nc] == -1)
-            {
-                dist[nr][nc] = dist[r][c] + 1;  // 記錄步數 +1
-                q.push({nr, nc});  // 將新座標推入佇列
-            }
-        }
     }
 
-    cout &lt;&lt; ans &lt;&lt; "\n";  // 輸出最短逃離步數
-    return 0;
-}</code></pre>
+    if (possible) printf(&quot;Easy Peasy\n&quot;);
+    else printf(&quot;Impossible\n&quot;);
+}
+
+int main() {
+    while (scanf(&quot;%d %d&quot;, &amp;n, &amp;t) != EOF) {
+        solve(); // 處理每筆測資
+    }
+    return 0; // 程式正常結束
+}
+</code></pre>
             </div>
         </div>
     </div>

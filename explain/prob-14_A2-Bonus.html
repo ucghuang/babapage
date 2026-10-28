@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#14 201905_A2-Bonus - TOI 題目詳解與 C++ 實作</title>
+    <title>#14 201905<sub>A</sub>2-Bonus - TOI 題目詳解與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -121,19 +121,19 @@
     <div class="container">
         <div class="problem-card">
             <div class="card-header">
-                <h1><span class="index-tag">#14</span> 201905_A2-Bonus (巨額獎金)</h1>
+                <h1><span class="index-tag">#14</span> 201905<sub>A</sub>2-Bonus (巨額獎金)</h1>
                 <div class="header-right">
-                    <a href="../questions/201905_A2-Bonus(Q).pdf" class="file-name-meta" target="_blank">PDF: 201905_A2-Bonus(Q).pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-14" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                    <a href="../questions/201905<sub>A</sub>2-Bonus(Q).pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201905<sub>A</sub>2-Bonus(Q).pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-14" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
             <div class="section-part">
                 <h2 class="section-title">題目摘要</h2>
                 <div class="analysis-box">
-                    <p><strong>問題敘述：</strong> 戀愛遊戲中玩家要從初始階段 $S_0$ 經過多個事件選擇到達結局階段 $S_{N-1}$。每條路線不能重複造訪同一個階段。給定 $N$ 個階段與 $E$ 條事件導向邊，請計算總共有多少條不同的通關路線數 $R$。</p>
-                    <p><strong>輸入格式：</strong> 第一列有兩個正整數 $N$ 及 $E$ ($2 \le N \le 10^6$)；接著 $E$ 列每列有兩個整數 $i$、$j$，表示存在事件可從階段 $S_i$ 進入階段 $S_j$。</p>
-                    <p><strong>輸出格式：</strong> 輸出一個正整數 $R$，代表從初始階段到結局階段的總路線數。</p>
+                    <p><strong>問題敘述：</strong> 戀愛遊戲中玩家要從初始階段 <span style="font-style: italic;">S<sub>0</sub></span> 經過多個事件選擇到達結局階段 <span style="font-style: italic;">S<sub>N-1</sub></span>。每條路線不能重複造訪同一個階段。給定 <span style="font-style: italic;">N</span> 個階段與 <span style="font-style: italic;">E</span> 條事件導向邊，請計算總共有多少條不同的通關路線數 <span style="font-style: italic;">R</span>。</p>
+                    <p><strong>輸入格式：</strong> 第一列有兩個正整數 <span style="font-style: italic;">N</span> 及 <span style="font-style: italic;">E</span> (<span style="font-style: italic;">2 ≤ N ≤ 10<sup>6</sup></span>)；接著 <span style="font-style: italic;">E</span> 列每列有兩個整數 <span style="font-style: italic;">i</span>、<span style="font-style: italic;">j</span>，表示存在事件可從階段 <span style="font-style: italic;">S<sub>i</sub></span> 進入階段 <span style="font-style: italic;">S<sub>j</sub></span>。</p>
+                    <p><strong>輸出格式：</strong> 輸出一個正整數 <span style="font-style: italic;">R</span>，代表從初始階段到結局階段的總路線數。</p>
                 </div>
             </div>
 
@@ -142,7 +142,7 @@
                 <div class="analysis-box">
                     <p>本題採用<strong>圖論深度優先搜尋 (DFS) 與記憶化 (Memoization) 策略</strong>：</p>
                     <ul>
-                        <li>由於遊戲是有向無環圖 (DAG)，我們可以從終點階段 $S_{N-1}$ 出發，透過反向建立邊（從終點往回推導至起點）來計算到達各點的路線數。</li>
+                        <li>由於遊戲是有向無環圖 (DAG)，我們可以從終點階段 <span style="font-style: italic;">S<sub>N-1</sub></span> 出發，透過反向建立邊（從終點往回推導至起點）來計算到達各點的路線數。</li>
                         <li>利用記憶化陣列 <code>R[cur]</code> 記錄已經計算過的節點路線數，若該節點已經算過則直接回傳，避免重複遞迴導致時間超時 (TLE)。</li>
                     </ul>
                 </div>
@@ -167,19 +167,19 @@
 2 8
 5 8</pre>
                     <ul>
-                        <li><strong>圖形結構分析：</strong> 總共有 9 個階段（編號 0 到 8），起點為 $S_0$，終點為 $S_8$。</li>
+                        <li><strong>圖形結構分析：</strong> 總共有 9 個階段（編號 0 到 8），起點為 <span style="font-style: italic;">S<sub>0</sub></span>，終點為 <span style="font-style: italic;">S<sub>8</sub></span>。</li>
                         <li><strong>反向邊與遞迴追溯過程：</strong>
                             <ul>
-                                <li>我們從終點 $S_8$ 出發，找出能通往 $S_8$ 的前置階段有：$S_2$、$S_5$、$S_6$。</li>
-                                <li>因此 $S_8$ 的總路線數等於這三個前置階段路線數的加總：$R[8] = R[2] + R[5] + R[6]$。</li>
+                                <li>我們從終點 <span style="font-style: italic;">S<sub>8</sub></span> 出發，找出能通往 <span style="font-style: italic;">S<sub>8</sub></span> 的前置階段有：<span style="font-style: italic;">S<sub>2</sub></span>、<span style="font-style: italic;">S<sub>5</sub></span>、<span style="font-style: italic;">S<sub>6</sub></span>。</li>
+                                <li>因此 <span style="font-style: italic;">S<sub>8</sub></span> 的總路線數等於這三個前置階段路線數的加總：<span style="font-style: italic;">R[8] = R[2] + R[5] + R[6]</span>。</li>
                                 <li>我們依序遞迴往前計算：
                                     <ul>
-                                        <li>$S_6$ 的前置有 $S_4$ 和 $S_7$（皆可通往 $S_6$）。</li>
-                                        <li>$S_4$ 的前置有 $S_1$ 和 $S_3$。</li>
-                                        <li>$S_1, S_3, S_7, S_2, S_5$ 的前置皆可追溯回初始起點 $S_0$（起始點路線數 $R[0] = 1$）。</li>
+                                        <li><span style="font-style: italic;">S<sub>6</sub></span> 的前置有 <span style="font-style: italic;">S<sub>4</sub></span> 和 <span style="font-style: italic;">S<sub>7</sub></span>（皆可通往 <span style="font-style: italic;">S<sub>6</sub></span>）。</li>
+                                        <li><span style="font-style: italic;">S<sub>4</sub></span> 的前置有 <span style="font-style: italic;">S<sub>1</sub></span> 和 <span style="font-style: italic;">S<sub>3</sub></span>。</li>
+                                        <li><span style="font-style: italic;">S<sub>1</sub>, S<sub>3</sub>, S<sub>7</sub>, S<sub>2</sub>, S<sub>5</sub></span> 的前置皆可追溯回初始起點 <span style="font-style: italic;">S<sub>0</sub></span>（起始點路線數 <span style="font-style: italic;">R[0] = 1</span>）。</li>
                                     </ul>
                                 </li>
-                                <li>透過記憶化 DFS 逐層加總回傳，最終在 $S_8$ 匯集得到總路線數為 5。</li>
+                                <li>透過記憶化 DFS 逐層加總回傳，最終在 <span style="font-style: italic;">S<sub>8</sub></span> 匯集得到總路線數為 5。</li>
                             </ul>
                         </li>
                     </ul>
@@ -203,12 +203,12 @@
 7 9
 8 9</pre>
                     <ul>
-                        <li><strong>圖形結構分析：</strong> 總共有 10 個階段（編號 0 到 9），起點為 $S_0$，終點為 $S_9$。</li>
+                        <li><strong>圖形結構分析：</strong> 總共有 10 個階段（編號 0 到 9），起點為 <span style="font-style: italic;">S<sub>0</sub></span>，終點為 <span style="font-style: italic;">S<sub>9</sub></span>。</li>
                         <li><strong>反向邊與遞迴追溯過程：</strong>
                             <ul>
-                                <li>從終點 $S_9$ 出發，其前置階段有：$S_3$、$S_4$、$S_5$、$S_7$、$S_8$。</li>
-                                <li>程式透過 DFS 從終點 $S_9$ 往回反向搜尋，並利用 <code>R[cur]</code> 陣列記錄每個階段可以到達終點的合法分支數。</li>
-                                <li>當所有分支路徑在起點 $S_0$ 匯聚並完整加總後，計算出總通關路線數為 7。</li>
+                                <li>從終點 <span style="font-style: italic;">S<sub>9</sub></span> 出發，其前置階段有：<span style="font-style: italic;">S<sub>3</sub></span>、<span style="font-style: italic;">S<sub>4</sub></span>、<span style="font-style: italic;">S<sub>5</sub></span>、<span style="font-style: italic;">S<sub>7</sub></span>、<span style="font-style: italic;">S<sub>8</sub></span>。</li>
+                                <li>程式透過 DFS 從終點 <span style="font-style: italic;">S<sub>9</sub></span> 往回反向搜尋，並利用 <code>R[cur]</code> 陣列記錄每個階段可以到達終點的合法分支數。</li>
+                                <li>當所有分支路徑在起點 <span style="font-style: italic;">S<sub>0</sub></span> 匯聚並完整加總後，計算出總通關路線數為 7。</li>
                             </ul>
                         </li>
                     </ul>
@@ -245,7 +245,7 @@ int main()
     {
         int t1,t2;
         std::cin&gt;&gt;t1&gt;&gt;t2;  // 讀入每一條事件邊連接的兩個階段 t1 與 t2
-        Edge[t2].push_back(t1);  // 建立反向邊，方便從終點往回推導路線
+        Edge[t2].push<sub>b</sub>ack(t1);  // 建立反向邊，方便從終點往回推導路線
     }
     
     DFS(S-1);  // 從最終結局階段（編號 S-1）開始進行 DFS 搜尋

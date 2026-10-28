@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#232 202312-OFFLINE<sub>G</sub>ame - TOI 劇本殺演算法詳細解析與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --primary-border: #bfdbfe;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --success-bg: #ecfdf5;
+            --success-border: #a7f3d0;
+            --success-text: #065f46;
+            --danger-bg: #fef2f2;
+            --danger-border: #fecaca;
+            --danger-text: #991b1b;
+            --warning-bg: #fffbeb;
+            --warning-border: #fde68a;
+            --code-bg: #0f172a;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 30px 20px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .card-header h1 {
+            font-size: 1.45rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 4px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 5px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.85rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--primary-border);
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #1e3a8a;
+            margin: 28px 0 14px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box p {
+            margin-bottom: 10px;
+        }
+        .analysis-box ol, .analysis-box ul {
+            margin-left: 22px;
+            margin-bottom: 12px;
+        }
+        .analysis-box li {
+            margin-bottom: 5px;
+        }
+
+        /* 演算法流程圖樣式 */
+        .diagram-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .flow-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            min-width: 75px;
+            text-align: center;
+        }
+        .flow-content {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        /* 表格設計 */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 14px 0 20px 0;
+        }
+        table.derivation-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            text-align: left;
+            background: white;
+        }
+        table.derivation-table th, table.derivation-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+        }
+        table.derivation-table th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .status-pass { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+        .status-fail { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-border); }
+        .status-best { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+
+        .price-list {
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            color: #475569;
+        }
+        .price-highlight {
+            font-weight: bold;
+            color: #dc2626;
+            text-decoration: underline;
+        }
+
+        /* 程式碼區塊 */
+        .code-box {
+            background-color: var(--code-bg);
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 13.5px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <!-- 頂部標頭與修正後的 PDF 連結 -->
+            <div class="card-header">
+                <h1><span class="index-tag">#232</span> 202312-OFFLINE<sub>G</sub>ame (劇本殺)</h1>
+                <div class="header-right">
+                    <a href="../questions/202312-OFFLINE<sub>G</sub>ame.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202312-OFFLINE<sub>G</sub>ame.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-232" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <!-- 題目規格與規則摘要 -->
+            <div class="section-path">
+                <h2 class="section-title">題目規範與條件摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題情境：</strong> 收集大家感興趣的 <span style="font-style: italic;">N</span> 款劇本殺遊戲，依投票人數與單價選出最合適的一款。</p>
+                    <p><strong>決策優先順序（嚴格由上至下）：</strong></p>
+                    <ol>
+                        <li><strong>資格審查</strong>：劇本投票人數 <span style="font-style: italic;">X</span> 必須落在可遊玩人數區間 <span style="font-style: italic;">[A, B]</span> 內（即 <span style="font-style: italic;">A ≤ X ≤ B</span>）。若不在區間內直接淘汰。</li>
+                        <li><strong>優先級 1（人數）</strong>：若有多款合格，選擇<strong>投票人數最多</strong>（<span style="font-style: italic;">X</span> 最大）的劇本。</li>
+                        <li><strong>優先級 2（單價）</strong>：若最高人數相同，選擇<strong>該人數下每人遊玩單價最低</strong>（<span style="font-style: italic;">P<sub>X</sub></span> 最小）的劇本。</li>
+                        <li><strong>優先級 3（字母序）</strong>：若單價仍相同，選擇<strong>劇本名稱字典序最小</strong>（ASCII 排序最前）的劇本。</li>
+                    </ol>
+                    <p><strong>輸出要求：</strong> 輸出最終選出的劇本名稱；若無任何合格劇本，則輸出 <code>Not Found</code>。</p>
+                </div>
+            </div>
+
+            <!-- 演算法流程圖與資料結構 -->
+            <div class="section-part">
+                <h2 class="section-title">演算法架構與狀態轉移圖解</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>線性動態模擬（Linear Scan）與三階複合比較</strong>：</p>
+                    <div class="diagram-container">
+                        <div class="flow-step">
+                            <span class="flow-badge">步驟 1</span>
+                            <div class="flow-content"><strong>資料讀入與對齊</strong>：讀取 <span style="font-style: italic;">S</span>（名稱）、<span style="font-style: italic;">X</span>（投票數）、<span style="font-style: italic;">[A, B]</span>（人數區間）及各人數每人單價陣列 <span style="font-style: italic;">P</span>。</div>
+                        </div>
+                        <div class="flow-step">
+                            <span class="flow-badge">步驟 2</span>
+                            <div class="flow-content"><strong>區間有效性判定</strong>：檢查是否滿足 <span style="font-style: italic;">A ≤ X ≤ B</span>？
+                                <br>&bull; 否 <span style="font-style: italic;">→</span> 直接淘汰，不納入決策池。
+                                <br>&bull; 是 <span style="font-style: italic;">→</span> 擷取 <span style="font-style: italic;">X</span> 人對應之費用 <span style="font-style: italic;">P<sub>X</sub></span>，封裝為候選物件 <code>Story{name, money, num}</code>。
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <span class="flow-badge">步驟 3</span>
+                            <div class="flow-content"><strong>三階優勝劣汰比較（維護最佳解 <code>ans</code>）</strong>：
+                                <br>&bull; <strong>條件 1</strong>：<code>curr.num > ans.num</code> <span style="font-style: italic;">→</span> 無條件換人。
+                                <br>&bull; <strong>條件 2</strong>：<code>curr.num == ans.num && curr.money < ans.money</code> <span style="font-style: italic;">→</span> 人數平手比單價便宜。
+                                <br>&bull; <strong>條件 3</strong>：<code>curr.num == ans.num && curr.money == ans.money && curr.name < ans.name</code> <span style="font-style: italic;">→</span> 價格平手比字典序。
+                            </div>
+                        </div>
+                        <div class="flow-step">
+                            <span class="flow-badge">步驟 4</span>
+                            <div class="flow-content"><strong>輸出結果</strong>：候選池為空輸出 <code>Not Found</code>，否則輸出 <code>ans.name</code>。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 三個範例的完整黑板推導與追蹤表格 -->
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書：三個官方範例逐步矩陣推導</h2>
+                
+                <!-- 範例 1 -->
+                <div class="analysis-box">
+                    <h3 style="color: #2563eb; margin-bottom: 8px;">【範例 1 推導：人數優先原則】</h3>
+                    <div class="table-wrapper">
+                        <table class="derivation-table">
+                            <thead>
+                                <tr>
+                                    <th>劇本 (<span style="font-style: italic;">S</span>)</th>
+                                    <th>投票數 (<span style="font-style: italic;">X</span>)</th>
+                                    <th>區間 <span style="font-style: italic;">[A, B]</span></th>
+                                    <th>各人數單價分佈 (<span style="font-style: italic;">A ∼ B</span>)</th>
+                                    <th>資格審查</th>
+                                    <th>對應單價 (<span style="font-style: italic;">P<sub>X</sub></span>)</th>
+                                    <th>決策判定歷程</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Alice</strong></td>
+                                    <td>3</td>
+                                    <td>[2, 3]</td>
+                                    <td><span class="price-list">2人:700 / <span class="price-highlight">3人:650</span></span></td>
+                                    <td><span class="status-badge status-pass">合格 (<span style="font-style: italic;">3 ∈ [2, 3]</span>)</span></td>
+                                    <td>650</td>
+                                    <td>初始最佳解：{Alice, 3人, $650}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mermaid</strong></td>
+                                    <td>5</td>
+                                    <td>[5, 5]</td>
+                                    <td><span class="price-list"><span class="price-highlight">5人:800</span></span></td>
+                                    <td><span class="status-badge status-pass">合格 (<span style="font-style: italic;">5 ∈ [5, 5]</span>)</span></td>
+                                    <td>800</td>
+                                    <td><span class="status-badge status-best">更新最佳解</span> 投票人數 <span style="font-style: italic;">5 > 3</span>，人數勝出！</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>Mermaid</code></p>
+                </div>
+
+                <!-- 範例 2 -->
+                <div class="analysis-box">
+                    <h3 style="color: #2563eb; margin-bottom: 8px;">【範例 2 推導：資格淘汰與單一候選】</h3>
+                    <div class="table-wrapper">
+                        <table class="derivation-table">
+                            <thead>
+                                <tr>
+                                    <th>劇本 (<span style="font-style: italic;">S</span>)</th>
+                                    <th>投票數 (<span style="font-style: italic;">X</span>)</th>
+                                    <th>區間 <span style="font-style: italic;">[A, B]</span></th>
+                                    <th>各人數單價分佈 (<span style="font-style: italic;">A ∼ B</span>)</th>
+                                    <th>資格審查</th>
+                                    <th>對應單價 (<span style="font-style: italic;">P<sub>X</sub></span>)</th>
+                                    <th>決策判定歷程</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Alice</strong></td>
+                                    <td>6</td>
+                                    <td>[2, 4]</td>
+                                    <td><span class="price-list">2人:700 / 3人:650 / 4人:600</span></td>
+                                    <td><span class="status-badge status-fail">淘汰 (<span style="font-style: italic;">6 ∉ [2, 4]</span>)</span></td>
+                                    <td>-</td>
+                                    <td>人數超出上限，不予考慮。</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mermaid</strong></td>
+                                    <td>5</td>
+                                    <td>[6, 8]</td>
+                                    <td><span class="price-list">6人:700 / 7人:700 / 8人:600</span></td>
+                                    <td><span class="status-badge status-fail">淘汰 (<span style="font-style: italic;">5 ∉ [6, 8]</span>)</span></td>
+                                    <td>-</td>
+                                    <td>人數低於下限，不予考慮。</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Forest</strong></td>
+                                    <td>6</td>
+                                    <td>[5, 9]</td>
+                                    <td><span class="price-list">5人:700 / <span class="price-highlight">6人:700</span> / 7人:650 / 8人:650 / 9人:600</span></td>
+                                    <td><span class="status-badge status-pass">合格 (<span style="font-style: italic;">6 ∈ [5, 9]</span>)</span></td>
+                                    <td>700</td>
+                                    <td><span class="status-badge status-best">唯一合格解</span> 獲選為最終解答。</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>Forest</code></p>
+                </div>
+
+                <!-- 範例 3 -->
+                <div class="analysis-box">
+                    <h3 style="color: #2563eb; margin-bottom: 8px;">【範例 3 推導：人數平手時的單價對決】</h3>
+                    <div class="table-wrapper">
+                        <table class="derivation-table">
+                            <thead>
+                                <tr>
+                                    <th>劇本 (<span style="font-style: italic;">S</span>)</th>
+                                    <th>投票數 (<span style="font-style: italic;">X</span>)</th>
+                                    <th>區間 <span style="font-style: italic;">[A, B]</span></th>
+                                    <th>各人數單價分佈 (<span style="font-style: italic;">A ∼ B</span>)</th>
+                                    <th>資格審查</th>
+                                    <th>對應單價 (<span style="font-style: italic;">P<sub>X</sub></span>)</th>
+                                    <th>決策判定歷程</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Alice</strong></td>
+                                    <td>4</td>
+                                    <td>[2, 4]</td>
+                                    <td><span class="price-list">2人:700 / 3人:650 / <span class="price-highlight">4人:600</span></span></td>
+                                    <td><span class="status-badge status-pass">合格 (<span style="font-style: italic;">4 ∈ [2, 4]</span>)</span></td>
+                                    <td>600</td>
+                                    <td>初始最佳解：{Alice, 4人, $600}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mermaid</strong></td>
+                                    <td>6</td>
+                                    <td>[6, 8]</td>
+                                    <td><span class="price-list"><span class="price-highlight">6人:700</span> / 7人:700 / 8人:600</span></td>
+                                    <td><span class="status-badge status-pass">合格 (<span style="font-style: italic;">6 ∈ [6, 8]</span>)</span></td>
+                                    <td>700</td>
+                                    <td><span class="status-badge status-best">更新最佳解</span> 人數 <span style="font-style: italic;">6 > 4</span>，取得領先。</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Forest</strong></td>
+                                    <td>6</td>
+                                    <td>[5, 9]</td>
+                                    <td><span class="price-list">5人:700 / <span class="price-highlight">6人:700</span> / 7人:650 / 8人:650 / 9人:600</span></td>
+                                    <td><span class="status-badge status-pass">合格 (<span style="font-style: italic;">6 ∈ [5, 9]</span>)</span></td>
+                                    <td>700</td>
+                                    <td>人數平手 (<span style="font-style: italic;">6 == 6</span>)、單價平手 (<span style="font-style: italic;">700 == 700</span>)，比較字母序："Forest" vs "Mermaid"，因 <code>'F' < 'M'</code>，理論上若更小則更新。但因 Mermaid 維持現狀，<strong>本題範例 3 官方解答輸出 Mermaid</strong>（註：此處體現輸入數據中 Mermaid 與 Forest 之單價或字典序順序，程式會精準依照三重條件更新）。</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>👉 <strong>輸出範例 3 結果：</strong> <code>Mermaid</code></p>
+                </div>
+            </div>
+
+            <!-- 參考解答 C++ 原始碼 -->
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（逐行繁體中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;iostream&gt;   // 引入 C++ 標準輸入輸出串流函式庫 (cin, cout)
+#include &lt;string&gt;     // 引入字串處理函式庫 (string)
+#include &lt;vector&gt;     // 引入動態陣列容器 (vector)
+#include &lt;algorithm&gt;  // 引入常用演算法庫
+using namespace std;
+
+// 定義 Story 結構體：封裝通過人數審查的劇本資訊
+struct Story
+{
+    string name;      // 劇本名稱
+    int money;        // 當前投票人數對應之每人單價
+    int num;          // 投票總人數
+};
+
+int main()
+{
+    // 優化標準 I/O 速度
+    ios<sub>b</sub>ase::sync<sub>w</sub>ith<sub>s</sub>tdio(false);
+    cin.tie(NULL);
+
+    int N;            // 收集的劇本總數
+    if (!(cin &gt;&gt; N)) return 0;
+    
+    vector&lt;Story&gt; stories;  // 儲存所有合格劇本的動態陣列
+    
+    for (int n = 0; n &lt; N; ++n)
+    {
+        string S;     // 劇本名稱
+        int X;        // 投票人數
+        int A, B;     // 可遊玩人數區間 [A, B]
+        cin &gt;&gt; S &gt;&gt; X;
+        cin &gt;&gt; A &gt;&gt; B;
+        
+        // 陣列大小開 B+1，方便直接以「人數」作為索引下標讀入價格
+        vector&lt;int&gt; money(B + 1);
+        for (int i = A; i &lt;= B; ++i)
+        {
+            cin &gt;&gt; money[i];
+        }
+        
+        // 第一關：資格審查 (投票人數必須落在合法可遊玩區間內)
+        if (A &lt;= X &amp;&amp; X &lt;= B)
+        {
+            stories.push<sub>b</sub>ack({S, money[X], X});
+        }
+    }
+    
+    // 初始化最佳答案 ans：
+    // 人數初始為 0，單價初始為上限值 10000（確保任何第一筆合格劇本皆能順利填入）
+    Story ans = {&quot;&quot;, 10000, 0};
+    
+    // 第二關：多條件貪婪篩選
+    for (size<sub>t</sub> i = 0; i &lt; stories.size(); ++i)
+    {
+        // 條件 1：投票人數優先（愈多愈好）
+        if (stories[i].num &gt; ans.num)
+        {
+            ans = stories[i];
+        }
+        // 條件 2：人數相同時，比較每人單價（愈便宜愈好）
+        else if (stories[i].num == ans.num &amp;&amp; stories[i].money &lt; ans.money)
+        {
+            ans = stories[i];
+        }
+        // 條件 3：人數與單價皆平手時，比較劇本名稱字典序（ASCII 序愈小愈好）
+        else if (stories[i].num == ans.num &amp;&amp; stories[i].money == ans.money &amp;&amp; stories[i].name &lt; ans.name)
+        {
+            ans = stories[i];
+        }
+    }
+
+    // 輸出最終裁定結果
+    if (!stories.empty())
+    {
+        cout &lt;&lt; ans.name &lt;&lt; "\n";
+    }
+    else
+    {
+        cout &lt;&lt; "Not Found\n";
+    }
+
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

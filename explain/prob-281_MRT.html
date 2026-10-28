@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#281 202503<sub>M</sub>RT (捷運) - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#281</span> 202503<sub>M</sub>RT (捷運)</h1>
+                <div class="header-right">
+                    <a href="../questions/202503<sub>M</sub>RT.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202503<sub>M</sub>RT.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-281" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 捷運實施常客優惠多年，三月調整了優惠方案：</p>
+                    <ul>
+                        <li>每月搭乘捷運 11 至 20 次，現金回饋 5%（即總票價乘以 0.95）。</li>
+                        <li>每月搭乘捷運 21 至 40 次，現金回饋 10%（即總票價乘以 0.90）。</li>
+                        <li>每月搭乘捷運 41 次以上，現金回饋 15%（即總票價乘以 0.85）。</li>
+                        <li>若每月搭乘次數未達 11 次，則無現金回饋。</li>
+                    </ul>
+                    <p>此外，還有 TPASS 1200 方案，每月搭乘金額 1200 元以上的乘客可以購買 TPASS 更划算。露璐想知道她每個月的交通費，如果常客優惠計算後的交通費超過 1200 元的話她打算購買 TPASS（即交通費上限為 1200 元）。請寫一個程式計算露璐的交通費。</p>
+                    <p><strong>輸入格式：</strong> 第一列輸入一個正整數 <span style="font-style: italic;">N</span> (<span style="font-style: italic;">1 ≤ N ≤ 100</span>)，表示露璐一個月的搭車次數。第二列包含 <span style="font-style: italic;">N</span> 個正整數 <span style="font-style: italic;">X<sub>i</sub></span> (<span style="font-style: italic;">20 ≤ X<sub>i</sub> ≤ 65</span>)，每個數代表每次搭乘的票價。</p>
+                    <p><strong>輸出格式：</strong> 輸出露璐該月的交通費。如果交通費比 1200 便宜，輸出該費用（原始票價扣除現金回饋金額，四捨五入至整數）；否則輸出 1200（即使用 TPASS）。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【條件判斷與模擬計算】</h2>
+                <div class="analysis-box">
+                    <p>本題為基礎的迴圈累加與條件分支應用題：</p>
+                    <ul>
+                        <li><strong>累加總票價：</strong> 使用迴圈讀入搭乘次數 <span style="font-style: italic;">N</span> 以及每次的票價 <span style="font-style: italic;">X<sub>i</sub></span>，將其累加至 <code>amount</code> 變數中。</li>
+                        <li><strong>套用常客優惠：</strong> 根據搭乘次數 <span style="font-style: italic;">N</span> 的區間（11~20次、21~40次、41次以上），對 <code>amount</code> 乘以對應的折扣係數（0.95、0.90、0.85）。</li>
+                        <li><strong>比較 TPASS 方案：</strong> 判斷計算後的優惠金額是否大於或等於 1200 元。若大於或等於 1200 元則輸出 1200；否則使用 <code>round()</code> 函數將金額四捨五入至整數後輸出。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+12
+20 20 25 30 20 15 25 20 35 30 20 20</pre>
+                    <ul>
+                        <li>搭乘次數 <span style="font-style: italic;">N = 12</span>。落在 11 至 20 次區間，享有 5% 現金回饋（乘以 0.95）。</li>
+                        <li>票價加總：<span style="font-style: italic;">20+20+25+30+20+15+25+20+35+30+20+20 = 280元</span>。</li>
+                        <li>折扣後金額：<span style="font-style: italic;">280 × 0.95 = 266元</span>。</li>
+                        <li>金額 266 小於 1200，故無需使用 TPASS。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>266</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+50
+65 65 ... (共50個65)</pre>
+                    <ul>
+                        <li>搭乘次數 <span style="font-style: italic;">N = 50</span>。落在 41 次以上區間，享有 15% 現金回饋（乘以 0.85）。</li>
+                        <li>票價加總：<span style="font-style: italic;">50 × 65 = 3250元</span>。</li>
+                        <li>折扣後金額：<span style="font-style: italic;">3250 × 0.85 = 2762.5元</span>。</li>
+                        <li>金額 2762.5 超過 1200 元，改用 TPASS 方案較划算。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>1200</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 3 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+10
+65 65 65 65 65 65 65 65 65 65</pre>
+                    <ul>
+                        <li>搭乘次數 <span style="font-style: italic;">N = 10</span>。小於 11 次，無常客優惠（折扣 1.0）。</li>
+                        <li>票價加總：<span style="font-style: italic;">10 × 65 = 650元</span>。</li>
+                        <li>金額 650 小於 1200，故輸出原價。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 3 結果：</strong> <code>650</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;iostream&gt; // 引入標準輸入輸出標頭檔，以便使用 cin 與 cout
+#include &lt;math.h&gt;   // 引入數學函式庫，以便使用 round 進行四捨五入
+using namespace std;
+
+int main()
+{
+    int n;          // 宣告變數 n 用來儲存每個月搭乘捷運的總次數
+    cin >> n;       // 讀入搭乘次數 n
+    double amount = 0; // 宣告雙精度浮點數變數 amount 用來累加總票價，初始化為 0
+    for (int i = 0; i &lt; n; i++) // 使用迴圈讀入每次搭乘的票價共 n 次
+    {   
+        int x;      // 宣告變數 x 用來儲存單次搭乘票價
+        cin >> x;   // 讀入單次票價
+        amount += x; // 將單次票價累加到總金額 amount 中
+    }
+    
+    // 根據搭乘次數套用不同的常客優惠現金回饋方案
+    if (n &gt;= 41)    // 若搭乘次數 41 次以上
+    {
+        amount = amount * 0.85; // 享 15% 現金回饋（乘以 0.85）
+    }
+    else if (n &gt;= 21) // 若搭乘次數介於 21 至 40 次之間
+    {
+        amount = amount * 0.9;  // 享 10% 現金回饋（乘以 0.90）
+    }
+    else if (n &gt;= 11) // 若搭乘次數介於 11 至 20 次之間
+    {
+        amount = amount * 0.95; // 享 5% 現金回饋（乘以 0.95）
+    }
+    
+    // 判斷是否購買 TPASS 1200 方案
+    if (amount &gt;= 1200) // 若優惠後的交通費大於或等於 1200 元
+    {
+        cout &lt;&lt; 1200 &lt;&lt; endl; // 購買 TPASS 方案更划算，固定輸出 1200
+    }
+    else // 若交通費小於 1200 元
+    {
+        // 將金額四捨五入到整數後輸出
+        cout &lt;&lt; round(amount) &lt;&lt; endl;
+    }
+    return 0; // 程式正常結束
+}
+</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

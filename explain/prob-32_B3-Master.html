@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#32 201910_B3-Master - TOI 題目詳解與 C++ 實作</title>
+    <title>#32 201910<sub>B</sub>3-Master - TOI 題目詳解與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -121,18 +121,18 @@
     <div class="container">
         <div class="problem-card">
             <div class="card-header">
-                <h1><span class="index-tag">#32</span> 201910_B3-Master (虛擬寵物大師)</h1>
+                <h1><span class="index-tag">#32</span> 201910<sub>B</sub>3-Master (虛擬寵物大師)</h1>
                 <div class="header-right">
-                    <a href="../questions/201910_B3-Master.pdf" class="file-name-meta" target="_blank">PDF: 201910_B3-Master.pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-32" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                    <a href="../questions/201910<sub>B</sub>3-Master.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201910<sub>B</sub>3-Master.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-32" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
             <div class="section-part">
                 <h2 class="section-title">題目摘要</h2>
                 <div class="analysis-box">
-                    <p><strong>問題敘述：</strong> 虛擬寵物的強度取決於原始 CP 值與 IV 值（素質）。利用手上的星塵沙子，每消耗 1000 星塵可提升一級，依據 IV 區間不同，每升一等增加的 CP 值也有所差異（IV 0~29 增加 10，IV 30~39 增加 50，IV 40~45 增加 100）。給定候選寵物數量 $n$、手上的星塵總量 $S$，以及每隻寵物的 CP 值與 IV 值，請找出消耗完現有星塵成長後，能達到<strong>最高 CP 值</strong>的寵物編號與其最終 CP 值。</p>
-                    <p><strong>輸入格式：</strong> 第一行有兩個正整數 $n$ ($1 \le n \le 50$) 與 $S$ ($1 \le S \le 10^5$)；接下來 $n$ 行，每行有兩個整數 CP 與 IV。</p>
+                    <p><strong>問題敘述：</strong> 虛擬寵物的強度取決於原始 CP 值與 IV 值（素質）。利用手上的星塵沙子，每消耗 1000 星塵可提升一級，依據 IV 區間不同，每升一等增加的 CP 值也有所差異（IV 0~29 增加 10，IV 30~39 增加 50，IV 40~45 增加 100）。給定候選寵物數量 <span style="font-style: italic;">n</span>、手上的星塵總量 <span style="font-style: italic;">S</span>，以及每隻寵物的 CP 值與 IV 值，請找出消耗完現有星塵成長後，能達到<strong>最高 CP 值</strong>的寵物編號與其最終 CP 值。</p>
+                    <p><strong>輸入格式：</strong> 第一行有兩個正整數 <span style="font-style: italic;">n</span> (<span style="font-style: italic;">1 ≤ n ≤ 50</span>) 與 <span style="font-style: italic;">S</span> (<span style="font-style: italic;">1 ≤ S ≤ 10<sup>5</sup></span>)；接下來 <span style="font-style: italic;">n</span> 行，每行有兩個整數 CP 與 IV。</p>
                     <p><strong>輸出格式：</strong> 輸出一行，包含欲捕捉的「虛擬寵物編號」與該寵物「成長後最高 CP 值」，中間以空格隔開。</p>
                 </div>
             </div>
@@ -142,8 +142,8 @@
                 <div class="analysis-box">
                     <p>本題採用<strong>貪心與直接模擬策略</strong>：</p>
                     <ul>
-                        <li>每隻寵物升等所消耗的星塵總量是固定的（即手上的總星塵 $S$ 全數投資在同一隻寵物身上）。</li>
-                        <li>因此，我們可以獨立計算每一隻寵物在消耗完所有星塵後能提升幾等（$\lfloor S / 1000 \rfloor$），並依據其 IV 值對應的每級 CP 成長量，直接算出成長後的最終 CP 值。</li>
+                        <li>每隻寵物升等所消耗的星塵總量是固定的（即手上的總星塵 <span style="font-style: italic;">S</span> 全數投資在同一隻寵物身上）。</li>
+                        <li>因此，我們可以獨立計算每一隻寵物在消耗完所有星塵後能提升幾等（<span style="font-style: italic;">\lfloor S / 1000 \rfloor</span>），並依據其 IV 值對應的每級 CP 成長量，直接算出成長後的最終 CP 值。</li>
                         <li>在所有候選寵物中，透過貪心比較法挑選出最終 CP 值最高者即可。</li>
                     </ul>
                 </div>
@@ -159,12 +159,12 @@
 1300 33
 1600 22</pre>
                     <ul>
-                        <li><strong>總星塵 $S = 1000$：</strong> 可升級次數為 $1000 / 1000 = 1$ 等。</li>
+                        <li><strong>總星塵 <span style="font-style: italic;">S = 1000</span>：</strong> 可升級次數為 <span style="font-style: italic;">1000 / 1000 = 1</span> 等。</li>
                         <li><strong>逐一評估每隻寵物：</strong>
                             <ul>
-                                <li><strong>寵物 1：</strong> $\text{CP} = 1520, \text{IV} = 43$（屬於 $40 \sim 45$ 區間，每等增加 100）。<br>成長後 $\text{CP} = 1520 + 1 \times 100 = 1620$。</li>
-                                <li><strong>寵物 2：</strong> $\text{CP} = 1300, \text{IV} = 33$（屬於 $30 \sim 39$ 區間，每等增加 50）。<br>成長後 $\text{CP} = 1300 + 1 \times 50 = 1350$。</li>
-                                <li><strong>寵物 3：</strong> $\text{CP} = 1600, \text{IV} = 22$（屬於 $0 \sim 29$ 區間，每等增加 10）。<br>成長後 $\text{CP} = 1600 + 1 \times 10 = 1610$。</li>
+                                <li><strong>寵物 1：</strong> <span style="font-style: italic;">CP = 1520, IV = 43</span>（屬於 <span style="font-style: italic;">40 ∼ 45</span> 區間，每等增加 100）。<br>成長後 <span style="font-style: italic;">CP = 1520 + 1 × 100 = 1620</span>。</li>
+                                <li><strong>寵物 2：</strong> <span style="font-style: italic;">CP = 1300, IV = 33</span>（屬於 <span style="font-style: italic;">30 ∼ 39</span> 區間，每等增加 50）。<br>成長後 <span style="font-style: italic;">CP = 1300 + 1 × 50 = 1350</span>。</li>
+                                <li><strong>寵物 3：</strong> <span style="font-style: italic;">CP = 1600, IV = 22</span>（屬於 <span style="font-style: italic;">0 ∼ 29</span> 區間，每等增加 10）。<br>成長後 <span style="font-style: italic;">CP = 1600 + 1 × 10 = 1610</span>。</li>
                             </ul>
                         </li>
                         <li><strong>比較結果：</strong> 最高 CP 值為 1620，對應編號為 1。</li>
@@ -179,13 +179,13 @@
 500 30
 3000 27</pre>
                     <ul>
-                        <li><strong>總星塵 $S = 55555$：</strong> 可升級次數為 $55555 / 1000 = 55$ 等。</li>
+                        <li><strong>總星塵 <span style="font-style: italic;">S = 55555</span>：</strong> 可升級次數為 <span style="font-style: italic;">55555 / 1000 = 55</span> 等。</li>
                         <li><strong>逐一評估：</strong>
                             <ul>
-                                <li>寵物 1 ($\text{IV} = 42$, 增 100)：$200 + 55 \times 100 = 5700$。</li>
-                                <li>寵物 2 ($\text{IV} = 40$, 增 100)：$400 + 55 \times 100 = 5900$（最高）。</li>
-                                <li>寵物 3 ($\text{IV} = 30$, 增 50)：$500 + 55 \times 50 = 3250$。</li>
-                                <li>寵物 4 ($\text{IV} = 27$, 增 10)：$3000 + 55 \times 10 = 3550$。</li>
+                                <li>寵物 1 (<span style="font-style: italic;">IV = 42</span>, 增 100)：<span style="font-style: italic;">200 + 55 × 100 = 5700</span>。</li>
+                                <li>寵物 2 (<span style="font-style: italic;">IV = 40</span>, 增 100)：<span style="font-style: italic;">400 + 55 × 100 = 5900</span>（最高）。</li>
+                                <li>寵物 3 (<span style="font-style: italic;">IV = 30</span>, 增 50)：<span style="font-style: italic;">500 + 55 × 50 = 3250</span>。</li>
+                                <li>寵物 4 (<span style="font-style: italic;">IV = 27</span>, 增 10)：<span style="font-style: italic;">3000 + 55 × 10 = 3550</span>。</li>
                             </ul>
                         </li>
                     </ul>
@@ -202,7 +202,7 @@ int main()
 	int n = 0, S = 0;  // 宣告 n 代表候選寵物數量，S 代表小手上的星塵沙子總量
 	scanf("%d %d", &amp;n, &amp;S);  // 讀入寵物數量 n 與星塵總量 S
 
-	int BestCp = 0, BestCp_No = 0;  // 宣告紀錄最高成長後 CP 值與對應寵物編號的變數
+	int BestCp = 0, BestCp<sub>N</sub>o = 0;  // 宣告紀錄最高成長後 CP 值與對應寵物編號的變數
 	for(int i=1; i&lt;=n; i+=1)
 	{
 		int resultCP = 0;  // 宣告變數儲存當前寵物成長後的 CP 值
@@ -221,11 +221,11 @@ int main()
 		// 比較並更新所有候選寵物中的最高 CP 值與編號
 		if( resultCP &gt; BestCp ){
 			BestCp = resultCP;  // 更新最高 CP 值
-			BestCp_No = i;      // 更新對應的寵物編號
+			BestCp<sub>N</sub>o = i;      // 更新對應的寵物編號
 		}
 	}
 
-	printf("%d %d\n", BestCp_No, BestCp);  // 輸出成長後最高 CP 值的寵物編號與其最高 CP 值
+	printf("%d %d\n", BestCp<sub>N</sub>o, BestCp);  // 輸出成長後最高 CP 值的寵物編號與其最高 CP 值
 	return 0;  // 程式正常結束
 }</code></pre>
             </div>

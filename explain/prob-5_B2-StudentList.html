@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#5 201903_B2-StudentList - TOI 題目詳解與 C++ 實作</title>
+    <title>#5 201903<sub>B</sub>2-StudentList - TOI 題目詳解與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -121,10 +121,10 @@
     <div class="container">
         <div class="problem-card">
             <div class="card-header">
-                <h1><span class="index-tag">#5</span> 201903_B2-StudentList (班級名單)</h1>
+                <h1><span class="index-tag">#5</span> 201903<sub>B</sub>2-StudentList (班級名單)</h1>
                 <div class="header-right">
-                    <a href="../questions/201903_B2-StudentList(Q).pdf" class="file-name-meta" target="_blank">PDF: 201903_B2-StudentList(Q).pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-5" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                    <a href="../questions/201903<sub>B</sub>2-StudentList(Q).pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201903<sub>B</sub>2-StudentList(Q).pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-5" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
@@ -132,18 +132,18 @@
                 <h2 class="section-title">題目摘要</h2>
                 <div class="analysis-box">
                     <p><strong>問題敘述：</strong> 阿旺老師規定每堂課固定有三位同學請假。老師習慣從最後一個座號開始點名，因此名條必須將「有出席」同學的座號由後往前印出來（格式為 <code>No. 座號</code>）[cite: 1]。</p>
-                    <p><strong>輸入格式：</strong> 總共有兩行。第一行輸入一個整數 $N$ ($3 < N \le 20$) 代表全班總人數（座號從 1 到 $N$）；第二行固定輸入三個以空白隔開的數字，代表三位請假同學的座號[cite: 1]。</p>
-                    <p><strong>輸出格式：</strong> 輸出 $N - 3$ 列，每列為一個出席同學的座號（格式如 <code>No. 5</code>），無多餘換行[cite: 1]。</p>
+                    <p><strong>輸入格式：</strong> 總共有兩行。第一行輸入一個整數 <span style="font-style: italic;">N</span> (<span style="font-style: italic;">3 < N ≤ 20</span>) 代表全班總人數（座號從 1 到 <span style="font-style: italic;">N</span>）；第二行固定輸入三個以空白隔開的數字，代表三位請假同學的座號[cite: 1]。</p>
+                    <p><strong>輸出格式：</strong> 輸出 <span style="font-style: italic;">N - 3</span> 列，每列為一個出席同學的座號（格式如 <code>No. 5</code>），無多餘換行[cite: 1]。</p>
                 </div>
             </div>
 
             <div class="section-part">
                 <h2 class="section-title">演算法使用解析：【逆向迴圈過濾與條件判斷】</h2>
                 <div class="analysis-box">
-                    <p>本題透過由大到小的反向迴圈（從 $N$ 遞減到 $1$）來滿足「由後往前印出」的要求[cite: 1]。</p>
+                    <p>本題透過由大到小的反向迴圈（從 <span style="font-style: italic;">N</span> 遞減到 <span style="font-style: italic;">1</span>）來滿足「由後往前印出」的要求[cite: 1]。</p>
                     <ul>
-                        <li>在迴圈中逐一檢查當前座號 $i$ 是否等於三位請假同學中任一人的座號（$a, b, c$）[cite: 1]。</li>
-                        <li>若 $i$ 不是請假座號，則印出 <code>No. i</code>，並利用條件控制格式與換行，確保符合題目無多餘換行的輸出規範[cite: 1]。</li>
+                        <li>在迴圈中逐一檢查當前座號 <span style="font-style: italic;">i</span> 是否等於三位請假同學中任一人的座號（<span style="font-style: italic;">a, b, c</span>）[cite: 1]。</li>
+                        <li>若 <span style="font-style: italic;">i</span> 不是請假座號，則印出 <code>No. i</code>，並利用條件控制格式與換行，確保符合題目無多餘換行的輸出規範[cite: 1]。</li>
                     </ul>
                 </div>
             </div>
@@ -156,14 +156,14 @@
 5
 3 4 5</pre>
                     <ul>
-                        <li>全班人數 $N = 5$，請假座號為 $3, 4, 5$。</li>
+                        <li>全班人數 <span style="font-style: italic;">N = 5</span>，請假座號為 <span style="font-style: italic;">3, 4, 5</span>。</li>
                         <li>由後往前檢查座號：
                             <ul>
-                                <li>$i = 5$：是請假生，略過。</li>
-                                <li>$i = 4$：是請假生，略過。</li>
-                                <li>$i = 3$：是請假生，略過。</li>
-                                <li>$i = 2$：出席，輸出 <code>No. 2</code>。</li>
-                                <li>$i = 1$：出席，輸出 <code>No. 1</code>。</li>
+                                <li><span style="font-style: italic;">i = 5</span>：是請假生，略過。</li>
+                                <li><span style="font-style: italic;">i = 4</span>：是請假生，略過。</li>
+                                <li><span style="font-style: italic;">i = 3</span>：是請假生，略過。</li>
+                                <li><span style="font-style: italic;">i = 2</span>：出席，輸出 <code>No. 2</code>。</li>
+                                <li><span style="font-style: italic;">i = 1</span>：出席，輸出 <code>No. 1</code>。</li>
                             </ul>
                         </li>
                     </ul>
@@ -174,8 +174,8 @@
 8
 1 2 3</pre>
                     <ul>
-                        <li>全班人數 $N = 8$，請假座號為 $1, 2, 3$。</li>
-                        <li>從 $8$ 倒數到 $1$，排除 $1, 2, 3$ 後，依序印出 $8$ 到 $4$。</li>
+                        <li>全班人數 <span style="font-style: italic;">N = 8</span>，請假座號為 <span style="font-style: italic;">1, 2, 3</span>。</li>
+                        <li>從 <span style="font-style: italic;">8</span> 倒數到 <span style="font-style: italic;">1</span>，排除 <span style="font-style: italic;">1, 2, 3</span> 後，依序印出 <span style="font-style: italic;">8</span> 到 <span style="font-style: italic;">4</span>。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 2 結果：</strong><br>No. 8<br>No. 7<br>No. 6<br>No. 5<br>No. 4</p>
 
@@ -184,8 +184,8 @@
 10
 3 6 9</pre>
                     <ul>
-                        <li>全班人數 $N = 10$，請假座號為 $3, 6, 9$。</li>
-                        <li>從 $10$ 倒數到 $1$，排除 $3, 6, 9$ 後，依序印出：$10, 8, 7, 5, 4, 2, 1$。</li>
+                        <li>全班人數 <span style="font-style: italic;">N = 10</span>，請假座號為 <span style="font-style: italic;">3, 6, 9</span>。</li>
+                        <li>從 <span style="font-style: italic;">10</span> 倒數到 <span style="font-style: italic;">1</span>，排除 <span style="font-style: italic;">3, 6, 9</span> 後，依序印出：<span style="font-style: italic;">10, 8, 7, 5, 4, 2, 1</span>。</li>
                     </ul>
                     <p>👉 <strong>輸出範例 3 結果：</strong><br>No. 10<br>No. 8<br>No. 7<br>No. 5<br>No. 4<br>No. 2<br>No. 1</p>
                 </div>

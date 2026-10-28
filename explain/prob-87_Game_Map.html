@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#87 202011<sub>G</sub>ame<sub>M</sub>ap - TOI 題目詳解、網格轉換教學與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --table-border: #e2e8f0;
+            --code-bg: #0f172a;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 30px 16px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+        }
+        .section-title {
+            font-size: 1.25rem;
+            color: #1e293b;
+            margin: 28px 0 14px 0;
+            border-left: 5px solid var(--primary);
+            padding-left: 12px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+
+        /* 雙欄對照排版 */
+        .io-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 16px 0;
+        }
+        @media (max-width: 768px) {
+            .io-grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        .io-subcard {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .io-subcard h3 {
+            font-size: 15px;
+            color: #334155;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* 輸入輸出純文字區塊 */
+        .raw-io-block {
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #0f172a;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        /* 網格與地圖樣式 */
+        .map-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 12px 0;
+        }
+        .map-grid {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+        .map-grid td {
+            width: 48px;
+            height: 48px;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid #94a3b8;
+            font-size: 13px;
+            font-weight: bold;
+            position: relative;
+        }
+        .coord-label {
+            font-size: 9px;
+            color: #64748b;
+            position: absolute;
+            bottom: 2px;
+            right: 3px;
+            font-weight: normal;
+            font-family: monospace;
+        }
+        .cell-start { background-color: #86efac; color: #14532d; }  /* 綠色起點 */
+        .cell-end   { background-color: #fef08a; color: #713f12; }  /* 黃色終點 */
+        .cell-block { background-color: #334155; color: #f8fafc; }  /* 深灰障礙 */
+        .cell-trap  { background-color: #fca5a5; color: #7f1d1d; }  /* 紅色陷阱 */
+        .cell-path  { background-color: #bfdbfe; color: #1e3a8a; }  /* 藍色步數路徑 */
+        .cell-empty { background-color: #ffffff; color: #94a3b8; }  /* 普通空地 */
+
+        /* 圖例樣式 */
+        .legend-bar {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            margin: 10px 0 16px 0;
+            padding: 8px 12px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            justify-content: center;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid #64748b;
+        }
+
+        /* 追蹤表格樣式 */
+        .trace-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            margin: 12px 0;
+            background: #ffffff;
+        }
+        .trace-table th, .trace-table td {
+            border: 1px solid var(--table-border);
+            padding: 8px 10px;
+            text-align: left;
+        }
+        .trace-table th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+        }
+        .trace-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        .trace-table code {
+            font-family: Consolas, monospace;
+            background: #e2e8f0;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 12.5px;
+        }
+
+        /* 程式碼區塊樣式 */
+        .code-box {
+            background-color: var(--code-bg);
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 13.5px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.65;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <!-- 標題與來源元資訊 -->
+            <div class="card-header">
+                <h1><span class="index-tag">#87</span> 202011<sub>G</sub>ame<sub>M</sub>ap (遊戲地圖)</h1>
+                <div class="header-right">
+                    <a href="../questions/202011<sub>G</sub>ame<sub>M</sub>ap.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202011<sub>G</sub>ame<sub>M</sub>ap.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-87" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <!-- 題目重點規則摘要 -->
+            <div class="section-path">
+                <h2 class="section-title">題目摘要與核心規範</h2>
+                <div class="analysis-box">
+                    <p><strong>問題情境：</strong> 玩家在 <span style="font-style: italic;">x 	imes y</span> 的矩形網格地圖中移動，初始血量為 <code>3</code> 點。目標是從起點走到終點，每次只能往上下左右相鄰一格移動，求成功抵達終點的<strong>最少步數</strong>。</p>
+                    <p><strong>元素與規則說明：</strong></p>
+                    <ul>
+                        <li><strong>障礙物（Block）</strong>：完全無法通行。</li>
+                        <li><strong>陷阱（Trap）</strong>：可以踩上去，但踩到會扣 1 點血量。若血量扣成 <code>0</code> 則判定死亡失敗。</li>
+                        <li><strong>座標系統</strong>：左下角為 <span style="font-style: italic;">(0, 0)</span>，橫向往右為 <span style="font-style: italic;">x</span>，縱向往上為 <span style="font-style: italic;">y</span>。</li>
+                        <li><strong>輸出定義</strong>：輸出走到終點的最少步數；若無法生還抵達則輸出 <code>-1</code>。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 教學核心：如何將文字輸入轉繪成地圖 -->
+            <div class="section-part">
+                <h2 class="section-title">教學核心：輸入文字如何一步步轉化成圖形地圖？</h2>
+                <div class="analysis-box">
+                    <p>很多同學看到題目給的一串純文字數字會覺得抽象，其實繪製地圖只需要三個固定步驟：</p>
+                    <table class="trace-table" style="margin-top: 10px;">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%;">步驟流程</th>
+                                <th style="width: 35%;">題目輸入的讀取指令</th>
+                                <th style="width: 40%;">畫在方格紙上的轉化動作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>第 1 步：決定地圖框線</strong></td>
+                                <td><code>cin &gt;&gt; x &gt;&gt; y;</code><br>例如：<code>3 5</code></td>
+                                <td>在紙上畫出<strong>寬度為 3 格、高度為 5 格</strong>的網格，將<strong>左下角標記為 (0,0)</strong>，右上角為 (2,4)。</td>
+                            </tr>
+                            <tr>
+                                <td><strong>第 2 步：插上起點與終點旗標</strong></td>
+                                <td><code>cin &gt;&gt; sx &gt;&gt; sy;</code><br><code>cin &gt;&gt; ex &gt;&gt; ey;</code></td>
+                                <td>在座標 <span style="font-style: italic;">(S<sub>x</sub>, S<sub>y</sub>)</span> 塗上綠色標記為 <strong>S (起點)</strong>；在 <span style="font-style: italic;">(E<sub>x</sub>, E<sub>y</sub>)</span> 塗上黃色標記為 <strong>E (終點)</strong>。</td>
+                            </tr>
+                            <tr>
+                                <td><strong>第 3 步：擺放障礙與陷阱</strong></td>
+                                <td><code>cin &gt;&gt; B &gt;&gt; T;</code><br>隨後讀取 <span style="font-style: italic;">B</span> 行與 <span style="font-style: italic;">T</span> 行座標</td>
+                                <td>依據每對座標 <span style="font-style: italic;">(xp, yp)</span>：<br>• 障礙物座標填上深灰色 <strong>B</strong>（不可通行）<br>• 陷阱座標填上粉紅色 <strong>T</strong>（踩過扣 1 滴血）</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top: 12px; background: #eff6ff; padding: 12px; border-left: 4px solid var(--primary); border-radius: 4px; font-size: 14px;">
+                        <strong>💡 教學常見陷阱（座標軸 vs 陣列）：</strong><br>
+                        題目給的座標是 <span style="font-style: italic;">(x, y) = (	ext{橫向欄}, 	ext{縱向列})</span>，但 C++ 的二維陣列通常是 <code>陣列[列][欄]</code>，也就是 <code>maps[y][x]</code>！在寫程式標記時必須注意填入的是 <code>maps[yp][xp]</code>，否則整張地圖會發生水平/垂直翻轉。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 通用圖例 -->
+            <div class="legend-bar">
+                <div class="legend-item"><div class="legend-color cell-start"></div> 起點 S</div>
+                <div class="legend-item"><div class="legend-color cell-end"></div> 終點 E</div>
+                <div class="legend-item"><div class="legend-color cell-block"></div> 障礙物 B</div>
+                <div class="legend-item"><div class="legend-color cell-trap"></div> 陷阱 T</div>
+                <div class="legend-item"><div class="legend-color cell-path"></div> 最短路徑步數 (①~⑧)</div>
+            </div>
+
+            <!-- 範例一完整對照與解析 -->
+            <div class="section-part">
+                <h2 class="section-title">範例一：完整輸入輸出、地圖繪製與詳細解題步驟</h2>
+                <div class="analysis-box">
+                    <div class="io-grid-layout">
+                        <!-- 範例一輸入輸出純文字 -->
+                        <div class="io-subcard">
+                            <h3>純文字輸入與輸出</h3>
+                            <p style="font-size:13px; color:var(--text-muted); margin-bottom:6px;">【輸入】：</p>
+                            <div class="raw-io-block">3 5
+0 4
+0 0
+4 0
+1 1
+1 2
+0 3
+1 3</div>
+                            <p style="font-size:13px; color:var(--text-muted); margin: 10px 0 6px 0;">【輸出】：</p>
+                            <div class="raw-io-block">8</div>
+                        </div>
+
+                        <!-- 範例一轉換解讀 -->
+                        <div class="io-subcard">
+                            <h3>逐行轉換成地圖步驟</h3>
+                            <ul style="font-size: 13.5px; margin-left: 16px;">
+                                <li><code>3 5</code>：寬 3 (<span style="font-style: italic;">x=0..2</span>)、高 5 (<span style="font-style: italic;">y=0..4</span>) 的地圖。</li>
+                                <li><code>0 4</code>：起點 S 位於左上角 <span style="font-style: italic;">(0, 4)</span>。</li>
+                                <li><code>0 0</code>：終點 E 位於左下角 <span style="font-style: italic;">(0, 0)</span>。</li>
+                                <li><code>4 0</code>：有 4 個障礙物、0 個陷阱。</li>
+                                <li><code>1 1</code>、<code>1 2</code>、<code>0 3</code>、<code>1 3</code>：4 個障礙物落點。</li>
+                            </ul>
+                            <p style="font-size: 13px; color: #dc2626; margin-top: 8px;"><strong>狀況分析：</strong>起點下方 <span style="font-style: italic;">(0,3)</span> 與中間整排都被障礙物封鎖，無法由左側直下，必須繞行至右側外圍！</p>
+                        </div>
+                    </div>
+
+                    <!-- 範例一地圖圖形化 -->
+                    <div class="map-wrapper">
+                        <table class="map-grid">
+                            <tr>
+                                <td class="cell-start">S<span class="coord-label">(0,4)</span></td>
+                                <td class="cell-path">①<span class="coord-label">(1,4)</span></td>
+                                <td class="cell-path">②<span class="coord-label">(2,4)</span></td>
+                            </tr>
+                            <tr>
+                                <td class="cell-block">B<span class="coord-label">(0,3)</span></td>
+                                <td class="cell-block">B<span class="coord-label">(1,3)</span></td>
+                                <td class="cell-path">③<span class="coord-label">(2,3)</span></td>
+                            </tr>
+                            <tr>
+                                <td class="cell-empty"><span class="coord-label">(0,2)</span></td>
+                                <td class="cell-block">B<span class="coord-label">(1,2)</span></td>
+                                <td class="cell-path">④<span class="coord-label">(2,2)</span></td>
+                            </tr>
+                            <tr>
+                                <td class="cell-path">⑦<span class="coord-label">(0,1)</span></td>
+                                <td class="cell-block">B<span class="coord-label">(1,1)</span></td>
+                                <td class="cell-path">⑤<span class="coord-label">(2,1)</span></td>
+                            </tr>
+                            <tr>
+                                <td class="cell-end">E<span class="coord-label">(0,0)</span></td>
+                                <td class="cell-path">⑥<span class="coord-label">(1,0)</span></td>
+                                <td class="cell-empty"><span class="coord-label">(2,0)</span></td>
+                            </tr>
+                        </table>
+                        <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 6px;">範例一地圖：原點 <span style="font-style: italic;">(0,0)</span> 位於左下角</p>
+                    </div>
+
+                    <!-- 範例一步驟追蹤表 -->
+                    <h3 style="font-size: 14.5px; margin: 16px 0 8px 0; color: #334155;">【範例一最短路徑逐步推進解說】</h3>
+                    <table class="trace-table">
+                        <thead>
+                            <tr>
+                                <th>累計步數</th>
+                                <th>所在座標 (x, y)</th>
+                                <th>剩餘生命</th>
+                                <th>移動決策分析與避障過程</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0</td>
+                                <td>(0, 4) 起點</td>
+                                <td>3 HP</td>
+                                <td>初始位置。往下 <span style="font-style: italic;">(0,3)</span> 是障礙物不可走，只能往右走到 <span style="font-style: italic;">(1,4)</span>。</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>(1, 4)</td>
+                                <td>3 HP</td>
+                                <td>往下 <span style="font-style: italic;">(1,3)</span> 是障礙物阻擋，繼續往右移動到 <span style="font-style: italic;">(2,4)</span>。</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>(2, 4)</td>
+                                <td>3 HP</td>
+                                <td>右側已到底（邊界阻擋），轉向往下走進 <span style="font-style: italic;">(2,3)</span>。</td>
+                            </tr>
+                            <tr>
+                                <td>3~5</td>
+                                <td>(2, 3) $
+ightarrow<span style="font-style: italic;"> (2, 2) </span>
+ightarrow$ (2, 1)</td>
+                                <td>3 HP</td>
+                                <td>沿著地圖最右側邊緣持續垂直往下移動，成功繞過中央連串障礙物。</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>(1, 0)</td>
+                                <td>3 HP</td>
+                                <td>轉向往左下底線移動，抵達 <span style="font-style: italic;">(1,0)</span>（或經由 <span style="font-style: italic;">(2,0)</span> 轉入，步數相同）。</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>(0, 1) 或 (1, 0)</td>
+                                <td>3 HP</td>
+                                <td>往終點周邊靠攏，準備進入最後一步。</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td><strong>(0, 0) 終點</strong></td>
+                                <td>3 HP</td>
+                                <td><strong>順利抵達終點！</strong> BFS 佇列擴散在此層命中終點，回傳累計步數 <code>8</code>。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 範例二完整對照與解析 -->
+            <div class="section-part">
+                <h2 class="section-title">範例二：完整輸入輸出、地圖繪製與詳細解題步驟</h2>
+                <div class="analysis-box">
+                    <div class="io-grid-layout">
+                        <!-- 範例二輸入輸出純文字 -->
+                        <div class="io-subcard">
+                            <h3>純文字輸入與輸出</h3>
+                            <p style="font-size:13px; color:var(--text-muted); margin-bottom:6px;">【輸入】：</p>
+                            <div class="raw-io-block">3 3
+2 0
+0 2
+2 0
+1 0
+1 1</div>
+                            <p style="font-size:13px; color:var(--text-muted); margin: 10px 0 6px 0;">【輸出】：</p>
+                            <div class="raw-io-block">4</div>
+                        </div>
+
+                        <!-- 範例二轉換解讀 -->
+                        <div class="io-subcard">
+                            <h3>逐行轉換成地圖步驟</h3>
+                            <ul style="font-size: 13.5px; margin-left: 16px;">
+                                <li><code>3 3</code>：寬 3 (<span style="font-style: italic;">x=0..2</span>)、高 3 (<span style="font-style: italic;">y=0..2</span>) 的正方形地圖。</li>
+                                <li><code>2 0</code>：起點 S 位於右下角 <span style="font-style: italic;">(2, 0)</span>。</li>
+                                <li><code>0 2</code>：終點 E 位於左上角 <span style="font-style: italic;">(0, 2)</span>。</li>
+                                <li><code>2 0</code>：有 2 個障礙物、0 個陷阱。</li>
+                                <li><code>1 0</code>、<code>1 1</code>：障礙物位於下方中間與正中間。</li>
+                            </ul>
+                            <p style="font-size: 13px; color: #166534; margin-top: 8px;"><strong>狀況分析：</strong>起點往左被 <span style="font-style: italic;">(1,0)</span> 堵死，只能向上直行繞過中間障礙，再向左抵達終點！</p>
+                        </div>
+                    </div>
+
+                    <!-- 範例二地圖圖形化 -->
+                    <div class="map-wrapper">
+                        <table class="map-grid">
+                            <tr>
+                                <td class="cell-end">E<span class="coord-label">(0,2)</span></td>
+                                <td class="cell-path">③<span class="coord-label">(1,2)</span></td>
+                                <td class="cell-path">②<span class="coord-label">(2,2)</span></td>
+                            </tr>
+                            <tr>
+                                <td class="cell-empty"><span class="coord-label">(0,1)</span></td>
+                                <td class="cell-block">B<span class="coord-label">(1,1)</span></td>
+                                <td class="cell-path">①<span class="coord-label">(2,1)</span></td>
+                            </tr>
+                            <tr>
+                                <td class="cell-empty"><span class="coord-label">(0,0)</span></td>
+                                <td class="cell-block">B<span class="coord-label">(1,0)</span></td>
+                                <td class="cell-start">S<span class="coord-label">(2,0)</span></td>
+                            </tr>
+                        </table>
+                        <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 6px;">範例二地圖：原點 <span style="font-style: italic;">(0,0)</span> 位於左下角</p>
+                    </div>
+
+                    <!-- 範例二步驟追蹤表 -->
+                    <h3 style="font-size: 14.5px; margin: 16px 0 8px 0; color: #334155;">【範例二 BFS 搜尋擴散與決策流程表】</h3>
+                    <table class="trace-table">
+                        <thead>
+                            <tr>
+                                <th>步數 (Steps)</th>
+                                <th>當前處理座標 (x, y)</th>
+                                <th>血量狀態</th>
+                                <th>方向探索與座標檢驗</th>
+                                <th>決策結果</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0</td>
+                                <td>(2, 0) 起點</td>
+                                <td>3 HP</td>
+                                <td>• 向左 (1,0)：障礙物 Block 🚫<br>• 向上 (2,1)：空地合法 ✔</td>
+                                <td>將 <code>(2, 1, hp=3)</code> 推入佇列。</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>(2, 1)</td>
+                                <td>3 HP</td>
+                                <td>• 向左 (1,1)：障礙物 Block 🚫<br>• 向上 (2,2)：空地合法 ✔<br>• 向下 (2,0)：已走過 🚫</td>
+                                <td>將 <code>(2, 2, hp=3)</code> 推入佇列。</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>(2, 2)</td>
+                                <td>3 HP</td>
+                                <td>• 向上：邊界外 🚫<br>• 向右：邊界外 🚫<br>• 向左 (1,2)：空地合法 ✔</td>
+                                <td>將 <code>(1, 2, hp=3)</code> 推入佇列。</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>(1, 2)</td>
+                                <td>3 HP</td>
+                                <td>• 向下 (1,1)：障礙物 🚫<br>• 向左 (0,2)：終點合法 ✔</td>
+                                <td>將 <code>(0, 2, hp=3)</code> 推入佇列。</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td><strong>(0, 2) 終點</strong></td>
+                                <td>3 HP</td>
+                                <td><strong>命中終點座標 (ex, ey)！</strong></td>
+                                <td>立即回傳當前步數 <code>4</code>。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 本體程式演算法與運作解析 -->
+            <div class="section-part">
+                <h2 class="section-title">本體程式核心演算法機制深度解析</h2>
+                <div class="analysis-box">
+                    <p><strong>1. 三維狀態佇列（State-Space BFS）：</strong></p>
+                    <p>傳統的 BFS 只要用 <code>visited[y][x]</code> 記錄是否造訪過即可。但本題有「陷阱會扣血」的機制：如果先走到某格但只剩 1 滴血，後續可能會因血量歸零而無法過關；反之，若稍晚走到同一格卻有 2 滴血，這條分支反而有機會生還。因此每個佇列節點都封裝了三個數值：<code>struct state { health, x, y };</code>。</p>
+
+                    <p style="margin-top: 14px;"><strong>2. 三維動態剪枝陣列 <code>map<sub>r</sub>ecords[1000][1000][3]</code>：</strong></p>
+                    <p>為了防止重複搜尋造成超時（TLE），使用三維陣列記錄<strong>在特定剩餘血量下抵達某座標的最少步數</strong>：</p>
+                    <ul>
+                        <li><code>map<sub>r</sub>ecords[y][x][hp - 1]</code>：存放抵達 <span style="font-style: italic;">(x, y)</span> 且剩餘 <span style="font-style: italic;">hp</span> 血量時的最小步數。</li>
+                        <li>若新分支抵達 <span style="font-style: italic;">(x, y)</span> 時的步數大於或等於已記錄的歷史最優步數，即直接 <code>continue</code> 剪枝捨棄。</li>
+                    </ul>
+
+                    <p style="margin-top: 14px;"><strong>3. 迷因初始值的作用：</strong></p>
+                    <p>程式碼中出現的字串轉整數如 <code>*(uint32<sub>t</sub>*)"starburst steam!!!"</code>，在二進位中代表一個龐大的正整數（相當於 <code>0xXXXXXXXX</code>），其作用單純是將紀錄陣列初始化為「無限大」，代表該狀態尚未被探索過。</p>
+                </div>
+            </div>
+
+            <!-- 保留 C++ 原始代碼，每行皆有繁體中文教學註解 -->
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（保留完整代碼，逐行繁體中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;bits/stdc++.h&gt;  // 引入標準函式庫 (包含 I/O、queue 等)
+using namespace std;  // 使用標準命名空間 std
+
+uint8<sub>t</sub> maps[1000][1000] = {0};  // 全域地圖陣列：0 表示空地，1 表示障礙物，2 表示陷阱
+uint32<sub>t</sub> map<sub>r</sub>ecords[1000][1000][3] = {0};  // 三維陣列：記錄每個座標在不同剩餘血量（1~3）下到達時的最小步數，用於狀態剪枝
+
+struct state  // 定義 BFS 佇列中儲存的狀態結構體
+{
+    uint8<sub>t</sub> health;  // 當前剩餘血量 (1 至 3)
+    int x;           // 當前橫向座標 x
+    int y;           // 當前縱向座標 y
+};
+
+inline bool check<sub>b</sub>ound(int x,int y,int xp,int yp)  // 內聯函數：檢查座標 (xp, yp) 是否在橫向 x、縱向 y 的地圖範圍內
+{
+    return xp &gt;= 0 &amp;&amp; xp &lt; x &amp;&amp; yp &gt;= 0 &amp;&amp; yp &lt; y;  // 回傳是否合法的布林值
+}
+
+inline void add<sub>o</sub>ffset(int &amp;x,int &amp;y,int types)  // 內聯函數：根據移動方向代號（0~3）更新座標 (x, y)
+{
+    int offset[4][2]={  // 定義 4 個移動方向的偏移量：上、下、左、右
+        {0,1},   // 往上方移動 (y+1)
+        {0,-1},  // 往下方移動 (y-1)
+        {1,0},   // 往右方移動 (x+1)
+        {-1,0}   // 往左方移動 (x-1)
+    };
+    x+=offset[types][0];  // 累加 x 軸偏移量
+    y+=offset[types][1];  // 累加 y 軸偏移量
+}
+
+int bfs(int sx,int sy,int x, int y, int ex, int ey)  // 廣度優先搜尋函數：尋找從起點到終點的最短步數
+{
+    for(int i=0;i!=y;++i)  // 走訪縱向每一列
+        for(int j=0;j!=x;++j)  // 走訪橫向每一行
+        {
+            // 初始化 map<sub>r</sub>ecords，填入極大值（此處利用迷因字串轉換為 uint32<sub>t</sub> 作為初始無窮大）
+            map<sub>r</sub>ecords[i][j][0] = *(uint32<sub>t</sub>*)&quot;24歳、学生です&quot;;
+            map<sub>r</sub>ecords[i][j][1] = *(uint32<sub>t</sub>*)&quot;starburst steam!!!&quot;;
+            map<sub>r</sub>ecords[i][j][2] = *(uint32<sub>t</sub>*)&quot;ｱ゛↑ｱ゛↑ｱ゛↑ｱ゛↑ｱ゛↑&quot;;
+        }
+    queue&lt;state&gt; que;  // 宣告 state 類型的 BFS 佇列
+    que.push({3,sx,sy});  // 將初始血量 3 與起點座標 (sx, sy) 放入佇列
+    int steps = 0;  // 初始化步數計數器為 0
+    while(!que.empty())  // 當佇列不為空時持續迴圈
+    {
+        auto sz = que.size();  // 取得當前層級的節點數量
+        for(int i=0;i &lt; sz;++i)  // 走訪當前層級的所有狀態
+        {
+            auto cur = que.front();  // 取得佇列前端的當前狀態
+            if(cur.x == ex &amp;&amp; cur.y == ey)  // 若當前座標已到達終點 (ex, ey)
+                return steps;  // 回傳當前的最短步數
+
+            for(int u=0;u!=4;++u)  // 走訪 4 個相鄰移動方向
+            {
+                int xp = cur.x, yp = cur.y;  // 複製當前座標
+                add<sub>o</sub>ffset(xp,yp,u);  // 計算下一步的新座標 (xp, yp)
+                if(!check<sub>b</sub>ound(x,y,xp,yp))  // 若新座標超出地圖範圍
+                    continue;  // 跳過此方向
+                if(maps[yp][xp] == 1)  // 若新座標是障礙物 (1)
+                    continue;  // 無法通行，跳過
+                if(maps[yp][xp] == 2 &amp;&amp; cur.health-1 &lt;= 0)  // 若新座標是陷阱 (2) 且扣血後血量 &lt;= 0
+                    continue;  // 血量耗盡遊戲失敗，跳過
+                
+                int r<sub>h</sub>p = cur.health-(maps[yp][xp] == 2);  // 計算移動到新位置後的剩餘血量（若踩到陷阱則血量 -1）
+                if(map<sub>r</sub>ecords[yp][xp][r<sub>h</sub>p-1] &lt;= steps)  // 剪枝檢查：若該位置在相同或更高血量下已經被更少或相等的步數造訪過
+                    continue;  // 略過此分支，避免重複搜尋
+                
+                map<sub>r</sub>ecords[yp][xp][r<sub>h</sub>p-1] = steps;  // 更新該位置在對應血量下的最少步數紀錄
+                que.push({(uint8<sub>t</sub>)r<sub>h</sub>p,xp,yp});  // 將新狀態（更新後的血量與座標）推入佇列
+            }
+            que.pop();  // 將當前狀態從佇列前端移除
+        }
+        steps++;  // 當前層級走訪完畢，步數 +1
+    }
+    return -1;  // 若佇列耗盡仍無法到達終點，回傳 -1
+}
+
+int main()  // 主程式起點
+{
+    int x,y;  // 宣告地圖寬度 x 與高度 y
+    int sx,sy;  // 宣告起點座標 (sx, sy)
+    int ex,ey;  // 宣告終點座標 (ex, ey)
+    int bc,tc;  // 宣告障礙物個數 bc 與陷阱個數 tc
+
+    cin &gt;&gt; x &gt;&gt; y;  // 輸入地圖尺寸
+    cin &gt;&gt; sx &gt;&gt; sy;  // 輸入起點座標
+    cin &gt;&gt; ex &gt;&gt; ey;  // 輸入終點座標
+    cin &gt;&gt; bc &gt;&gt; tc;  // 輸入障礙物與陷阱數量
+    for(int i = 0 ; i != bc ; i++)  // 迴圈讀入每個障礙物座標
+    {
+        int xp, yp;
+        cin &gt;&gt; xp &gt;&gt; yp;
+        maps[yp][xp] = 1;  // 在地圖中將該座標標記為障礙物 (1)
+    }
+    for(int i = 0 ; i != tc ; i++)  // 迴圈讀入每個陷阱座標
+    {
+        int xp, yp;
+        cin &gt;&gt; xp &gt;&gt; yp;
+        maps[yp][xp] = 2;  // 在地圖中將該座標標記為陷阱 (2)
+    }
+    cout &lt;&lt; bfs(sx,sy,x,y,ex,ey) &lt;&lt; '
+';  // 呼叫 bfs 計算並輸出最短步數或 -1
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

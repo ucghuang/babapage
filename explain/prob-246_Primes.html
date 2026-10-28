@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#246 202403<sub>P</sub>rimes (質數遊戲) - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#246</span> 202403<sub>P</sub>rimes (質數遊戲)</h1>
+                <div class="header-right">
+                    <a href="../questions/202403<sub>P</sub>rimes.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202403<sub>P</sub>rimes.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-246" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong>給定一個正整數 \(N\)，請判斷 \(N\) 是否為兩個質數的乘積。如果是，請輸出這兩個質數 \(A\) 與 \(B\) (\(A ≤ B\))，以空白分隔；若不是，則輸出 <code>0 0</code>。</p>
+                    <p><strong>輸入格式：</strong>輸入僅有一列，包含一個整數 \(N\) (\(2 ≤ N ≤ 2 × 10<sup>9</sup>\))。</p>
+                    <p><strong>輸出格式：</strong>若 \(N\) 是兩個質數 \(A\) 與 \(B\) 的乘積，輸出 <code>A B</code>；若不是，輸出 <code>0 0</code>。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【質數判定與因數分解】</h2>
+                <div class="analysis-box">
+                    <p>本題需要對給定的數字進行因數尋找與質數檢驗：</p>
+                    <ul>
+                        <li><strong>因數尋找：</strong>透過迴圈從 2 檢查到 \(\sqrt{N}\)。若 \(N \% i == 0\)，則 \(a = i\)、\(b = N / i\) 為一組因數對。</li>
+                        <li><strong>質數判定 (<code>isPrime</code>)：</strong>針對分解出的因數進行嚴格的質數檢驗。先排除偶數（除了 2 以外），再透過從 3 測試到 \(\sqrt{n}\)（每次遞增 2）來確認其是否為質數。</li>
+                        <li><strong>結果輸出：</strong>若因數 \(a\) 與 \(b\) 皆通過質數檢驗，則依序輸出；否則輸出 <code>0 0</code>。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1】</strong> \(N = 14\)</p>
+                    <ul>
+                        <li>尋找因數：從 2 到 \(\sqrt{14} ≈ 3.74\)。當 \(i = 2\) 時，\(14 \% 2 == 0\)，故 \(a = 2\)、\(b = 14 / 2 = 7\)。</li>
+                        <li>質數判定：檢驗 \(a = 2\) 為質數，\(b = 7\) 為質數。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong><code>2 7</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 2】</strong> \(N = 63\)</p>
+                    <ul>
+                        <li>尋找因數：從 2 到 \(\sqrt{63} ≈ 7.93\)。當 \(i = 3\) 時，\(63 \% 3 == 0\)，\(a = 3, b = 21\)；當 \(i = 7\) 時，\(63 \% 7 == 0\)，更新 \(a = 7, b = 9\)。</li>
+                        <li>質數判定：檢驗 \(a = 7\) 為質數，但 \(b = 9\) 不是質數（\(9 \% 3 == 0\)）。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong><code>0 0</code></p>
+
+                    <p style="margin-top: 20px;"><strong>【輸入範例 3】</strong> \(N = 917747\)</p>
+                    <ul>
+                        <li>尋找因數：可找到因數對 \(257\) 與 \(3571\)。</li>
+                        <li>質數判定：\(257\) 與 \(3571\) 皆為質數。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 3 結果：</strong><code>257 3571</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;iostream&gt; // 引入標準輸入輸出串流標頭檔
+#include &lt;cmath&gt;    // 引入數學函式庫，以便使用 sqrt 函數
+
+using namespace std;
+
+bool isPrime(int n) // 定義判斷質數的函式 isPrime
+{
+    if (n % 2 == 0 &amp;&amp; n != 2) // 若數字為偶數且不等於 2，則不是質數
+    {
+        return false;
+    }
+
+    if (n &gt; 3) // 若數字大於 3，透過迴圈檢查是否有奇數因數
+    {
+        for (int i = 3; i &lt;= sqrt(n); i += 2) // 從 3 開始測試到 sqrt(n)，每次遞增 2
+        {
+            if (n % i == 0) // 若能被 i 整除，代表不是質數
+            {
+                return false;
+            }
+        }
+    }
+    return true; // 通過檢查則為質數，回傳 true
+}
+
+int main()
+{
+    int N, a = 0, b = 0; // 宣告整數 N 代表輸入數字，a 與 b 用來記錄分解出的兩個因數
+    cin &gt;&gt; N; // 讀入整數 N
+    for (int i = 2; i &lt;= sqrt(N); ++i) // 從 2 開始尋找 N 的因數到 sqrt(N)
+    {
+        if (N % i == 0) // 若 i 是 N 的因數
+        {
+            a = i; // 將因數指定給 a
+            b = N / i; // 另一因數為 N / i，指定給 b
+        }
+    }
+
+    if (isPrime(a) &amp;&amp; isPrime(b)) // 檢查 a 與 b 是否同時為質數
+    {
+        cout &lt;&lt; a &lt;&lt; &quot; &quot; &lt;&lt; b &lt;&lt; endl; // 若皆為質數，依序輸出 a 與 b
+    }
+    else
+    {
+        cout &lt;&lt; &quot;0 0&quot; &lt;&lt; endl; // 若不是兩個質數的乘積，輸出 0 0
+    }
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

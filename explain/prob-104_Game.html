@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#104 202104<sub>G</sub>ame - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --primary-dark: #1d4ed8;
+            --secondary: #0d9488;
+            --secondary-light: #f0fdfa;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --accent-green: #16a34a;
+            --accent-red: #dc2626;
+            --code-bg: #0f172a;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.65;
+            padding: 30px 16px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 32px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 18px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .card-header h1 {
+            font-size: 1.6rem;
+            color: #1e3a8a;
+            display: flex;
+            align-items: center;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 8px;
+            font-weight: 700;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 5px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.88rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.25rem;
+            color: #1e293b;
+            margin: 32px 0 14px 0;
+            border-left: 5px solid var(--primary);
+            padding-left: 12px;
+            font-weight: 700;
+        }
+        .analysis-box {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 22px;
+            font-size: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 8px;
+        }
+
+        /* 標籤群組 */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+        .badge-subtask { background: #e0f2fe; color: #0369a1; }
+        .badge-success { background: #dcfce7; color: #15803d; }
+        .badge-fail { background: #fee2e2; color: #b91c1c; }
+
+        /* 表格排版 */
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+            text-align: left;
+        }
+        .styled-table th, .styled-table td {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+        }
+        .styled-table th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+        }
+        .styled-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .highlight-row { background-color: #eff6ff !important; font-weight: bold; }
+
+        /* 視覺化長條圖 */
+        .bar-chart-container {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 14px 0;
+        }
+        .bar-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .bar-label {
+            width: 130px;
+            font-family: monospace;
+            color: var(--text-main);
+        }
+        .bar-wrapper {
+            flex-grow: 1;
+            background: #e2e8f0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            margin-right: 12px;
+        }
+        .bar-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        .bar-fill.target {
+            background: #f59e0b;
+        }
+        .bar-value {
+            font-family: monospace;
+            font-weight: 600;
+            width: 90px;
+            text-align: right;
+        }
+
+        /* 程式碼區塊 */
+        .code-box {
+            background-color: var(--code-bg);
+            color: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+            border: 1px solid #1e293b;
+        }
+        .code-annotation {
+            color: #94a3b8;
+        }
+
+        /* 二分搜尋流程卡片 */
+        .step-card {
+            border-left: 3px solid var(--secondary);
+            background: var(--secondary-light);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#104</span> 202104<sub>G</sub>ame (遊戲升等)</h1>
+                <div class="header-right">
+                    <a href="../questions/202104<sub>G</sub>ame.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202104<sub>G</sub>ame.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-104" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <!-- 題目規格與子任務限制 -->
+            <div class="section-path">
+                <h2 class="section-title">題目規格與子任務限制</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 小明的軍團有 <span style="font-style: italic;">N</span> 位士兵，第 <span style="font-style: italic;">i</span> 位士兵的初始戰鬥力為 <span style="font-style: italic;">a<sub>i</sub></span>。小明準備至多 <span style="font-style: italic;">C</span> 枚金幣為士兵升等。將等級 <span style="font-style: italic;">a<sub>i</sub></span> 升級至目標等級 <span style="font-style: italic;">U</span>（若 <span style="font-style: italic;">a<sub>i</sub> < U</span>）需花費 <span style="font-style: italic;">(U - a<sub>i</sub>)<sup>2</sup></span> 枚金幣；若 <span style="font-style: italic;">a<sub>i</sub> ≥ U</span> 則不需花費。若要參加等級 <span style="font-style: italic;">U</span> 的盃賽，所有士兵的戰鬥力都必須<strong>至少為 <span style="font-style: italic;">U</span></strong>。求小明最高可以參加多少等級的盃賽？</p>
+                    <p style="margin-top: 10px;"><strong>測資組別評分說明：</strong></p>
+                    <table class="styled-table" style="margin-top: 8px;">
+                        <thead>
+                            <tr>
+                                <th>子任務</th>
+                                <th>配分</th>
+                                <th>士兵數 <span style="font-style: italic;">N</span></th>
+                                <th>金幣數 <span style="font-style: italic;">C</span></th>
+                                <th>初始戰力 <span style="font-style: italic;">a<sub>i</sub></span></th>
+                                <th>核心評測目的</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge badge-subtask">第一組</span></td>
+                                <td>10%</td>
+                                <td><span style="font-style: italic;">N = 2</span></td>
+                                <td><span style="font-style: italic;">C = 1</span></td>
+                                <td><span style="font-style: italic;">1 ≤ a<sub>i</sub> ≤ 10<sup>3</sup></span></td>
+                                <td>基礎特例測試（只能微調戰力差為 1 的士兵）</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-subtask">第二組</span></td>
+                                <td>30%</td>
+                                <td><span style="font-style: italic;">N ≤ 10<sup>2</sup></span></td>
+                                <td><span style="font-style: italic;">C ≤ 10<sup>6</sup></span></td>
+                                <td><span style="font-style: italic;">1 ≤ a<sub>i</sub> ≤ 10<sup>3</sup></span></td>
+                                <td>中小型測資，驗證基礎模擬或線性掃描</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-subtask">第三組</span></td>
+                                <td>60%</td>
+                                <td><span style="font-style: italic;">1 ≤ N ≤ 2 × 10<sup>4</sup></span></td>
+                                <td><span style="font-style: italic;">1 ≤ C ≤ 10<sup>14</sup></span></td>
+                                <td><span style="font-style: italic;">1 ≤ a<sub>i</sub> ≤ 10<sup>7</sup></span></td>
+                                <td>大數據範圍，需使用 <strong><span style="font-style: italic;">O(N log(range))</span> 二分搜尋</strong> 與防溢位處理</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 演算法解析與單調性 -->
+            <div class="section-part">
+                <h2 class="section-title">演算法思維：二分搜尋答案 (Binary Search on Answer)</h2>
+                <div class="analysis-box">
+                    <p>若我們設定目標等級為 <span style="font-style: italic;">U</span>：</p>
+                    <ul>
+                        <li><strong>花費函數具備「嚴格單調性 (Monotonicity)」：</strong>
+                            當目標等級 <span style="font-style: italic;">U</span> 越高，每位需要升等的士兵所需補足的差額 <span style="font-style: italic;">(U - a<sub>i</sub>)</span> 越大，且平方和 <span style="font-style: italic;">∑ max(0, U - a<sub>i</sub>)<sup>2</sup></span> 必然單調不減。
+                            <br>👉 若等級 <span style="font-style: italic;">U</span> 的金幣花費 <span style="font-style: italic;">≤ C</span>（可行），則任何等級 <span style="font-style: italic;">U' < U</span> 也一定可行。
+                            <br>👉 若等級 <span style="font-style: italic;">U</span> 的金幣花費 <span style="font-style: italic;">> C</span>（不可行），則任何等級 <span style="font-style: italic;">U' > U</span> 也絕對不可能達成。
+                        </li>
+                        <li><strong>搜尋區間設定 (Search Space)：</strong>
+                            <ul>
+                                <li><strong>下界 (<span style="font-style: italic;">L</span>)：</strong> 設為 <span style="font-style: italic;">1</span>（因 <span style="font-style: italic;">a<sub>i</sub> ≥ 1</span>）。</li>
+                                <li><strong>上界 (<span style="font-style: italic;">R</span>)：</strong> 設為 <span style="font-style: italic;">2 × 10<sup>7</sup></span>。極限情況為 <span style="font-style: italic;">N=1, a<sub>1</sub> = 10<sup>7</sup>, C = 10<sup>14</sup></span>，此時 <span style="font-style: italic;">(U - 10<sup>7</sup>)<sup>2</sup> ≤ 10<sup>14</sup> ⟹ U ≤ 10<sup>7</sup> + 10<sup>7</sup> = 2 × 10<sup>7</sup></span>。上界設為 <span style="font-style: italic;">20,000,000</span> 恰好能完整覆蓋最大邊界。</li>
+                            </ul>
+                        </li>
+                        <li><strong>時間複雜度：</strong> 每次二分驗證遍歷 <span style="font-style: italic;">N</span> 位士兵需 <span style="font-style: italic;">O(N)</span>，搜尋範圍區間長度 <span style="font-style: italic;">R ≈ 2 × 10<sup>7</sup></span>，二分次數約 <span style="font-style: italic;">log<sub>2</sub>(2 × 10<sup>7</sup>) ≈ 25</span> 次。總運算次數約 <span style="font-style: italic;">25 × 20000 ≈ 5 × 10<sup>5</sup></span> 次，執行時間 <span style="font-style: italic;">&lt; 0.05</span> 秒，輕鬆通過 <span style="font-style: italic;">1.0</span> 秒時限。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 三個官方範例的黑板逐步推導與圖表 -->
+            <div class="section-part">
+                <h2 class="section-title">三個官方範例板書推導與數值圖表</h2>
+                
+                <!-- 範例 1 -->
+                <div class="analysis-box">
+                    <h3 style="color: #1d4ed8; margin-bottom: 8px;">【範例 1 詳解】基礎平衡推導</h3>
+                    <p><strong>輸入：</strong> <code>3 10</code> (3 位士兵, 10 枚金幣) ｜ <strong>陣列：</strong> <code>2 4 6</code></p>
+                    
+                    <div class="bar-chart-container">
+                        <div style="font-weight: 600; margin-bottom: 10px; font-size: 14px;">初始戰鬥力狀態長條圖：</div>
+                        <div class="bar-item">
+                            <span class="bar-label">士兵 1 (a₁=2)</span>
+                            <div class="bar-wrapper"><div class="bar-fill" style="width: 20%;"></div></div>
+                            <span class="bar-value">戰力 2</span>
+                        </div>
+                        <div class="bar-item">
+                            <span class="bar-label">士兵 2 (a₂=4)</span>
+                            <div class="bar-wrapper"><div class="bar-fill" style="width: 40%;"></div></div>
+                            <span class="bar-value">戰力 4</span>
+                        </div>
+                        <div class="bar-item">
+                            <span class="bar-label">士兵 3 (a₃=6)</span>
+                            <div class="bar-wrapper"><div class="bar-fill" style="width: 60%;"></div></div>
+                            <span class="bar-value">戰力 6</span>
+                        </div>
+                    </div>
+
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>測試目標等級 <span style="font-style: italic;">U</span></th>
+                                <th>士兵 1 花費 <span style="font-style: italic;">(U-2)<sup>2</sup></span></th>
+                                <th>士兵 2 花費 <span style="font-style: italic;">(U-4)<sup>2</sup></span></th>
+                                <th>士兵 3 花費 <span style="font-style: italic;">(U-6)<sup>2</sup></span></th>
+                                <th>總花費 <span style="font-style: italic;">∑ Cost</span></th>
+                                <th>判定 (金幣 <span style="font-style: italic;">C=10</span>)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span style="font-style: italic;">U = 4</span></td>
+                                <td><span style="font-style: italic;">(4-2)<sup>2</sup> = 4</span></td>
+                                <td>不需花費 (0)</td>
+                                <td>不需花費 (0)</td>
+                                <td><span style="font-style: italic;">4</span></td>
+                                <td><span class="badge badge-success">可行 (剩 6 金幣)</span></td>
+                            </tr>
+                            <tr class="highlight-row">
+                                <td><span style="font-style: italic;">U = 5</span></td>
+                                <td><span style="font-style: italic;">(5-2)<sup>2</sup> = 9</span></td>
+                                <td><span style="font-style: italic;">(5-4)<sup>2</sup> = 1</span></td>
+                                <td>不需花費 (0)</td>
+                                <td><strong><span style="font-style: italic;">10</span></strong></td>
+                                <td><span class="badge badge-success">可行 (剛好用盡)</span> ⭐️ <strong>最佳解</strong></td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-style: italic;">U = 6</span></td>
+                                <td><span style="font-style: italic;">(6-2)<sup>2</sup> = 16</span></td>
+                                <td><span style="font-style: italic;">(6-4)<sup>2</sup> = 4</span></td>
+                                <td>不需花費 (0)</td>
+                                <td><span style="font-style: italic;">20</span></td>
+                                <td><span class="badge badge-fail">不可行 (超出預算 10)</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>5</code></p>
+                </div>
+
+                <!-- 範例 2 -->
+                <div class="analysis-box">
+                    <h3 style="color: #1d4ed8; margin-bottom: 8px;">【範例 2 詳解】多士兵群體升等計算</h3>
+                    <p><strong>輸入：</strong> <code>6 267</code> (6 位士兵, 267 枚金幣) ｜ <strong>陣列：</strong> <code>25 39 36 17 20 39</code></p>
+                    
+                    <p style="margin-top: 8px;">在二分搜尋過程中，演算法會測試 <span style="font-style: italic;">U = 29</span> 與 <span style="font-style: italic;">U = 30</span>：</p>
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>士兵編號 <span style="font-style: italic;">i</span></th>
+                                <th>初始戰力 <span style="font-style: italic;">a<sub>i</sub></span></th>
+                                <th>升至 <span style="font-style: italic;">U = 29</span> 之花費</th>
+                                <th>升至 <span style="font-style: italic;">U = 30</span> 之花費</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>第 1 位</td><td>25</td><td><span style="font-style: italic;">(29 - 25)<sup>2</sup> = 16</span></td><td><span style="font-style: italic;">(30 - 25)<sup>2</sup> = 25</span></td></tr>
+                            <tr><td>第 2 位</td><td>39</td><td>已達標 (0)</td><td>已達標 (0)</td></tr>
+                            <tr><td>第 3 位</td><td>36</td><td>已達標 (0)</td><td>已達標 (0)</td></tr>
+                            <tr><td>第 4 位</td><td>17</td><td><span style="font-style: italic;">(29 - 17)<sup>2</sup> = 144</span></td><td><span style="font-style: italic;">(30 - 17)<sup>2</sup> = 169</span></td></tr>
+                            <tr><td>第 5 位</td><td>20</td><td><span style="font-style: italic;">(29 - 20)<sup>2</sup> = 81</span></td><td><span style="font-style: italic;">(30 - 20)<sup>2</sup> = 100</span></td></tr>
+                            <tr><td>第 6 位</td><td>39</td><td>已達標 (0)</td><td>已達標 (0)</td></tr>
+                            <tr class="highlight-row">
+                                <td colspan="2"><strong>總花費加總</strong></td>
+                                <td><strong><span style="font-style: italic;">16 + 144 + 81 = 251</span></strong></td>
+                                <td><strong><span style="font-style: italic;">25 + 169 + 100 = 278</span></strong></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><strong>比對金幣 <span style="font-style: italic;">C = 267</span></strong></td>
+                                <td><span class="badge badge-success">可行 (<span style="font-style: italic;">251 ≤ 267</span>)，繼續向上搜尋</span></td>
+                                <td><span class="badge badge-fail">不可行 (<span style="font-style: italic;">278 > 267</span>)，收斂上界</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>二分搜尋最終收斂並鎖定在最高可行等級 <span style="font-style: italic;">U = 29</span>。</p>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>29</code></p>
+                </div>
+
+                <!-- 範例 3 -->
+                <div class="analysis-box">
+                    <h3 style="color: #1d4ed8; margin-bottom: 8px;">【範例 3 詳解】極大數值與邊界極限推導</h3>
+                    <p><strong>輸入：</strong> <code>1 100000000000000</code> (<span style="font-style: italic;">10<sup>14</sup></span>) ｜ <strong>陣列：</strong> <code>10000000</code> (<span style="font-style: italic;">10<sup>7</sup></span>)</p>
+                    
+                    <div class="step-card">
+                        <strong>數學推導過程：</strong>
+                        <ul>
+                            <li>士兵數量僅有 1 位，戰力為 <span style="font-style: italic;">a<sub>1</sub> = 10,000,000 = 10<sup>7</sup></span>。</li>
+                            <li>金幣數量為 <span style="font-style: italic;">C = 100,000,000,000,000 = 10<sup>14</sup></span>。</li>
+                            <li>由花費公式 <span style="font-style: italic;">(U - a<sub>1</sub>)<sup>2</sup> ≤ C</span>，可直接代入計算：
+                                $<span style="font-style: italic;">(U - 10<sup>7</sup>)<sup>2</sup> ≤ 10<sup>14</sup></span>$
+                                兩邊取平方根：
+                                $<span style="font-style: italic;">U - 10<sup>7</sup> ≤ \sqrt{10<sup>14</sup>} = 10<sup>7</sup> ⟹ U ≤ 10<sup>7</sup> + 10<sup>7</sup> = 20,000,000</span>$
+                            </li>
+                        </ul>
+                    </div>
+                    <p>此範例證明了設定搜尋上界 <span style="font-style: italic;">R = 20,000,000</span> 的必要性，且展示金幣與花費計算<strong>必須使用 64 位元整數 (`long long`)</strong>，否則 <span style="font-style: italic;">10<sup>14</sup></span> 會超出 32 位元整數上限 (<span style="font-style: italic;">2 × 10<sup>9</sup></span>) 導致溢位崩潰。</p>
+                    <p>👉 <strong>輸出範例 3 結果：</strong> <code>20000000</code></p>
+                </div>
+            </div>
+
+            <!-- C++ 完整程式碼與逐行註解 -->
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（100% 官方解答規格，繁體中文逐行詳解）</h2>
+                <pre class="code-box"><code>#include &lt;cstdio&gt;      <span class="code-annotation">// 引入標準 I/O 函式庫，使用快速的 scanf 與 printf</span>
+
+const int N = 100000 + 5;     <span class="code-annotation">// 定義陣列上限常數 (配合 N &lt;= 20000 並保留彈性安全緩衝區)</span>
+typedef long long ll;         <span class="code-annotation">// 將 64 位元整數 long long 定義別名為 ll，防範金幣溢位</span>
+
+int n;                        <span class="code-annotation">// 士兵總數量 (1 &lt;= n &lt;= 2*10<sup>4</sup>)</span>
+ll c, arr[N];                 <span class="code-annotation">// c: 金幣數量 (最高 10<sup>14</sup>); arr[i]: 各士兵戰鬥力 (最高 10<sup>7</sup>)</span>
+
+<span class="code-annotation">// 驗證函數 can(level)：檢查能否將所有士兵提升至目標等級 level 且總花費不超過 c</span>
+int can(ll level)
+{
+    ll sum = 0;               <span class="code-annotation">// 累計升級所需的金幣總額</span>
+    for(int i = 0; i &lt; n; ++i)
+    {
+        if(arr[i] &lt; level)    <span class="code-annotation">// 只有當士兵戰力低於目標 level 時才需升級</span>
+        {
+            <span class="code-annotation">// 累加升級花費：(目標等級 - 初始戰力)<sup>2</sup></span>
+            sum += (level - arr[i]) * (level - arr[i]);
+            
+            <span class="code-annotation">// 剪枝優化 (Pruning)：若途中累計花費已超過總金幣數 c，提早失敗離開</span>
+            if(sum &gt; c)
+            {
+                return 0;     <span class="code-annotation">// 回傳 0 表示金幣不足，無法達成</span>
+            }
+        }
+    }
+    
+    <span class="code-annotation">// 迴圈結束後若花費仍在預算範圍內，代表此等級可行</span>
+    if(sum &lt;= c)
+    {
+        return 1;             <span class="code-annotation">// 回傳 1 表示可以達成</span>
+    }
+    return 0;
+}
+
+int main()
+{
+    <span class="code-annotation">// x: 搜尋下界 (最低可能等級 1)</span>
+    <span class="code-annotation">// y: 搜尋上界 (由範例 3 推導之理論最大極限 20,000,000)</span>
+    <span class="code-annotation">// mid: 當前二分測試的中點等級</span>
+    <span class="code-annotation">// ans: 記錄歷次驗證成功中的最大等級</span>
+    ll x = 1, y = 20000000, mid, ans = 0;
+    
+    <span class="code-annotation">// 讀取士兵數量 n 與總金幣數 c</span>
+    scanf("%d%lld", &n, &c);
+    
+    <span class="code-annotation">// 依序讀取每位士兵的初始戰鬥力</span>
+    for(int i = 0; i &lt; n; ++i)
+    {
+        scanf("%lld", &arr[i]);
+    }
+    
+    <span class="code-annotation">// 開始執行二分搜尋答案 (Binary Search on Answer)</span>
+    while(x &lt;= y)
+    {
+        mid = (x + y) / 2;    <span class="code-annotation">// 取目前區間中間值進行測試</span>
+        
+        if(can(mid))          <span class="code-annotation">// 若 mid 等級可以達成</span>
+        {
+            x = mid + 1;      <span class="code-annotation">// 嘗試挑戰更高的等級，將搜尋下界右移</span>
+            if(ans &lt; mid) ans = mid;  <span class="code-annotation">// 更新當前找到的最佳有效等級答案</span>
+        }
+        else                  <span class="code-annotation">// 若金幣不足無法達成等級 mid</span>
+        {
+            y = mid - 1;      <span class="code-annotation">// 目標定太高了，降低搜尋上界往左縮小</span>
+        }
+    }
+    
+    <span class="code-annotation">// 輸出小明軍隊最高能參加的盃賽等級</span>
+    printf("%lld\n", ans);
+    
+    return 0;                 <span class="code-annotation">// 程式正常結束</span>
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

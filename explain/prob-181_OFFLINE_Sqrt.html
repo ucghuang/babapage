@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#181 202212-OFFLINE<sub>S</sub>qrt (根號) - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --code-bg: #0f172a;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 28px 0 14px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .grid-samples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 16px;
+            margin-top: 14px;
+        }
+        .sample-item {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+        }
+        .sample-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .sample-text {
+            background: var(--code-bg);
+            color: #38bdf8;
+            font-family: "Cascadia Code", Consolas, Monaco, "Courier New", monospace;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.35;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .code-box {
+            background-color: var(--code-bg);
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#181</span> 202212-OFFLINE<sub>S</sub>qrt (根號)</h1>
+                <div class="header-right">
+                    <a href="../questions/202212-OFFLINE<sub>S</sub>qrt.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202212-OFFLINE<sub>S</sub>qrt.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-181" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要與幾何規則</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong>小光在玩數學遊戲，當中有一個「平方根魔法」，畫面會呈現由 <code>*</code> 字元構成的根號特效。圖形依序由四個幾何線段構成：<strong>「短邊 → 左斜邊 → 右斜邊 → 長邊」</strong>：</p>
+                    <ul>
+                        <li><strong>(1) 長邊：</strong>頂部水平線，星號數量是短邊的兩倍（長度 <span style="font-style: italic;">2K</span>）。</li>
+                        <li><strong>(2) 右斜邊：</strong>往右上揚升至頂端，星號數量與短邊相同（長度 <span style="font-style: italic;">K</span>）。</li>
+                        <li><strong>(3) 短邊高度與奇偶數對齊規則：</strong>
+                            <ul>
+                                <li>短邊固定為水平線，長度為 <span style="font-style: italic;">K</span>。</li>
+                                <li><strong>當 <span style="font-style: italic;">K</span> 為奇數時：</strong>短邊水平高度剛好切齊「右斜邊線段之中點」。短邊起始列為 <span style="font-style: italic;">\lfloor K / 2 \rfloor</span>。</li>
+                                <li><strong>當 <span style="font-style: italic;">K</span> 為偶數時：</strong>因幾何中心無法整除對齊，短邊高度稍微下降（列座標增加 1，即起始列為 <span style="font-style: italic;">K / 2</span>），以維持視覺協調美觀。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>輸入格式：</strong>整數 <span style="font-style: italic;">K</span> (<span style="font-style: italic;">3 ≤ K ≤ 500</span>)，代表根號的短邊長。</p>
+                    <p><strong>輸出格式：</strong>依據規則使用 <code>*</code> 與空格輸出繪圖後的字元矩陣。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法解析：【二維畫布模擬與向量步進】</h2>
+                <div class="analysis-box">
+                    <p>本題屬於經典的<strong>二維字元畫布 (2D Canvas) 狀態機軌跡模擬題</strong>：</p>
+                    <ul>
+                        <li><strong>畫布邊界計算：</strong>圖形垂直高度固定為 <span style="font-style: italic;">K</span> 列（列索引為 <span style="font-style: italic;">0 ∼ K-1</span>），最頂部的長邊固定落在第 <span style="font-style: italic;">0</span> 列。矩陣總寬度經推導為 <span style="font-style: italic;">W = 4K + \lfloor \frac{K+1}{2} \rfloor - 3</span>。</li>
+                        <li><strong>向量方向控制：</strong>定義方向偏移向量 <code>dir[4][2] = {{0,1}, {1,1}, {-1,1}}</code>：
+                            <ul>
+                                <li><code>0 (水平向右)</code>：<span style="font-style: italic;">Δ x = 0, Δ y = +1</span></li>
+                                <li><code>1 (右下斜行)</code>：<span style="font-style: italic;">Δ x = +1, Δ y = +1</span></li>
+                                <li><code>2 (右上斜行)</code>：<span style="font-style: italic;">Δ x = -1, Δ y = +1</span></li>
+                            </ul>
+                        </li>
+                        <li><strong>模組化繪圖流程：</strong>
+                            <ol style="margin-left: 20px; margin-top: 6px;">
+                                <li><strong>起點定位：</strong>初始座標設為 <span style="font-style: italic;">(x, y) = (\lfloor K/2 \rfloor, 0)</span>，方向為向右。</li>
+                                <li><strong>繪製短邊：</strong>呼叫 <code>draw<sub>h</sub>orizon</code> 走 <span style="font-style: italic;">K-1</span> 步填入 <code>*</code>，接著切換方向至右下。</li>
+                                <li><strong>繪製 V 型底與右斜邊：</strong>呼叫 <code>draw<sub>v</sub></code>。左斜邊走偶數步 <span style="font-style: italic;">(K/2 - 1)</span> 或奇數步 <span style="font-style: italic;">(\lfloor K/2 \rfloor)</span> 觸底，切換方向為右上，再走 <span style="font-style: italic;">K-1</span> 步抵達頂端第 <span style="font-style: italic;">0</span> 列。</li>
+                                <li><strong>繪製頂部長邊：</strong>向右走 <span style="font-style: italic;">2K</span> 步完成長邊，隨後依高度 <span style="font-style: italic;">K</span> 與寬度 <span style="font-style: italic;">W</span> 依序印出。</li>
+                            </ol>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">PDF 官方範例 1 至 4 完整對照解析</h2>
+                <div class="analysis-box">
+                    <p>以下為短邊長度分別為奇數（<span style="font-style: italic;">K=3, 5</span>）與偶數（<span style="font-style: italic;">K=4, 6</span>）時的畫布真實點陣輸出：</p>
+                    <div class="grid-samples">
+                        <div class="sample-item">
+                            <div class="sample-title">
+                                <span>【範例 1】K = 3（奇數，中點正對齊）</span>
+                                <span>高度 3 列 × 寬度 11 格</span>
+                            </div>
+                            <pre class="sample-text">     ******
+*** *      
+   *       </pre>
+                        </div>
+                        <div class="sample-item">
+                            <div class="sample-title">
+                                <span>【範例 2】K = 5（奇數，中點正對齊）</span>
+                                <span>高度 5 列 × 寬度 20 格</span>
+                            </div>
+                            <pre class="sample-text">          **********
+         *          
+*****   *           
+     * *            
+      *             </pre>
+                        </div>
+                        <div class="sample-item">
+                            <div class="sample-title">
+                                <span>【範例 3】K = 4（偶數，短邊微降）</span>
+                                <span>高度 4 列 × 寬度 15 格</span>
+                            </div>
+                            <pre class="sample-text">       ********
+      *        
+**** *         
+    *          </pre>
+                        </div>
+                        <div class="sample-item">
+                            <div class="sample-title">
+                                <span>【範例 4】K = 6（偶數，短邊微降）</span>
+                                <span>高度 6 列 × 寬度 24 格</span>
+                            </div>
+                            <pre class="sample-text">            ************
+           *            
+          *             
+******   *              
+      * *               
+       *                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;stdio.h&gt; // 引入標準輸入輸出標頭檔
+
+char area[501][2501] = {}; // 宣告 2D 畫布，支援題目測資上限 K <= 500
+// 定義方向向量：0 代表水平向右 (0, 1)，1 代表右下 (1, 1)，2 代表右上 (-1, 1)
+int dir[4][2] = {{0, 1}, {1, 1}, {-1, 1}};
+
+// 繪製水平線段的模組函式
+void draw<sub>h</sub>orizon(int *x, int *y, int *way, int len)
+{
+    // 移動 len - 1 步，沿途留存 '*' 字元
+    for(int i = 0; i &lt; len - 1; ++i)
+    {
+        area[*x][*y] = &#x27;*&#x27;;
+        *x += dir[*way][0];
+        *y += dir[*way][1];
+    }
+    *way = 1; // 短邊畫完後，轉向右下 (方向 1) 繪製左斜邊
+}
+
+// 繪製 V 型底端與揚升右斜邊的模組函式
+void draw<sub>v</sub>(int *x, int *y, int *way, int len)
+{
+    // 依據短邊長度的奇偶性，調整向下深入的步數以符合幾何對齊需求
+    if(len % 2 == 0) // 偶數情況：下探步數稍微減少 1 步
+    {
+        for(int i = 0; i &lt; len / 2 - 1; ++i)
+        {
+            area[*x][*y] = &#x27;*&#x27;;
+            *x += dir[*way][0];
+            *y += dir[*way][1];
+        }
+        *way = 2; // 抵達谷底，轉向右上 (方向 2)
+    }
+    else // 奇數情況：下探 len / 2 步恰好可切齊右斜邊中心
+    {
+        for(int i = 0; i &lt; len / 2; ++i)
+        {
+            area[*x][*y] = &#x27;*&#x27;;
+            *x += dir[*way][0];
+            *y += dir[*way][1];
+        }
+        *way = 2; // 抵達谷底，轉向右上 (方向 2)
+    }
+
+    // 右斜邊往右上揚升 len - 1 步直達頂端第 0 列
+    for(int i = 0; i &lt; len - 1; ++i)
+    {
+        area[*x][*y] = &#x27;*&#x27;;
+        *x += dir[*way][0];
+        *y += dir[*way][1];
+    }
+    *way = 0; // 抵達頂部後轉回水平向右 (方向 0)，準備繪製頂部長邊
+}
+
+int main()
+{
+    int len;
+    if(scanf(&quot;%d&quot;, &amp;len) != 1) return 0;
+
+    // 起始位置設為列 x = len / 2，行 y = 0，初始方向為向右
+    int x = len / 2, y = 0, way = 0;
+
+    // 初始化畫布全填為空白字元
+    for(int i = 0; i &lt; 501; ++i)
+    {
+        for(int j = 0; j &lt; 2501; ++j)
+        {
+            area[i][j] = &#x27; &#x27;;
+        }
+    }
+
+    // 依序執行畫筆軌跡
+    draw<sub>h</sub>orizon(&amp;x, &amp;y, &amp;way, len);          // 1. 繪製長度為 len 的短邊
+    draw<sub>v</sub>(&amp;x, &amp;y, &amp;way, len);                // 2. 繪製 V 型凹陷及右斜邊
+    draw<sub>h</sub>orizon(&amp;x, &amp;y, &amp;way, len * 2 + 1);  // 3. 繪製頂部長邊 (長度為 2 * len)
+
+    // 計算畫布實際需輸出的總寬度
+    int horizon = 4 * len + (len + 1) / 2 - 3;
+
+    // 依列輸出 0 到 len - 1 行
+    for(int i = 0; i &lt; len; ++i)
+    {
+        for(int j = 0; j &lt; horizon; ++j)
+        {
+            printf(&quot;%c&quot;, area[i][j]);
+        }
+        printf(&quot;\n&quot;);
+    }
+
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

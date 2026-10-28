@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#170 202210<sub>P</sub>yramid (金字塔) - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#170</span> 202210<sub>P</sub>yramid (金字塔)</h1>
+                <div class="header-right">
+                    <a href="../questions/202210<sub>P</sub>yramid.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202210<sub>P</sub>yramid.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-170" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 給定 <span style="font-style: italic;">N</span> 塊矩形木板，每塊木板有長度 <span style="font-style: italic;">L</span> 與寬度 <span style="font-style: italic;">W</span>。小新想用這些木板堆疊成一座金字塔。金字塔每一層由一片木板構成，且上層木板必須「完全小於」下層木板（即木板 A 的長度小於木板 B 且寬度小於木板 B）。木板不可旋轉。請計算金字塔最多可以有幾層。</p>
+                    <p><strong>輸入格式：</strong> 第一列有一個整數 <span style="font-style: italic;">N</span> (<span style="font-style: italic;">1 ≤ N ≤ 10<sup>5</sup></span>) 代表木板總數。接下來 <span style="font-style: italic;">N</span> 列，每列有兩個整數 <span style="font-style: italic;">L</span> 和 <span style="font-style: italic;">W</span> (<span style="font-style: italic;">1 ≤ L ≤ 10<sup>9</sup>, 1 ≤ W ≤ 10<sup>9</sup></span>)，代表木板的長度與寬度。</p>
+                    <p><strong>輸出格式：</strong> 輸出一個數字代表金字塔的最大層數。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【排序與最長遞增子序列 (LIS) 配合二分搜尋】</h2>
+                <div class="analysis-box">
+                    <p>本題為經典的二維偏序 / 最長遞增子序列 (LIS) 變體問題：</p>
+                    <ul>
+                        <li><strong>排序策略：</strong> 先將所有木板依長度 <span style="font-style: italic;">L</span> 由小到大排序；若長度相同，則依寬度 <span style="font-style: italic;">W</span> 由大到小排序。這樣可以確保相同長度的木板不會互相視為合法遞增（避免重複長度被選取）。</li>
+                        <li><strong>LIS 狀態維護：</strong> 排序後，對木板的寬度 <span style="font-style: italic;">W</span> 維護一個 <code>pyramid</code> 陣列。利用 <code>lower<sub>b</sub>ound</code> 進行二分搜尋，尋找最長嚴格遞增子序列。</li>
+                        <li><strong>效能優化：</strong> 時間複雜度為 <span style="font-style: italic;">O(N log N)</span>，空間複雜度為 <span style="font-style: italic;">O(N)</span>，能完美應對 <span style="font-style: italic;">N = 10<sup>5</sup></span> 的大規模測資。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+5
+8 7
+9 7
+9 10
+3 6
+5 2</pre>
+                    <ul>
+                        <li>木板經過排序（依長度升序，長度相同時寬度降序）：
+                            <ol>
+                                <li><code>(3, 6)</code></li>
+                                <li><code>(5, 2)</code></li>
+                                <li><code>(8, 7)</code></li>
+                                <li><code>(9, 10)</code></li>
+                                <li><code>(9, 7)</code></li>
+                            </ol>
+                        </li>
+                        <li>提取寬度序列進行 LIS 模擬：<code>[6, 2, 7, 10, 7]</code>
+                            <ul>
+                                <li>加入 6 <span style="font-style: italic;">→</span> `[6]`</li>
+                                <li>處理 2 <span style="font-style: italic;">→</span> 替換 6 <span style="font-style: italic;">→</span> `[2]`</li>
+                                <li>處理 7 <span style="font-style: italic;">→</span> 附加 <span style="font-style: italic;">→</span> `[2, 7]`</li>
+                                <li>處理 10 <span style="font-style: italic;">→</span> 附加 <span style="font-style: italic;">→</span> `[2, 7, 10]`</li>
+                                <li>處理 7 <span style="font-style: italic;">→</span> 替換 7 <span style="font-style: italic;">→</span> `[2, 7, 10]`</li>
+                            </ul>
+                        </li>
+                        <li>最終 LIS 長度（金字塔最大層數）為 3。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>3</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;iostream&gt; // 引入標準輸入輸出標頭檔，以便使用 cin 與 cout
+#include&lt;vector&gt; // 引入動態陣列 vector 標頭檔
+#include&lt;algorithm&gt; // 引入演算法標頭檔，包含 sort 與 lower<sub>b</sub>ound
+#include&lt;utility&gt; // 引入 pair 容器標頭檔
+using namespace std; // 使用標準命名空間 std
+
+int main()
+{
+    int N; // 宣告整數 N，用來儲存木板總數
+    cin &gt;&gt; N; // 讀入木板總數 N
+    vector&lt;pair&lt;int,int&gt;&gt; wood; // 宣告 vector 儲存 pair&lt;int, int&gt;，分別代表木板的長 (first) 與寬 (second)
+    for(int i=0;i&lt;N;++i) // 迴圈讀入每塊木板的尺寸
+    {
+        int a,b; // 宣告暫存變數 a（長）與 b（寬）
+        cin &gt;&gt; a &gt;&gt; b; // 讀入長度 a 與寬度 b
+        wood.push<sub>b</sub>ack(make<sub>p</sub>air(a,b)); // 將木板尺寸放入 wood 容器中
+    }
+
+    // 將木板進行排序：若長度不同則依長度由小到大排序；若長度相同則依寬度由大到小排序
+    sort(begin(wood),end(wood),
+         [](pair&lt;int,int&gt; &amp;a, pair&lt;int,int&gt; &amp;b)-&gt;bool{return a.first==b.first? a.second&gt;b.second:a.first&lt;b.first;});
+
+    vector&lt;int&gt; pyramid; // 宣告 pyramid 陣列，用來維護最長遞增子序列 (LIS) 的寬度
+    pyramid.push<sub>b</sub>ack(wood[0].second); // 將第一塊木板的寬度放入 pyramid 作為起點
+    for(int i=1;i&lt;wood.size();++i) // 從第二塊木板開始走訪所有木板
+    {
+        if(pyramid.back()&lt;wood[i].second) // 若當前木板寬度大於 pyramid 最後一個元素（可接在金字塔上方）
+            pyramid.push<sub>b</sub>ack(wood[i].second); // 直接將其加入 pyramid 尾端
+        else // 否則（寬度小於或等於 pyramid 尾端）
+            *lower<sub>b</sub>ound(begin(pyramid),end(pyramid),wood[i].second) = wood[i].second; // 利用二分搜尋找到第一個大於等於當前寬度的位置並進行替換（優化 LIS）
+
+    }
+    cout &lt;&lt; pyramid.size() &lt;&lt; endl; // 輸出 pyramid 的大小，即為金字塔的最大層數
+    return 0; // 程式正常結束
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

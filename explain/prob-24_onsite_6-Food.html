@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#24 201908-onsite_6-Food - TOI 題目詳解與 C++ 實作</title>
+    <title>#24 201908-onsite<sub>6</sub>-Food - TOI 題目詳解與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -121,18 +121,18 @@
     <div class="container">
         <div class="problem-card">
             <div class="card-header">
-                <h1><span class="index-tag">#24</span> 201908-onsite_6-Food (飲食分類)</h1>
+                <h1><span class="index-tag">#24</span> 201908-onsite<sub>6</sub>-Food (飲食分類)</h1>
                 <div class="header-right">
-                    <a href="../questions/201908-onsite_6-Food.pdf" class="file-name-meta" target="_blank">PDF: 201908-onsite_6-Food.pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-24" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                    <a href="../questions/201908-onsite<sub>6</sub>-Food.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201908-onsite<sub>6</sub>-Food.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-24" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
             <div class="section-part">
                 <h2 class="section-title">題目摘要</h2>
                 <div class="analysis-box">
-                    <p><strong>問題敘述：</strong> 為了幫助挑食的小胖建立均衡飲食觀念，需要製作一個過濾器來分類現有的食物。給定 $N$ 個食物名稱與對應的種類，以及最後要搜尋的目標種類 $C$，請找出所有屬於該種類的食物名稱，並依照字典順序（由小到大）輸出。</p>
-                    <p><strong>輸入格式：</strong> 第一行有一個正整數 $N$ ($1 \le N \le 50$) 代表食物個數；接下來 $N$ 行，每行各有兩個字串 $F$ 與 $S$，分別代表食物名稱與種類；最後一行有一字串 $C$ 代表要搜尋的食物種類（字串長度均不超過 15 個字元且不含空格）。</p>
+                    <p><strong>問題敘述：</strong> 為了幫助挑食的小胖建立均衡飲食觀念，需要製作一個過濾器來分類現有的食物。給定 <span style="font-style: italic;">N</span> 個食物名稱與對應的種類，以及最後要搜尋的目標種類 <span style="font-style: italic;">C</span>，請找出所有屬於該種類的食物名稱，並依照字典順序（由小到大）輸出。</p>
+                    <p><strong>輸入格式：</strong> 第一行有一個正整數 <span style="font-style: italic;">N</span> (<span style="font-style: italic;">1 ≤ N ≤ 50</span>) 代表食物個數；接下來 <span style="font-style: italic;">N</span> 行，每行各有兩個字串 <span style="font-style: italic;">F</span> 與 <span style="font-style: italic;">S</span>，分別代表食物名稱與種類；最後一行有一字串 <span style="font-style: italic;">C</span> 代表要搜尋的食物種類（字串長度均不超過 15 個字元且不含空格）。</p>
                     <p><strong>輸出格式：</strong> 按照字典順序（由小到大）輸出屬於搜尋種類的食物名稱。若無該搜尋種類的食物則輸出 <code>No</code>。</p>
                 </div>
             </div>
@@ -143,7 +143,7 @@
                     <p>本題採用<strong>字串比對與基本排序策略</strong>：</p>
                     <ul>
                         <li>透過迴圈讀入所有食物的名稱與種類，並將最後查詢的種類存入變數中。</li>
-                        <li>走訪所有記錄，利用 <code>strcmp</code> 比對食物種類是否與目標種類 $C$ 相同；若相符，則將該食物名稱複製到答案陣列中。</li>
+                        <li>走訪所有記錄，利用 <code>strcmp</code> 比對食物種類是否與目標種類 <span style="font-style: italic;">C</span> 相同；若相符，則將該食物名稱複製到答案陣列中。</li>
                         <li>若沒有找到任何符合的食物，直接輸出 <code>No</code>；若有找到，則使用雙層迴圈配合 <code>strcmp</code> 進行字串的氣泡排序（Dictionary Order），確保輸出時由小到大排列。</li>
                     </ul>
                 </div>

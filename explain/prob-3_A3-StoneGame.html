@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#3 201903<sub>A</sub>3-StoneGame - TOI 題目詳解、博弈推導與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --win-color: #16a34a;
+            --win-bg: #dcfce7;
+            --lose-color: #dc2626;
+            --lose-bg: #fee2e2;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 30px 20px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 28px 0 14px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+            font-weight: 700;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .svg-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        table.derivation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+            background: #ffffff;
+        }
+        table.derivation-table th, table.derivation-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+        table.derivation-table th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+            text-align: center;
+        }
+        .badge-win {
+            background-color: var(--win-bg);
+            color: var(--win-color);
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .badge-lose {
+            background-color: var(--lose-bg);
+            color: var(--lose-color);
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .badge-opt {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 13.5px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+        .score-badge {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#3</span> 201903<sub>A</sub>3-StoneGame (石頭遊戲)</h1>
+                <div class="header-right">
+                    <a href="../questions/201903<sub>A</sub>3-StoneGame(Q).pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201903<sub>A</sub>3-StoneGame(Q).pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-3" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-path">
+                <h2 class="section-title">題目摘要與規則設定</h2>
+                <div class="analysis-box">
+                    <p><strong>情境描述：</strong> Alice 和 Bob 到沙灘旅遊，在岸邊撿了很多石頭進行策略博弈。</p>
+                    <ul>
+                        <li><strong>規則 1（先手與結束條件）：</strong> Alice 必為先手。雙方輪流從地面上拿走石頭，<strong>輪到自己時地面無石頭可拿者判敗（Normal Play Convention）</strong>。</li>
+                        <li><strong>規則 2（指定步數集合）：</strong> 指定 <span style="font-style: italic;">N</span> 個正整數組成集合 <span style="font-style: italic;">P = \{P<sub>1</sub>, P<sub>2</sub>, …, P<sub>N</sub>\}</span>（<span style="font-style: italic;">1 ≤ P ≤ 2 × 10<sup>6</sup></span>），每次只能從地面拿走屬於集合 <span style="font-style: italic;">P</span> 內指定數量的石頭。題目保證集合中必定包含 <span style="font-style: italic;">1</span>（即最少可拿 1 顆）。</li>
+                        <li><strong>輸入格式：</strong> 第一列為 <span style="font-style: italic;">N</span> (<span style="font-style: italic;">1 ≤ N ≤ 50</span>)；第二列為 <span style="font-style: italic;">N</span> 個整數 <span style="font-style: italic;">P</span>；第三列為局數 <span style="font-style: italic;">M</span> (<span style="font-style: italic;">1 ≤ M ≤ 10<sup>5</sup></span>)；接續 <span style="font-style: italic;">M</span> 列各為該局初始石頭數 <span style="font-style: italic;">Q</span> (<span style="font-style: italic;">1 ≤ Q ≤ 2 × 10<sup>6</sup></span>)。</li>
+                        <li><strong>輸出格式：</strong> 對每局輸出 Alice 的勝負結果：勝輸出 <code>Win!</code>，敗輸出 <code>Lose</code>。</li>
+                        <li><strong>評分級距：</strong>
+                            <ul>
+                                <li><span class="score-badge">第 1 組 (10分)</span> <span style="font-style: italic;">1 ≤ P, Q ≤ 4, M = 1</span></li>
+                                <li><span class="score-badge">第 2 組 (30分)</span> <span style="font-style: italic;">1 ≤ P, Q ≤ 100,000</span></li>
+                                <li><span class="score-badge">第 3 組 (60分)</span> <span style="font-style: italic;">1 ≤ P, Q ≤ 2,000,000</span></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <!-- 題目情境與博弈模型 SVG 圖形 -->
+                    <div class="svg-container">
+                        <svg viewBox="0 0 820 220" width="100%" height="220" xmlns="http://www.w3.org/2000/svg">
+                            <!-- 沙灘背景區塊 -->
+                            <rect x="10" y="10" width="800" height="200" rx="10" fill="#fef3c7" stroke="#fde68a" stroke-width="2"/>
+                            <text x="30" y="38" font-size="14" font-weight="bold" fill="#b45309">沙灘石頭策略對奕模型 (Impartial Game)</text>
+                            
+                            <!-- 石頭堆 -->
+                            <circle cx="410" cy="95" r="32" fill="#78716c" />
+                            <circle cx="390" cy="115" r="26" fill="#a8a29e" />
+                            <circle cx="430" cy="115" r="28" fill="#57534e" />
+                            <circle cx="410" cy="125" r="22" fill="#44403c" />
+                            <text x="410" y="100" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">剩餘 Q 顆</text>
+
+                            <!-- Alice (先手) -->
+                            <rect x="50" y="55" width="170" height="110" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
+                            <text x="135" y="85" font-size="16" font-weight="bold" fill="#1e40af" text-anchor="middle">Alice (先手)</text>
+                            <text x="135" y="112" font-size="12" fill="#1e3a8a" text-anchor="middle">尋找轉移使 SG = 0</text>
+                            <text x="135" y="132" font-size="12" fill="#1e3a8a" text-anchor="middle">目標：將必敗態留給對方</text>
+
+                            <!-- Bob (後手) -->
+                            <rect x="600" y="55" width="170" height="110" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+                            <text x="685" y="85" font-size="16" font-weight="bold" fill="#334155" text-anchor="middle">Bob (後手)</text>
+                            <text x="685" y="112" font-size="12" fill="#475569" text-anchor="middle">若接到必敗態 (SG=0)</text>
+                            <text x="685" y="132" font-size="12" fill="#475569" text-anchor="middle">不管如何取均必敗</text>
+
+                            <!-- 取石箭頭路徑 -->
+                            <path d="M 220 100 L 350 100" stroke="#2563eb" stroke-width="3" fill="none" marker-end="url(#arrow)" />
+                            <text x="285" y="90" font-size="12" fill="#2563eb" font-weight="bold" text-anchor="middle">拿走 P[j] 顆</text>
+
+                            <path d="M 470 100 L 600 100" stroke="#64748b" stroke-width="3" stroke-dasharray="5,5" fill="none" />
+                            <text x="535" y="90" font-size="12" fill="#64748b" font-weight="bold" text-anchor="middle">換手輪替</text>
+
+                            <text x="410" y="185" font-size="13" fill="#6b7280" text-anchor="middle">終止邊界：Q = 0 且輪到自己取石者判定為輸 (Lose)</text>
+                        </svg>
+                    </div>
+					
+                    <!-- SVG 視覺化圖形 -->
+                    <div class="diagram-container">
+                        <strong style="color: #334155;">狀態轉移有向圖（DAG 博弈模型）：</strong>
+                        <svg class="svg-diagram" viewBox="0 0 760 120" xmlns="http://www.w3.org/2000/svg">
+                            <!-- 箭頭標記 -->
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1 L 8 5 L 0 9 z" fill="#64748b" />
+                                </marker>
+                                <marker id="arrow-win" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1 L 8 5 L 0 9 z" fill="#16a34a" />
+                                </marker>
+                            </defs>
+
+                            <!-- 狀態節點: Q=0 (Lose) -->
+                            <circle cx="70" cy="60" r="30" fill="#fee2e2" stroke="#dc2626" stroke-width="2.5"/>
+                            <text x="70" y="55" font-size="14" font-weight="bold" fill="#991b1b" text-anchor="middle">Q = 0</text>
+                            <text x="70" y="73" font-size="12" fill="#dc2626" text-anchor="middle">SG=0 (敗)</text>
+
+                            <!-- 狀態節點: Q=1~5 (Win) -->
+                            <rect x="230" y="30" width="130" height="60" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
+                            <text x="295" y="55" font-size="14" font-weight="bold" fill="#166534" text-anchor="middle">Q ∈ {1, 2, 3, 4, 5}</text>
+                            <text x="295" y="75" font-size="12" fill="#15803d" text-anchor="middle">SG=1 (必勝態)</text>
+
+                            <!-- 轉移: Q=1~5 到 Q=0 -->
+                            <path d="M 230 60 L 110 60" stroke="#16a34a" stroke-width="2" marker-end="url(#arrow-win)" />
+                            <text x="170" y="50" font-size="11" fill="#166534" text-anchor="middle">取光全部 (p=Q)</text>
+
+                            <!-- 狀態節點: Q=6 (Lose) -->
+                            <circle cx="510" cy="60" r="30" fill="#fee2e2" stroke="#dc2626" stroke-width="2.5"/>
+                            <text x="510" y="55" font-size="14" font-weight="bold" fill="#991b1b" text-anchor="middle">Q = 6</text>
+                            <text x="510" y="73" font-size="12" fill="#dc2626" text-anchor="middle">SG=0 (敗)</text>
+
+                            <!-- 轉移: Q=6 只能到 Q=1~5 -->
+                            <path d="M 480 60 L 370 60" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)" />
+                            <text x="425" y="50" font-size="11" fill="#64748b" text-anchor="middle">取 1~5 顆</text>
+
+                            <!-- 狀態節點: Q=7 (Win) -->
+                            <circle cx="690" cy="60" r="30" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
+                            <text x="690" y="55" font-size="14" font-weight="bold" fill="#166534" text-anchor="middle">Q = 7</text>
+                            <text x="690" y="73" font-size="12" fill="#15803d" text-anchor="middle">SG=1 (勝)</text>
+
+                            <!-- 轉移: Q=7 到 Q=6 -->
+                            <path d="M 660 60 L 550 60" stroke="#16a34a" stroke-width="2" marker-end="url(#arrow-win)" />
+                            <text x="605" y="50" font-size="11" fill="#166534" text-anchor="middle">先手拿 1 顆</text>
+                        </svg>
+                    </div>
+
+					
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法數學原理：賽局理論與狀態轉移</h2>
+                <div class="analysis-box">
+                    <p>本題屬於標準的<strong>公平組合遊戲（Impartial Game）</strong>。由於遊戲只在單一石堆上進行，我們可以直接採用「必勝態（P-position）與必敗態（N-position）」的二元性質簡化 SG 函數計算：</p>
+                    <ul>
+                        <li><strong>終止態（Base Case）：</strong> <span style="font-style: italic;">SG[0] = 0</span>。輪到該局的人已無石頭可拿，直接判輸，屬於<strong>必敗態（Lose）</strong>。</li>
+                        <li><strong>必勝態（Winning State, <span style="font-style: italic;">SG[Q] = 1</span>）：</strong> 
+                            從狀態 <span style="font-style: italic;">Q</span> 出發，只要存在至少一個合法的取石數 <span style="font-style: italic;">P<sub>j</sub> ∈ P</span> (<span style="font-style: italic;">P<sub>j</sub> ≤ Q</span>)，使得轉移後的狀態為必敗態（即 <span style="font-style: italic;">SG[Q - P<sub>j</sub>] == 0</span>），則先手玩家只要選擇拿走 <span style="font-style: italic;">P<sub>j</sub></span> 顆，就能將必敗態強加給對手，確保自身獲勝。
+                        </li>
+                        <li><strong>必敗態（Losing State, <span style="font-style: italic;">SG[Q] = 0</span>）：</strong> 
+                            從狀態 <span style="font-style: italic;">Q</span> 出發，若針對「所有」合法的取石數 <span style="font-style: italic;">P<sub>j</sub> ∈ P</span>，轉移後的狀態全都是必勝態（即 <span style="font-style: italic;">∀ P<sub>j</sub> ≤ Q,\ SG[Q - P<sub>j</sub>] == 1</span>），則先手玩家無論怎麼拿，對手接手後都處於必勝局面，因此當前狀態為必敗態。
+                        </li>
+                        <li><strong>線性動態規劃預處理：</strong> 狀態最大值達 <span style="font-style: italic;">2 × 10<sup>6</sup></span>。透過外層走訪 <span style="font-style: italic;">i = 1 … 2 × 10<sup>6</sup></span>、內層遍歷集合 <span style="font-style: italic;">P</span> 的常數次操作，能在 <span style="font-style: italic;">O(N \cdot max(Q))</span> 時間內預處理完畢，並以 <span style="font-style: italic;">O(1)</span> 快速回答每筆查詢。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">範例 1 詳細狀態轉移與黑板推導</h2>
+                <div class="analysis-box">
+                    <p><strong>輸入參數：</strong> <span style="font-style: italic;">N = 5</span>，<span style="font-style: italic;">P = \{1, 2, 3, 4, 5\}</span>，查詢 <span style="font-style: italic;">Q ∈ \{6, 7\}</span>。</p>
+                    <table class="derivation-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 10%;">石頭數 <span style="font-style: italic;">Q</span></th>
+                                <th style="width: 32%;">可轉移之後續狀態 <span style="font-style: italic;">(Q - P<sub>j</sub>)</span></th>
+                                <th style="width: 28%;">後續狀態之 SG 值</th>
+                                <th style="width: 15%;">當前 <span style="font-style: italic;">SG[Q]</span></th>
+                                <th style="width: 15%;">勝負結論</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="text-align: center; font-weight: bold;">0</td>
+                                <td>無（已無法取石）</td>
+                                <td>-</td>
+                                <td style="text-align: center;"><span class="badge-lose">0</span></td>
+                                <td style="text-align: center;">必敗態 (Lose)</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; font-weight: bold;">1</td>
+                                <td>取 1 顆 <span style="font-style: italic;">→</span> 剩 0</td>
+                                <td><span style="font-style: italic;">SG[0] = 0</span> <span class="badge-opt">最佳步</span></td>
+                                <td style="text-align: center;"><span class="badge-win">1</span></td>
+                                <td style="text-align: center;">必勝態 (Win!)</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; font-weight: bold;">2</td>
+                                <td>取 1 <span style="font-style: italic;">→</span> 1; 取 2 <span style="font-style: italic;">→</span> 0</td>
+                                <td><span style="font-style: italic;">SG[0] = 0</span> <span class="badge-opt">最佳步</span>, <span style="font-style: italic;">SG[1] = 1</span></td>
+                                <td style="text-align: center;"><span class="badge-win">1</span></td>
+                                <td style="text-align: center;">必勝態 (Win!)</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; font-weight: bold;">3</td>
+                                <td>取 1 <span style="font-style: italic;">→</span> 2; 取 2 <span style="font-style: italic;">→</span> 1; 取 3 <span style="font-style: italic;">→</span> 0</td>
+                                <td><span style="font-style: italic;">SG[0] = 0</span> <span class="badge-opt">最佳步</span></td>
+                                <td style="text-align: center;"><span class="badge-win">1</span></td>
+                                <td style="text-align: center;">必勝態 (Win!)</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; font-weight: bold;">4</td>
+                                <td>取 1~4 顆 <span style="font-style: italic;">→</span> 可轉移至 3, 2, 1, 0</td>
+                                <td>包含 <span style="font-style: italic;">SG[0] = 0</span> <span class="badge-opt">最佳步</span></td>
+                                <td style="text-align: center;"><span class="badge-win">1</span></td>
+                                <td style="text-align: center;">必勝態 (Win!)</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; font-weight: bold;">5</td>
+                                <td>取 1~5 顆 <span style="font-style: italic;">→</span> 可轉移至 4, 3, 2, 1, 0</td>
+                                <td>包含 <span style="font-style: italic;">SG[0] = 0</span> <span class="badge-opt">最佳步</span></td>
+                                <td style="text-align: center;"><span class="badge-win">1</span></td>
+                                <td style="text-align: center;">必勝態 (Win!)</td>
+                            </tr>
+                            <tr style="background: #fff1f2;">
+                                <td style="text-align: center; font-weight: bold;">6 (查詢)</td>
+                                <td>取 1~5 顆 <span style="font-style: italic;">→</span> 分別剩 5, 4, 3, 2, 1</td>
+                                <td>全部狀態之 SG 均為 1（無任何轉移能到達 0）</td>
+                                <td style="text-align: center;"><span class="badge-lose">0</span></td>
+                                <td style="text-align: center; font-weight: bold; color: var(--lose-color);">Lose</td>
+                            </tr>
+                            <tr style="background: #f0fdf4;">
+                                <td style="text-align: center; font-weight: bold;">7 (查詢)</td>
+                                <td>取 1 顆 <span style="font-style: italic;">→</span> 剩 6; 取其他 <span style="font-style: italic;">→</span> 剩 5, 4, 3, 2</td>
+                                <td><strong><span style="font-style: italic;">SG[6] = 0</span></strong> <span class="badge-opt">最佳步：取 1 顆</span></td>
+                                <td style="text-align: center;"><span class="badge-win">1</span></td>
+                                <td style="text-align: center; font-weight: bold; color: var(--win-color);">Win!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 8px;"><strong>週期性規律推導：</strong> 當可取集合為連續的 <span style="font-style: italic;">1 ∼ K</span> 時（此處 <span style="font-style: italic;">K=5</span>），整個遊戲等價於巴什博弈（Bash Game）。狀態呈現以 <span style="font-style: italic;">K+1 = 6</span> 為週期的規律：只要 <span style="font-style: italic;">Q ±od 6 == 0</span> 則先手必敗（<code>Lose</code>），否則先手必勝（<code>Win!</code>）。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">範例 2 詳細狀態轉移與黑板推導</h2>
+                <div class="analysis-box">
+                    <p><strong>輸入參數：</strong> 第二列輸入 <code>1 2 2 5</code>（去重並排序後有效集合 <span style="font-style: italic;">P = \{1, 2, 5\}</span>），查詢 <span style="font-style: italic;">Q ∈ \{5, 6, 8\}</span>。</p>
+                    <table class="derivation-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 10%;">石頭數 <span style="font-style: italic;">Q</span></th>
+                                <th style="width: 30%;">合法取法與轉移狀態 <span style="font-style: italic;">(Q - P<sub>j</sub>)</span></th>
+                                <th style="width: 32%;">後續狀態 SG 值判定</th>
+                                <th style="width: 14%;">當前 <span style="font-style: italic;">SG[Q]</span></th>
+                                <th style="width: 14%;">勝負結論</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="text-align: center; font-weight: bold;">0</td>
+                                <td>無合法操作</td>
+                                <td>邊界條件</td>
+                                <td style="text-align: center;"><span class="badge-lose">0</span></td>
+                                <td style="text-align: center;">必敗態 (Lose)</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; font-weight: bold;">1</td>
+                                <td>可拿 1 <span style="font-style: italic;">→</span> 剩 0</td>
+                                <td><span style="font-style: italic;">SG[0] = 0</span> <span class="badge-opt">最佳步</span></td>
+                                <td style="text-align: center;"><span class="badge-win">1</span></td>
+                                <td style="text-align: center;">必勝態 (Win!)</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; font-weight: bold;">2</td>
+                                <td>可拿 1 <span style="font-style: italic;">→</span> 1; 拿 2 <span style="font-style: italic;">→</span> 0</td>
+                                <td><span style="font-style: italic;">SG[0] = 0</span> <span class="badge-opt">最佳步：拿 2 顆</span></td>
+                                <td style="text-align: center;"><span class="badge-win">1</span></td>
+                                <td style="text-align: center;">必勝態 (Win!)</td>
+                            </tr>
+                            <tr style="background: #fff1f2;">
+                                <td style="text-align: center; font-weight: bold;">3</td>
+                                <td>可拿 1 <span style="font-style: italic;">→</span> 2; 拿 2 <span style="font-style: italic;">→</span> 1</td>
+                                <td><span style="font-style: italic;">SG[2]=1,\ SG[1]=1</span>（全為勝態，無 0 可選）</td>
+                                <td style="text-align: center;"><span class="badge-lose">0</span></td>
+                                <td style="text-align: center;">必敗態 (Lose)</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; font-weight: bold;">4</td>
+                                <td>可拿 1 <span style="font-style: italic;">→</span> 3; 拿 2 <span style="font-style: italic;">→</span> 2</td>
+                                <td><span style="font-style: italic;">SG[3] = 0</span> <span class="badge-opt">最佳步：拿 1 顆</span></td>
+                                <td style="text-align: center;"><span class="badge-win">1</span></td>
+                                <td style="text-align: center;">必勝態 (Win!)</td>
+                            </tr>
+                            <tr style="background: #f0fdf4;">
+                                <td style="text-align: center; font-weight: bold;">5 (查詢)</td>
+                                <td>可拿 1 <span style="font-style: italic;">→</span> 4; 拿 2 <span style="font-style: italic;">→</span> 3; <strong>拿 5 <span style="font-style: italic;">→</span> 0</strong></td>
+                                <td><span style="font-style: italic;">SG[0] = 0</span> <span class="badge-opt">最佳步：拿 5 顆一次拿完</span></td>
+                                <td style="text-align: center;"><span class="badge-win">1</span></td>
+                                <td style="text-align: center; font-weight: bold; color: var(--win-color);">Win!</td>
+                            </tr>
+                            <tr style="background: #fff1f2;">
+                                <td style="text-align: center; font-weight: bold;">6 (查詢)</td>
+                                <td>可拿 1 <span style="font-style: italic;">→</span> 5; 拿 2 <span style="font-style: italic;">→</span> 4; 拿 5 <span style="font-style: italic;">→</span> 1</td>
+                                <td><span style="font-style: italic;">SG[5]=1,\ SG[4]=1,\ SG[1]=1</span>（全為勝態）</td>
+                                <td style="text-align: center;"><span class="badge-lose">0</span></td>
+                                <td style="text-align: center; font-weight: bold; color: var(--lose-color);">Lose</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; font-weight: bold;">7</td>
+                                <td>可拿 1 <span style="font-style: italic;">→</span> 6; 拿 2 <span style="font-style: italic;">→</span> 5; 拿 5 <span style="font-style: italic;">→</span> 2</td>
+                                <td><strong><span style="font-style: italic;">SG[6] = 0</span></strong> <span class="badge-opt">最佳步：拿 1 顆</span></td>
+                                <td style="text-align: center;"><span class="badge-win">1</span></td>
+                                <td style="text-align: center;">必勝態 (Win!)</td>
+                            </tr>
+                            <tr style="background: #f0fdf4;">
+                                <td style="text-align: center; font-weight: bold;">8 (查詢)</td>
+                                <td>可拿 1 <span style="font-style: italic;">→</span> 7; 拿 2 <span style="font-style: italic;">→</span> 6; <strong>拿 5 <span style="font-style: italic;">→</span> 3</strong></td>
+                                <td><strong><span style="font-style: italic;">SG[3] = 0</span></strong> <span class="badge-opt">最佳步：拿 5 顆留 3 顆</span></td>
+                                <td style="text-align: center;"><span class="badge-win">1</span></td>
+                                <td style="text-align: center; font-weight: bold; color: var(--win-color);">Win!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 範例 2 決策流程圖 SVG -->
+                    <div class="svg-container">
+                        <svg viewBox="0 0 800 240" width="100%" height="240" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+                                </marker>
+                                <marker id="arrow-red" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+                                </marker>
+                            </defs>
+                            
+                            <text x="400" y="25" font-size="14" font-weight="bold" fill="#1e3a8a" text-anchor="middle">範例 2 之關鍵局決策樹結構圖</text>
+
+                            <!-- Q = 6 節點 (Lose) -->
+                            <rect x="50" y="50" width="120" height="40" rx="6" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
+                            <text x="110" y="75" font-size="14" font-weight="bold" fill="#991b1b" text-anchor="middle">Q = 6 (Alice)</text>
+                            
+                            <!-- 轉移分支 -->
+                            <line x1="170" y1="70" x2="260" y2="50" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arrow-red)"/>
+                            <text x="215" y="52" font-size="11" fill="#dc2626">拿 1 顆</text>
+                            <rect x="265" y="35" width="110" height="30" rx="4" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5"/>
+                            <text x="320" y="55" font-size="12" fill="#166534" text-anchor="middle">剩 5 (Bob 贏)</text>
+
+                            <line x1="170" y1="70" x2="260" y2="90" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arrow-red)"/>
+                            <text x="215" y="85" font-size="11" fill="#dc2626">拿 2 顆</text>
+                            <rect x="265" y="75" width="110" height="30" rx="4" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5"/>
+                            <text x="320" y="95" font-size="12" fill="#166534" text-anchor="middle">剩 4 (Bob 贏)</text>
+
+                            <line x1="170" y1="70" x2="260" y2="130" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arrow-red)"/>
+                            <text x="215" y="118" font-size="11" fill="#dc2626">拿 5 顆</text>
+                            <rect x="265" y="115" width="110" height="30" rx="4" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5"/>
+                            <text x="320" y="135" font-size="12" fill="#166534" text-anchor="middle">剩 1 (Bob 贏)</text>
+
+                            <text x="110" y="115" font-size="12" fill="#b91c1c" text-anchor="middle">無路可走：必然輸 (Lose)</text>
+
+                            <!-- 分隔垂直虛線 -->
+                            <line x1="430" y1="45" x2="430" y2="210" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4,4"/>
+
+                            <!-- Q = 8 節點 (Win) -->
+                            <rect x="470" y="50" width="120" height="40" rx="6" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
+                            <text x="530" y="75" font-size="14" font-weight="bold" fill="#166534" text-anchor="middle">Q = 8 (Alice)</text>
+
+                            <!-- 轉移分支 -->
+                            <line x1="590" y1="70" x2="670" y2="55" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="2,2"/>
+                            <text x="630" y="52" font-size="11" fill="#64748b">拿 1/2 顆</text>
+                            <rect x="675" y="40" width="105" height="26" rx="4" fill="#f1f5f9"/>
+                            <text x="727" y="58" font-size="11" fill="#475569" text-anchor="middle">次佳或劣步</text>
+
+                            <!-- 最佳致勝步 -->
+                            <line x1="590" y1="70" x2="670" y2="105" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow)"/>
+                            <text x="630" y="93" font-size="11" font-weight="bold" fill="#2563eb">最佳：拿 5 顆</text>
+                            <rect x="675" y="90" width="105" height="30" rx="4" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
+                            <text x="727" y="110" font-size="12" font-weight="bold" fill="#991b1b" text-anchor="middle">剩 3 (必敗態)</text>
+
+                            <path d="M 727 125 L 727 160" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)"/>
+                            <rect x="645" y="165" width="165" height="42" rx="4" fill="#fef2f2" stroke="#f87171"/>
+                            <text x="727" y="182" font-size="11" fill="#991b1b" text-anchor="middle">Bob 接手 Q=3 必敗</text>
+                            <text x="727" y="198" font-size="11" font-weight="bold" fill="#15803d" text-anchor="middle">Alice 鎖定勝局 (Win!)</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（逐行繁體中文教學註解）</h2>
+                <pre class="code-box"><code>#include&lt;bits/stdc++.h&gt;  // 引入標準擴充標頭檔 (包含 vector、演算法 sort 與標準 I/O)
+std::vector&lt;int&gt; v;       // 宣告全域動態陣列 v，用來儲存每次可拿走的石頭數量集合 P
+int SG[2000005]={};       // 宣告全域陣列 SG，大小為 2,000,005
+                          // SG[i] = 0 代表當石頭剩餘 i 顆時為「先手必敗態」(Lose)
+                          // SG[i] = 1 代表當石頭剩餘 i 顆時為「先手必勝態」(Win!)
+
+void get<sub>s</sub>g()             // 核心動態規劃函數：由小到大計算所有狀態的 SG 值
+{
+    int visit=1;          // 預設擴充變數
+    for(int i=0;i&lt;2000005;i+=1)  // 從 0 顆一路遞推推導至 2,000,000 顆
+    {
+        for(int j=0;j&lt;(int)v.size();j+=1)  // 遍歷所有合法的取石步數
+        {
+            if(v[j]&gt;i) break;              // 若目前可取數量已超過剩餘石頭數 i，後續更大者皆無法取，提前結束
+            else if(SG[i-v[j]]==0)         // 關鍵轉移：若拿走 v[j] 顆後留給對手的是「必敗態 (0)」
+            {
+                SG[i]=1;                   // 則目前狀態 i 為「必勝態 (1)」
+                break;                     // 已找到致勝路徑，無需再檢查其餘取法
+            }
+        }
+        if(!visit)          // 保留擴充機制
+        {
+            SG[i]=1;
+        }
+    }
+}
+
+int main()                  // 程式執行進入點
+{
+    int a;                  // 宣告整數 a，代表指定可拿石頭數量的個數 N
+    if(scanf(&quot;%d&quot;,&amp;a) != 1) return 0; // 讀入 N
+    
+    while(a--)              // 依序讀入 N 個指定的石頭數量
+    {
+        int x;
+        scanf(&quot;%d&quot;,&amp;x);
+        v.push<sub>b</sub>ack(x);     // 加入至可取集合陣列中
+    }
+    std::sort(v.begin(),v.end());  // 升冪排序，以利 DP 內部 break 剪枝提早結束迴圈
+    
+    get<sub>s</sub>g();               // 預先計算 0 ~ 2,000,000 每一種石頭數量之勝負結果
+    
+    int T;                  // 宣告整數 T，代表遊戲局數 M
+    if(scanf(&quot;%d&quot;,&amp;T) != 1) return 0; // 讀入 M
+    
+    int x;                  // 宣告整數 x，代表當前局地面上的初始石頭數量 Q
+    while(T--)              // 逐局處理查詢
+    {
+        scanf(&quot;%d&quot;,&amp;x);     // 讀入該局的初始石頭數 Q
+        if(SG[x]==0) printf(&quot;Lose\n&quot;);  // 若為 0 代表先手必敗，輸出 Lose
+        else printf(&quot;Win!\n&quot;);          // 若為 1 代表先手必勝，輸出 Win!
+    }
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

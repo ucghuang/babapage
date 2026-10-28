@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#157 202208-OFFLINE<sub>A</sub>dventure - TOI 題目詳解與 8 組範例圖像化完整推導</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --accent-color: #0ea5e9;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            margin-bottom: 30px;
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul, .analysis-box ol {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+        .example-block {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .example-title {
+            font-weight: bold;
+            color: #1d4ed8;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 6px;
+        }
+        /* 視覺化圖形方塊樣式 */
+        .visual-chart {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            overflow-x: auto;
+            color: #0f172a;
+            line-height: 1.5;
+        }
+        .highlight-tar {
+            color: #2563eb;
+            font-weight: bold;
+        }
+        .highlight-ans {
+            color: #dc2626;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <!-- 主題目卡片 -->
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#157</span> 202208-OFFLINE<sub>A</sub>dventure (海底探險)</h1>
+                <div class="header-right">
+                    <a href="../questions/202208-OFFLINE<sub>A</sub>dventure.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202208-OFFLINE<sub>A</sub>dventure.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-157" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-path">
+                <h2 class="section-title">題目摘要與核心規則</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 烏龜在直線海洋中探險。從最左方初始區塊（索引 0，即編號 1）出發，規則如下：
+                        <ol>
+                            <li>首先上升至最高區塊的高度，再游往該最高區塊。</li>
+                            <li>抵達最高區塊後：
+                                <ul>
+                                    <li>若最高區塊在地圖最右方，則折返，以先前經過且排除初始區塊的最低區塊為終點（若有多個取最近的）。</li>
+                                    <li>若否，則繼續向右尋找次高的區塊為終點（若有多個取最近的）。</li>
+                                </ul>
+                            </li>
+                            <li>「原地上升/下降一單位高」以及「從一區塊游至相鄰區塊」均花費 1 單位時間。給定區塊數量 <span style="font-style: italic;">L</span>、每個區塊高度、以及探索時間 <span style="font-style: italic;">T</span>，請判斷烏龜在第 <span style="font-style: italic;">T</span> 時間結束時位於哪個區塊。</li>
+                        </ol>
+                    </p>
+                    <p><strong>輸入格式：</strong> 第一列有整數 <span style="font-style: italic;">L</span> (<span style="font-style: italic;">3 ≤ L ≤ 200</span>)。第二列有 <span style="font-style: italic;">L</span> 個整數代表各區塊高度 (<span style="font-style: italic;">2 ≤ h<sub>i</sub> ≤ 1000</span>)。第三列有一個整數 <span style="font-style: italic;">T</span> (<span style="font-style: italic;">1 ≤ T ≤ 1000</span>) 代表探索時間。</p>
+                    <p><strong>輸出格式：</strong> 輸出烏龜最後位於哪個區塊編號（1-based）。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法架構解析：【狀態機與時間序列模擬】</h2>
+                <div class="analysis-box">
+                    <p>本題採用<strong>狀態機與逐步時間模擬法</strong>，將整個過程拆解為以下模組：</p>
+                    <ul>
+                        <li><strong>步驟一：尋找關鍵目標 <code>tar1</code> 與 <code>tar2</code></strong>
+                            <ul>
+                                <li>掃描陣列找出最大高度及其索引 <code>tar1</code>。</li>
+                                <li>判斷 <code>tar1 == N-1</code>（是否在最右方）：
+                                    <ul>
+                                        <li><strong>是</strong>：從右至左掃描（排除起點 0），尋找高度最低的區塊作為折返終點 <code>tar2</code>。</li>
+                                        <li><strong>否</strong>：從 <code>tar1 + 1</code> 向右掃描，尋找次高的區塊作為終點 <code>tar2</code>。</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><strong>步驟二：時間序列動態模擬 (<span style="font-style: italic;">t = 0 ∼ 1000</span>)</strong>
+                            <ul>
+                                <li>若起點高度小於 <code>tar1</code> 高度，每一單位時間執行 <code>arr[0]++</code>（原地上升）。</li>
+                                <li>當高度追平後，進入移動階段：先向右移動至 <code>tar1</code>，抵達後切換 <code>phase1 = false</code>，改朝目標 <code>tar2</code> 移動直到終點。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- PDF 8個範例圖像化完整推導區塊 -->
+            <div class="section-part">
+                <h2 class="section-title">PDF 8 組範例之圖像化與演算法完整推導</h2>
+                <div class="analysis-box">
+                    <p>以下將 PDF 中提供的所有 8 個測試範例進行詳細的圖像化拆解、關鍵區塊判定與時間序列追蹤：</p>
+
+                    <!-- 範例 1 -->
+                    <div class="example-block">
+                        <div class="example-title">【範例 1】</div>
+                        <p><strong>輸入：</strong> <span style="font-style: italic;">L = 5</span>，高度 = <code>1 2 3 2 1</code>，<span style="font-style: italic;">T = 7</span></p>
+                        <div class="visual-chart">
+區塊編號：  [ 1 ]   [ 2 ]   [ 3 ]   [ 4 ]   [ 5 ]
+高度對應：    1       2       3       2       1
+關鍵標記：                    <span class="highlight-tar">tar1(最高)</span>      <span class="highlight-tar">tar2(次高)</span>
+                        </div>
+                        <p><strong>推導過程：</strong></p>
+                        <ul>
+                            <li>最高區塊：索引 <code>2</code>（高度 3，即區塊三），不在最右方。</li>
+                            <li>次高終點 <code>tar2</code>：從索引 3 到 4 搜尋右側次高，找到索引 <code>4</code>（高度 1，即區塊五）。</li>
+                            <li>時間序列模擬 (<span style="font-style: italic;">T = 7</span>)：起點高度 1 上升到 3 花費 2 單位 (<span style="font-style: italic;">t=0,1</span>)；從區塊 0 移到區塊 3 花費 2 單位 (<span style="font-style: italic;">t=2,3</span>)；接著往右移動，至第 7 單位時間結束 (<span style="font-style: italic;">T-1 = 6</span>) 時位於區塊 4。</li>
+                        </ul>
+                        <p>👉 <strong>輸出結果：</strong> <span class="highlight-ans">4</span></p>
+                    </div>
+
+                    <!-- 範例 2 -->
+                    <div class="example-block">
+                        <div class="example-title">【範例 2】</div>
+                        <p><strong>輸入：</strong> <span style="font-style: italic;">L = 5</span>，高度 = <code>1 2 3 2 1</code>，<span style="font-style: italic;">T = 4</span></p>
+                        <div class="visual-chart">
+區塊編號：  [ 1 ]   [ 2 ]   [ 3 ]   [ 4 ]   [ 5 ]
+高度對應：    1       2       3       2       1
+關鍵標記：                    <span class="highlight-tar">tar1(最高)</span>      <span class="highlight-tar">tar2(次高)</span>
+                        </div>
+                        <p><strong>推導過程：</strong></p>
+                        <ul>
+                            <li>關鍵區塊同範例 1：<code>tar1 = 2</code>（高度 3），<code>tar2 = 4</code>。</li>
+                            <li>時間序列模擬 (<span style="font-style: italic;">T = 4</span>)：對應陣列索引 <span style="font-style: italic;">T-1 = 3</span>。花費 2 單位上升 (<span style="font-style: italic;">t=0,1</span>)，再花費 2 單位移動到區塊三 (<span style="font-style: italic;">t=2,3</span>)。在 <span style="font-style: italic;">t=3</span> 結束時剛好抵達區塊三（編號 3）。</li>
+                        </ul>
+                        <p>👉 <strong>輸出結果：</strong> <span class="highlight-ans">3</span></p>
+                    </div>
+
+                    <!-- 範例 3 -->
+                    <div class="example-block">
+                        <div class="example-title">【範例 3】</div>
+                        <p><strong>輸入：</strong> <span style="font-style: italic;">L = 6</span>，高度 = <code>1 2 3 4 5 6</code>，<span style="font-style: italic;">T = 15</span></p>
+                        <div class="visual-chart">
+區塊編號：  [ 1 ]   [ 2 ]   [ 3 ]   [ 4 ]   [ 5 ]   [ 6 ]
+高度對應：    1       2       3       4       5       6
+關鍵標記：  <span class="highlight-tar">tar2(最低)</span>                              <span class="highlight-tar">tar1(最右最高)</span>
+                        </div>
+                        <p><strong>推導過程：</strong></p>
+                        <ul>
+                            <li>最高區塊：位於最右方索引 <code>5</code>（高度 6，即區塊六）。</li>
+                            <li>折返終點 <code>tar2</code>：從右至左（排除起點 0）尋找最低區塊。索引 1 至 4 高度分別為 2, 3, 4, 5，最低者為索引 <code>1</code>（高度 2，即區塊二）。</li>
+                            <li>時間序列模擬 (<span style="font-style: italic;">T = 15</span>)：先花費 5 單位上升至高度 6，再花費 5 單位向右移動至最右方區塊六；抵達後折返向左游動，最終在 <span style="font-style: italic;">T=15</span> 時停在區塊二。</li>
+                        </ul>
+                        <p>👉 <strong>輸出結果：</strong> <span class="highlight-ans">2</span></p>
+                    </div>
+
+                    <!-- 範例 4 -->
+                    <div class="example-block">
+                        <div class="example-title">【範例 4】</div>
+                        <p><strong>輸入：</strong> <span style="font-style: italic;">L = 6</span>，高度 = <code>1 2 3 4 6 5</code>，<span style="font-style: italic;">T = 99</span></p>
+                        <div class="visual-chart">
+區塊編號：  [ 1 ]   [ 2 ]   [ 3 ]   [ 4 ]   [ 5 ]   [ 6 ]
+高度對應：    1       2       3       4       6       5
+關鍵標記：                                  <span class="highlight-tar">tar1</span>    <span class="highlight-tar">tar2</span>
+                        </div>
+                        <p><strong>推導過程：</strong></p>
+                        <ul>
+                            <li>最高區塊：索引 <code>4</code>（高度 6，即區塊五），不在最右方。</li>
+                            <li>次高終點 <code>tar2</code>：從 <code>tar1 + 1</code>（即索引 5，高度 5）向右搜尋次高，找到索引 <code>5</code>（區塊六）。</li>
+                            <li>時間序列模擬 (<span style="font-style: italic;">T = 99</span>)：由於時間 <span style="font-style: italic;">T</span> 非常大，烏龜早已在遠早於 99 的時間點抵達終點區塊六並停止不動。</li>
+                        </ul>
+                        <p>👉 <strong>輸出結果：</strong> <span class="highlight-ans">6</span></p>
+                    </div>
+
+                    <!-- 範例 5 -->
+                    <div class="example-block">
+                        <div class="example-title">【範例 5】</div>
+                        <p><strong>輸入：</strong> <span style="font-style: italic;">L = 10</span>，高度 = <code>3 9 5 3 4 8 2 1 1 7</code>，<span style="font-style: italic;">T = 13</span></p>
+                        <div class="visual-chart">
+區塊編號：  [1]  [2]  [3]  [4]  [5]  [6]  [7]  [8]  [9]  [10]
+高度對應：   3    9    5    3    4    8    2    1    1    7
+關鍵標記：       <span class="highlight-tar">tar1</span>                <span class="highlight-tar">tar2</span>
+                        </div>
+                        <p><strong>推導過程：</strong></p>
+                        <ul>
+                            <li>最高區塊：索引 <code>1</code>（高度 9，即區塊二），不在最右方。</li>
+                            <li>次高終點 <code>tar2</code>：從索引 2 到 9 搜尋右側次高區塊，找到高度為 8 的索引 <code>5</code>（即區塊六）。</li>
+                            <li>時間序列模擬 (<span style="font-style: italic;">T = 13</span>)：起點高度 3 上升到 9 花費 6 單位時間 (<span style="font-style: italic;">t=0 ∼ 5</span>)；從區塊 0 移動到區塊 1 花費 1 單位 (<span style="font-style: italic;">t=6</span>)；再從區塊 1 經由區塊 2, 3, 4 移動到區塊 6，在 <span style="font-style: italic;">T=13</span> 結束時正好停在區塊六。</li>
+                        </ul>
+                        <p>👉 <strong>輸出結果：</strong> <span class="highlight-ans">6</span></p>
+                    </div>
+
+                    <!-- 範例 6 -->
+                    <div class="example-block">
+                        <div class="example-title">【範例 6】</div>
+                        <p><strong>輸入：</strong> <span style="font-style: italic;">L = 8</span>，高度 = <code>1 2 4 2 6 8 4 5</code>，<span style="font-style: italic;">T = 7</span></p>
+                        <div class="visual-chart">
+區塊編號：  [1]  [2]  [3]  [4]  [5]  [6]  [7]  [8]
+高度對應：   1    2    4    2    6    8    4    5
+關鍵標記：                           <span class="highlight-tar">tar1</span>        <span class="highlight-tar">tar2</span>
+                        </div>
+                        <p><strong>推導過程：</strong></p>
+                        <ul>
+                            <li>最高區塊：索引 <code>5</code>（高度 8，即區塊六），不在最右方。</li>
+                            <li>次高終點 <code>tar2</code>：從索引 6 到 7 搜尋右側次高，找到索引 <code>7</code>（高度 5，即區塊八）。</li>
+                            <li>時間序列模擬 (<span style="font-style: italic;">T = 7</span>)：起點高度 1 上升到 8 花費 7 單位時間 (<span style="font-style: italic;">t=0 ∼ 6</span>)。在第 7 單位時間結束（<span style="font-style: italic;">t=6</span>）時，剛好完成原地爬升至最高高度，此時人還在起點（區塊一）。</li>
+                        </ul>
+                        <p>👉 <strong>輸出結果：</strong> <span class="highlight-ans">1</span></p>
+                    </div>
+
+                    <!-- 範例 7 -->
+                    <div class="example-block">
+                        <div class="example-title">【範例 7】</div>
+                        <p><strong>輸入：</strong> <span style="font-style: italic;">L = 6</span>，高度 = <code>1 2 1 1 11 10</code>，<span style="font-style: italic;">T = 8</span></p>
+                        <div class="visual-chart">
+區塊編號：  [ 1 ]   [ 2 ]   [ 3 ]   [ 4 ]   [ 5 ]   [ 6 ]
+高度對應：    1       2       1       1      11      10
+關鍵標記：                                  <span class="highlight-tar">tar1</span>    <span class="highlight-tar">tar2</span>
+                        </div>
+                        <p><strong>推導過程：</strong></p>
+                        <ul>
+                            <li>最高區塊：索引 <code>4</code>（高度 11，即區塊五），不在最右方。</li>
+                            <li>次高終點 <code>tar2</code>：右側僅剩索引 5（高度 10，區塊六），故 <code>tar2 = 5</code>。</li>
+                            <li>時間序列模擬 (<span style="font-style: italic;">T = 8</span>)：起點高度 1 上升到 11 花費 10 單位時間，但在 <span style="font-style: italic;">T=8</span> 時烏龜尚在原地上升途中（高度尚未完全到達 11，仍滯留在起點區塊一）。</li>
+                        </ul>
+                        <p>👉 <strong>輸出結果：</strong> <span class="highlight-ans">1</span></p>
+                    </div>
+
+                    <!-- 範例 8 -->
+                    <div class="example-block">
+                        <div class="example-title">【範例 8】</div>
+                        <p><strong>輸入：</strong> <span style="font-style: italic;">L = 10</span>，高度 = <code>1 7 7 7 7 7 7 7 17 19</code>，<span style="font-style: italic;">T = 1000</span></p>
+                        <div class="visual-chart">
+區塊編號：  [1]   [2...7]   [8]   [9]   [10]
+高度對應：   1       7       17    17    19
+關鍵標記：  (起點)             <span class="highlight-tar">tar2</span>        <span class="highlight-tar">tar1(最右)</span>
+                        </div>
+                        <p><strong>推導過程：</strong></p>
+                        <ul>
+                            <li>最高區塊：位於最右方索引 <code>9</code>（高度 19，即區塊十）。</li>
+                            <li>折返終點 <code>tar2</code>：從右至左掃描排除起點，尋找最低區塊。索引 1 至 8 中，索引 <code>1</code> 與 <code>8</code> 等高度，根據「若有多個相同高度，找最近的那一塊（從右往左最近）」規則，鎖定索引 <code>8</code>（高度 17，即區塊九）。</li>
+                            <li>時間序列模擬 (<span style="font-style: italic;">T = 1000</span>)：經過長時間模擬，烏龜最終抵達折返終點區塊九並停止。</li>
+                        </ul>
+                        <p>👉 <strong>輸出結果：</strong> <span class="highlight-ans">9</span></p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（100% 取自官方解答，逐行繁體中文註解）</h2>
+                <pre class="code-box"><code>#include&lt;iostream&gt;   // 引入 C++ 標準輸入輸出串流函式庫 (如 cin, cout)
+using namespace std;  // 使用標準命名空間 std
+
+int main()            // 主程式起點
+{
+    int N;            // 宣告整數 N，代表總共有 N 個區塊
+    cin &gt;&gt; N;         // 輸入區塊數量 N
+    int arr[1005] = {};   // 宣告陣列 arr，儲存各個區塊的高度
+    int maxi = -1;    // 記錄最高區塊的高度，初始化為 -1
+    int tar1 = -1;    // 記錄最高區塊的索引位置 tar1
+    int tar2 = -1;    // 記錄終點區塊的索引位置 tar2
+    
+    for(int i=0;i&lt;N;++i)  // 迴圈讀入每個區塊的高度
+    {
+        cin &gt;&gt; arr[i];
+        if(arr[i]&gt;maxi)   // 若當前區塊高度大於已知最大高度
+        {
+            maxi = arr[i];// 更新最大高度
+            tar1 = i;     // 更新最高區塊索引 tar1
+        }
+    }
+    
+    if(tar1==N-1)         // 若最高區塊剛好在地圖最右方 (索引 N-1)
+    {
+        maxi = 1005;      // 重置 maxi 為大於所有高度的初始值，準備尋找最低區塊
+        for(int i=N-2;i&gt;0;--i)  // 從右至左檢查排除初始區塊 (索引 0) 的區塊
+        {
+            if(arr[i]&lt;maxi)  // 尋找高度最低的區塊作為折返終點
+            {
+                maxi = arr[i];
+                tar2 = i;     // 記錄終點 tar2
+            }
+        }
+    }
+    else                  // 若最高區塊不在最右方
+    {
+        maxi = -1;
+        for(int i=tar1+1;i&lt;N;++i)  // 向右尋找次高的區塊作為終點
+        {
+            if(arr[i]&gt;maxi)
+            {
+                maxi = arr[i];
+                tar2 = i;     // 記錄終點 tar2
+            }
+        }
+    }
+    
+    int T;                // 宣告整數 T，代表探索總時間（單位時間）
+    cin &gt;&gt; T;             // 輸入探索時間 T
+    int ans[1005] = {};   // 紀錄每個時間點烏龜所在的區塊位置陣列
+    int position = 0;     // 初始化烏龜目前所在的區塊索引（從 0 開始，即最左方初始區塊）
+    bool phase1 = true;   // 階段旗標 phase1：true 代表正在從起點移動到最高區塊 tar1
+    
+    for(int i=0;i&lt;1001;++i)  // 模擬時間從 0 到 1000 單位時間的移動軌跡
+    {
+        ans[i] = position;   // 寄存第 i 單位時間結束前烏龜所在的區塊
+        
+        if(arr[0]&lt;arr[tar1])  // 若起點高度尚未上升至最高區塊的高度
+        {
+            arr[0]+=1;       // 模擬原地上升 1 單位高度
+        }
+        else if(phase1)       // 若已完成上升，且正處於前往最高區塊 tar1 的階段
+        {
+            position += 1;   // 向右移動一格
+            if(position==tar1)  // 若抵達最高區塊 tar1
+            {
+                phase1 = false;  // 切換階段，準備前往終點 tar2
+            }
+        }
+        else if(position!=tar2)  // 若尚未抵達終點 tar2
+        {
+            if(tar2&gt;position)    // 若終點在右方，向右游一格
+            {
+                position += 1;
+            }
+            else                 // 若終點在左方，向左游一格
+            {
+                position -= 1;
+            }
+        }
+    }
+    
+    cout &lt;&lt; ans[T-1]+1 &lt;&lt; endl;  // 輸出第 T 單位時間烏龜所在的區塊編號（將 0-based 轉換為 1-based）
+}</code></pre>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

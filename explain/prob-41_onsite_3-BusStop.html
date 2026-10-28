@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#41 201912-onsite<sub>3</sub>-BusStop - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#41</span> 201912-onsite<sub>3</sub>-BusStop (站牌廣告)</h1>
+                <div class="header-right">
+                    <a href="../questions/201912-onsite<sub>3</sub>-BusStop.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 201912-onsite<sub>3</sub>-BusStop.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-41" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong> 公車路線共有 <span style="font-style: italic;">B</span> 個站牌（編號 <span style="font-style: italic;">1 … B</span>），來回行駛。給定 <span style="font-style: italic;">P</span> 位乘客的上下車起訖站 <span style="font-style: italic;">X</span> 與 <span style="font-style: italic;">Y</span>，每位乘客會經過介於 <span style="font-style: italic;">X</span> 與 <span style="font-style: italic;">Y</span> 之間的所有站牌。請統計經過各站牌的人流數量，並找出<strong>最少人流</strong>與<strong>最多人流</strong>的公車站牌編號。</p>
+                    <ul>
+                        <li><strong>輸入格式：</strong> 第一行輸入兩個正整數 <span style="font-style: italic;">B</span>（站牌數）與 <span style="font-style: italic;">P</span>（乘客數）。接下來 <span style="font-style: italic;">P</span> 行，每行有兩個正整數 <span style="font-style: italic;">X</span> 與 <span style="font-style: italic;">Y</span>[cite: 1]，代表乘客的上車與下車站牌。</li>
+                        <li><strong>輸出格式：</strong> 輸出兩個正整數，以一個空白隔開：分別為最少人流之公車站牌編號（若有多個取編號最小者）以及最多人流之公車站牌編號（若有多個取編號最大者）[cite: 1]。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【前綴和與區間頻率統計思路】</h2>
+                <div class="analysis-box">
+                    <p>本題在教學上屬於經典的<strong>「前綴和」</strong>與<strong>「區間標記」</strong>的基礎應用（難度評級：2 星 ★★☆☆☆）。其核心思路與設計邏輯如下：</p>
+                    <ul>
+                        <li><strong>區間累加的概念：</strong> 每當有一位乘客從站牌 <span style="font-style: italic;">X</span> 搭到 <span style="font-style: italic;">Y</span> 時[cite: 1]，公車會行經介於 <span style="font-style: italic;">X</span> 與 <span style="font-style: italic;">Y</span> 之間的所有站牌。這意味著我們需要對一段連續的區間 <span style="font-style: italic;">[ min(X, Y), max(X, Y) ]</span> 內的每一個站牌人流計數器全部加 1。</li>
+                        <li><strong>前綴和/差分思想的雛形：</strong> 在處理多次區間更新與點查詢的場景中，最直觀的作法是利用迴圈將區間內每個位置加上權重。當資料量較小時，直接透過迴圈對陣列區間做累加（即本題解答採用的直接區間標記法，也是前綴和與差分陣列的核心應用場景）即可完美對應。</li>
+                        <li><strong>極值尋找策略：</strong> 在統計完所有站牌的人流後，透過一次線性掃描（Linear Scan），由左至右找出最小值與最大值對應的索引，並嚴格遵守題目「最小編號取最小、最大編號取最大」的 tie-breaking 條件[cite: 1]。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導（涵蓋全數三個輸入範例）</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong>[cite: 1]</p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+8 3
+2 7
+5 3
+5 8</pre>
+                    <ul>
+                        <li><strong>初始狀態：</strong> 共有 <span style="font-style: italic;">B = 8</span> 個站牌，乘客數 <span style="font-style: italic;">P = 3</span>[cite: 1]。人流統計陣列 <code>Stop</code> 初始化為全 0。</li>
+                        <li><strong>處理第 1 筆乘客 (2 7)：</strong> 行經區間 <span style="font-style: italic;">[2, 7]</span>，將站牌 2, 3, 4, 5, 6, 7 的人流各 +1。當前陣列：<code>[0, 1, 1, 1, 1, 1, 1, 0]</code></li>
+                        <li><strong>處理第 2 筆乘客 (5 3)：</strong> 起訖點順序調整為 <span style="font-style: italic;">[3, 5]</span>，將站牌 3, 4, 5 的人流各 +1。當前陣列：<code>[0, 1, 2, 2, 2, 1, 1, 0]</code></li>
+                        <li><strong>處理第 3 筆乘客 (5 8)：</strong> 行經區間 <span style="font-style: italic;">[5, 8]</span>，將站牌 5, 6, 7, 8 的人流各 +1。最終陣列：<code>[0, 1, 2, 2, 3, 2, 2, 1]</code>（對應索引 1 到 8）</li>
+                        <li><strong>尋找極值：</strong> 最少人流為 0（1 號站牌），最多人流為 3（5 號站牌）[cite: 1]。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong><br>1 5[cite: 1]</p>
+
+                    <p style="margin-top: 25px;"><strong>【輸入範例 2 實際運作推導】</strong>[cite: 1]</p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+10 9
+1 5
+10 5
+4 2
+8 10
+4 5
+7 10
+2 4
+10 8
+8 9</pre>
+                    <ul>
+                        <li><strong>初始狀態：</strong> 共有 <span style="font-style: italic;">B = 10</span> 個站牌，乘客數 <span style="font-style: italic;">P = 9</span>[cite: 1]。</li>
+                        <li>依序將 9 位乘客的起訖區間 <span style="font-style: italic;">[X, Y]</span> 投影到 <code>Stop</code> 陣列中進行累加：
+                            <ul>
+                                <li>(1 5) <span style="font-style: italic;">→</span> 1~5 各 +1</li>
+                                <li>(10 5) <span style="font-style: italic;">→</span> 5~10 各 +1</li>
+                                <li>(4 2) <span style="font-style: italic;">→</span> 2~4 各 +1</li>
+                                <li>(8 10) <span style="font-style: italic;">→</span> 8~10 各 +1</li>
+                                <li>(4 5) <span style="font-style: italic;">→</span> 4~5 各 +1</li>
+                                <li>(7 10) <span style="font-style: italic;">→</span> 7~10 各 +1</li>
+                                <li>(2 4) <span style="font-style: italic;">→</span> 2~4 各 +1</li>
+                                <li>(10 8) <span style="font-style: italic;">→</span> 8~10 各 +1</li>
+                                <li>(8 9) <span style="font-style: italic;">→</span> 8~9 各 +1</li>
+                            </ul>
+                        </li>
+                        <li><strong>統計與極值：</strong> 經過全體 9 筆區間累加後，全體站牌人流的最小值出現在 1 號站牌（人流最少），最大值出現在 9 號站牌（人流最多）[cite: 1]。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong><br>1 9[cite: 1]</p>
+
+                    <p style="margin-top: 25px;"><strong>【輸入範例 3 實際運作推導】</strong>[cite: 1]</p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+1000 2
+1 1000
+1 1000</pre>
+                    <ul>
+                        <li><strong>初始狀態：</strong> 共有 <span style="font-style: italic;">B = 1000</span> 個站牌，乘客數 <span style="font-style: italic;">P = 2</span>[cite: 1]。</li>
+                        <li><strong>處理第 1 筆乘客 (1 1000)：</strong> 從 1 號站一路搭到 1000 號站，使全體 <span style="font-style: italic;">1 … 1000</span> 號站牌人流各 +1。</li>
+                        <li><strong>處理第 2 筆乘客 (1 1000)：</strong> 重複一次，使全體 <span style="font-style: italic;">1 … 1000</span> 號站牌人流再各 +1。</li>
+                        <li><strong>尋找極值：</strong>此時所有站牌的人流皆為 2。依據題意：
+                            <ul>
+                                <li>最少人流發生在多個站牌（值皆為 2），取<strong>編號最小者</strong> <span style="font-style: italic;">→</span> 1 號。</li>
+                                <li>最多人流發生在多個站牌（值皆為 2），取<strong>編號最大者</strong>（題目要求若有多個最多人流則輸出編號最大者） <span style="font-style: italic;">→</span> 1000 號[cite: 1]。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 3 結果：</strong><br>1 1000[cite: 1]</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（含每行詳細中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;stdio.h&gt; // 引入標準輸入輸出標頭檔，以便使用 scanf 與 printf
+
+int main()
+{
+    int B, P; // 宣告整數 B 代表總站牌數，P 代表乘客總人數
+    scanf("%d %d", &amp;B, &amp;P); // 讀入站牌數 B 與乘客數 P
+    
+    int Stop[1001] = {0}; // 宣告大小為 1001 的陣列 Stop 用來記錄每個站牌經過的人流數，並全部初始化為 0
+    
+    for(int i = 1; i &lt;= P; i += 1) // 透過迴圈處理每一位乘客的搭車需求，共執行 P 次
+    {
+        int X, Y; // 宣告變數 X 與 Y 分別代表上車站牌與下車站牌
+        scanf("%d %d", &amp;X, &amp;Y); // 讀入當前乘客的起訖站
+        
+        if(X &gt; Y) // 檢查若上車站大於下車站（代表反向行駛或編號大小顛倒）
+        {
+            int tmp = X; // 利用暫存變數 tmp 進行數值交換
+            X = Y;
+            Y = tmp; // 確保 X 永遠是起點（較小編號）、Y 永遠是終點（較大編號）
+        }
+        
+        for(int j = X; j &lt;= Y; j += 1) // 遍歷從起點 X 到終點 Y 的所有區間站牌
+        {
+            Stop[j] += 1; // 該站牌的人流計數器加 1（實踐區間標記與前綴和累加邏輯）
+        }
+    }
+
+    int MinS = 1000, MaxS = 1; // 初始化最小人流閥值為大數，最大人流閥值為 1
+    int MinS<sub>I</sub>ndex = 1000, MaxS<sub>I</sub>ndex = 1; // 初始化記錄最少與最多人流的站牌編號
+    
+    for(int i = 1; i &lt;= B; i += 1) // 從 1 號站牌到 B 號站牌依序檢查人流統計結果
+    {
+        if(Stop[i] &lt; MinS) // 若當前站牌人流小於目前記錄的最小值
+        {
+            MinS = Stop[i]; // 更新最小人流數
+            MinS<sub>I</sub>ndex = i; // 更新最少人流的站牌編號
+        }
+
+        if(Stop[i] &gt;= MaxS) // 若當前站牌人流大於或等於目前記錄的最大值（使用 &gt;= 確保有多個最大時取編號最大者）
+        {
+            MaxS = Stop[i]; // 更新最大人流數
+            MaxS<sub>I</sub>ndex = i; // 更新最多人流的站牌編號
+        }
+    }
+
+    printf("%d %d", MinS<sub>I</sub>ndex, MaxS<sub>I</sub>ndex); // 輸出最少人流站牌編號與最多人流站牌編號，中間以空白隔開[cite: 1]
+    return 0; // 程式正常結束
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

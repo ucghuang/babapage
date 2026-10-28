@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#107 202104<sub>S</sub>urvival - TOI 題目詳解與 C++ 實作</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .problem-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .index-tag {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        .file-name-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .file-name-meta:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .external-link-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .external-link-btn:hover {
+            background: #dbeafe;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            color: #334155;
+            margin: 24px 0 12px 0;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .analysis-box li {
+            margin-bottom: 6px;
+        }
+        .code-box {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="problem-card">
+            <div class="card-header">
+                <h1><span class="index-tag">#107</span> 202104<sub>S</sub>urvival (物競天擇)</h1>
+                <div class="header-right">
+                    <a href="../questions/202104<sub>S</sub>urvival.pdf" class="file-name-meta" target="<sub>b</sub>lank">PDF: 202104<sub>S</sub>urvival.pdf</a>
+                    <a href="../TOI<sub>A</sub>ll<sub>P</sub>roblems<sub>I</sub>ntegrated.html#prob-107" class="external-link-btn" target="<sub>b</sub>lank">開啟題目與原始解法 ↗</a>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">題目摘要</h2>
+                <div class="analysis-box">
+                    <p><strong>問題敘述：</strong>「物競天擇、適者生存」是大自然的殘酷競爭法則。母獅在小獅子出生後，會優先照顧強壯的個體，而天生弱小的獅子則可能遭到忽視或遺棄。為了保護弱小的小獅子，保育人員計畫在小獅子出生後，將最弱小的那隻帶回城市進行保育。比較方式是以每隻小獅子的<strong>體重（公斤）乘以身高（公分）</strong>，將該數值<strong>最小</strong>的小獅子帶回保護。</p>
+                    <p><strong>輸入格式：</strong></p>
+                    <ul>
+                        <li>第一行為一個整數 <span style="font-style: italic;">N</span> (<span style="font-style: italic;">2 ≤ N ≤ 2000</span>)，代表小獅子的總數。</li>
+                        <li>第二行有 <span style="font-style: italic;">N</span> 個整數，代表每隻獅子的身高 <span style="font-style: italic;">H<sub>i</sub></span> (<span style="font-style: italic;">1 ≤ H<sub>i</sub> ≤ 1000, 1 ≤ i ≤ N</span>)。</li>
+                        <li>第三行有 <span style="font-style: italic;">N</span> 個整數，代表每隻獅子的體重 <span style="font-style: italic;">W<sub>i</sub></span> (<span style="font-style: italic;">1 ≤ W<sub>i</sub> ≤ 1000, 1 ≤ i ≤ N</span>)。</li>
+                    </ul>
+                    <p><strong>輸出格式：</strong>輸出一行包含要帶走的小獅子的身高與體重，兩數中間以一個空格隔開。題目保證只會恰好有一隻小獅子擁有最小的乘積數值。</p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">演算法使用解析：【一維陣列線性掃描與最小值維護】</h2>
+                <div class="analysis-box">
+                    <p>本題為經典的<strong>線性掃描搜尋極值（Linear Search for Minimum）</strong>問題：</p>
+                    <ul>
+                        <li><strong>資料儲存：</strong>使用兩個長度至少為 <span style="font-style: italic;">2001</span> 的一維整數陣列 <code>lion<sub>H</sub>[]</code> 與 <code>lion<sub>W</sub>[]</code>，分別依序存放每隻小獅子的身高與體重。</li>
+                        <li><strong>極值維護：</strong>先設定變數 <code>min</code> 為一個足夠大的初始值（例如 <code>99999999</code>），變數 <code>idx</code> 用於記錄目前最小乘積出現的陣列索引（編號）。</li>
+                        <li><strong>邊讀邊比對：</strong>在第二個迴圈讀取體重 <code>lion<sub>W</sub>[i]</code> 的同時，直接計算 <code>lion<sub>H</sub>[i] * lion<sub>W</sub>[i]</code>。只要當前小獅子的乘積小於記錄中的 <code>min</code>，就立即更新 <code>min</code> 為該數值，並將 <code>idx</code> 更新為目前的索引 <code>i</code>。</li>
+                        <li><strong>結果輸出：</strong>迴圈結束後，<code>idx</code> 所指向的就是全體乘積最小的小獅子，直接輸出 <code>lion<sub>H</sub>[idx]</code> 與 <code>lion<sub>W</sub>[idx]</code> 即可。整體時間複雜度為 <span style="font-style: italic;">O(N)</span>，空間複雜度為 <span style="font-style: italic;">O(N)</span>。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">課堂黑板板書推導（全部範例詳細推導）</h2>
+                <div class="analysis-box">
+                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+2
+145 34
+21 55</pre>
+                    <ul>
+                        <li><strong>讀入小獅子總數：</strong><span style="font-style: italic;">N = 2</span></li>
+                        <li><strong>讀入身高陣列：</strong><code>lion<sub>H</sub>[0] = 145</code>, <code>lion<sub>H</sub>[1] = 34</code></li>
+                        <li><strong>讀入體重並即時比對（初始 min = 99999999, idx = 0）：</strong>
+                            <ul>
+                                <li><strong><span style="font-style: italic;">i = 0</span>：</strong>讀入 <code>lion<sub>W</sub>[0] = 21</code>。<br>
+                                    計算乘積 <span style="font-style: italic;">= 145 × 21 = 3045</span>。<br>
+                                    因為 <span style="font-style: italic;">3045 &lt; 99999999</span>，更新 <code>min = 3045</code>, <code>idx = 0</code>。
+                                </li>
+                                <li><strong><span style="font-style: italic;">i = 1</span>：</strong>讀入 <code>lion<sub>W</sub>[1] = 55</code>。<br>
+                                    計算乘積 <span style="font-style: italic;">= 34 × 55 = 1870</span>。<br>
+                                    因為 <span style="font-style: italic;">1870 &lt; 3045</span>，更新 <code>min = 1870</code>, <code>idx = 1</code>。
+                                </li>
+                            </ul>
+                        </li>
+                        <li><strong>最終最小值索引：</strong><code>idx = 1</code>，對應身高 <code>lion<sub>H</sub>[1] = 34</code>、體重 <code>lion<sub>W</sub>[1] = 55</code>。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 1 結果：</strong><br><code>34 55</code></p>
+
+                    <hr style="border: 0; border-top: 1px dashed var(--border-color); margin: 20px 0;">
+
+                    <p><strong>【輸入範例 2 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+4
+361 619 555 855
+419 758 549 240</pre>
+                    <ul>
+                        <li><strong>讀入小獅子總數：</strong><span style="font-style: italic;">N = 4</span></li>
+                        <li><strong>讀入身高陣列：</strong><code>lion<sub>H</sub> = [361, 619, 555, 855]</code></li>
+                        <li><strong>讀入體重並即時比對（初始 min = 99999999, idx = 0）：</strong>
+                            <ul>
+                                <li><strong><span style="font-style: italic;">i = 0</span>：</strong><code>lion<sub>W</sub>[0] = 419</code>。<br>
+                                    計算乘積 <span style="font-style: italic;">= 361 × 419 = 151259</span>。<br>
+                                    因為 <span style="font-style: italic;">151259 &lt; 99999999</span>，更新 <code>min = 151259</code>, <code>idx = 0</code>。
+                                </li>
+                                <li><strong><span style="font-style: italic;">i = 1</span>：</strong><code>lion<sub>W</sub>[1] = 758</code>。<br>
+                                    計算乘積 <span style="font-style: italic;">= 619 × 758 = 469202</span>。<br>
+                                    <span style="font-style: italic;">469202 ≥ 151259</span>，不更新。
+                                </li>
+                                <li><strong><span style="font-style: italic;">i = 2</span>：</strong><code>lion<sub>W</sub>[2] = 549</code>。<br>
+                                    計算乘積 <span style="font-style: italic;">= 555 × 549 = 304695</span>。<br>
+                                    <span style="font-style: italic;">304695 ≥ 151259</span>，不更新。
+                                </li>
+                                <li><strong><span style="font-style: italic;">i = 3</span>：</strong><code>lion<sub>W</sub>[3] = 240</code>。<br>
+                                    計算乘積 <span style="font-style: italic;">= 855 × 240 = 205200</span>。<br>
+                                    <span style="font-style: italic;">205200 ≥ 151259</span>，不更新。
+                                </li>
+                            </ul>
+                        </li>
+                        <li><strong>最終最小值索引：</strong><code>idx = 0</code>，對應身高 <code>lion<sub>H</sub>[0] = 361</code>、體重 <code>lion<sub>W</sub>[0] = 419</code>。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 2 結果：</strong><br><code>361 419</code></p>
+
+                    <hr style="border: 0; border-top: 1px dashed var(--border-color); margin: 20px 0;">
+
+                    <p><strong>【輸入範例 3 實際運作推導】</strong></p>
+                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
+5
+17 100 40 111 68
+157 151 25 173 197</pre>
+                    <ul>
+                        <li><strong>讀入小獅子總數：</strong><span style="font-style: italic;">N = 5</span></li>
+                        <li><strong>讀入身高陣列：</strong><code>lion<sub>H</sub> = [17, 100, 40, 111, 68]</code></li>
+                        <li><strong>讀入體重並即時比對（初始 min = 99999999, idx = 0）：</strong>
+                            <ul>
+                                <li><strong><span style="font-style: italic;">i = 0</span>：</strong><code>lion<sub>W</sub>[0] = 157</code>。<br>
+                                    計算乘積 <span style="font-style: italic;">= 17 × 157 = 2669</span>。<br>
+                                    因為 <span style="font-style: italic;">2669 &lt; 99999999</span>，更新 <code>min = 2669</code>, <code>idx = 0</code>。
+                                </li>
+                                <li><strong><span style="font-style: italic;">i = 1</span>：</strong><code>lion<sub>W</sub>[1] = 151</code>。<br>
+                                    計算乘積 <span style="font-style: italic;">= 100 × 151 = 15100</span>。<br>
+                                    <span style="font-style: italic;">15100 ≥ 2669</span>，不更新。
+                                </li>
+                                <li><strong><span style="font-style: italic;">i = 2</span>：</strong><code>lion<sub>W</sub>[2] = 25</code>。<br>
+                                    計算乘積 <span style="font-style: italic;">= 40 × 25 = 1000</span>。<br>
+                                    因為 <span style="font-style: italic;">1000 &lt; 2669</span>，更新 <code>min = 1000</code>, <code>idx = 2</code>。
+                                </li>
+                                <li><strong><span style="font-style: italic;">i = 3</span>：</strong><code>lion<sub>W</sub>[3] = 173</code>。<br>
+                                    計算乘積 <span style="font-style: italic;">= 111 × 173 = 19203</span>。<br>
+                                    <span style="font-style: italic;">19203 ≥ 1000</span>，不更新。
+                                </li>
+                                <li><strong><span style="font-style: italic;">i = 4</span>：</strong><code>lion<sub>W</sub>[4] = 197</code>。<br>
+                                    計算乘積 <span style="font-style: italic;">= 68 × 197 = 13396</span>。<br>
+                                    <span style="font-style: italic;">13396 ≥ 1000</span>，不更新。
+                                </li>
+                            </ul>
+                        </li>
+                        <li><strong>最終最小值索引：</strong><code>idx = 2</code>，對應身高 <code>lion<sub>H</sub>[2] = 40</code>、體重 <code>lion<sub>W</sub>[2] = 25</code>。</li>
+                    </ul>
+                    <p>👉 <strong>輸出範例 3 結果：</strong><br><code>40 25</code></p>
+                </div>
+            </div>
+
+            <div class="section-part">
+                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原檔邏輯與變數名稱，逐行中文教學註解）</h2>
+                <pre class="code-box"><code>#include &lt;iostream&gt; // 引入標準輸入輸出串流函式庫，以便使用 cin 與 cout
+using namespace std; // 使用標準命名空間 std，省去每次呼叫時的前綴
+
+int main() // 主程式進入點
+{ // 主程式區塊開始
+	int N; // 宣告整數變數 N，用來代表小獅子的總數量
+	cin&gt;&gt;N; // 從標準輸入讀入小獅子總數 N
+	int lion<sub>H</sub>[2001]={}; // 宣告大小為 2001 的整數陣列 lion<sub>H</sub>，並全部初始化為 0，用來儲存各獅子的身高
+	int lion<sub>W</sub>[2001]={}; // 宣告大小為 2001 的整數陣列 lion<sub>W</sub>，並全部初始化為 0，用來儲存各獅子的體重
+	int min=99999999; // 宣告整數變數 min 並初始化為極大值 99999999，用來維護最小的「身高×體重」乘積
+	int idx=0; // 宣告整數變數 idx 並初始化為 0，用來記錄擁有最小乘積之小獅子的陣列索引
+	for(int i=0; i&lt;N; ++i) // 使用迴圈依序讀入 N 隻小獅子的身高資料
+	{ // 讀入身高迴圈開始
+		cin&gt;&gt;lion<sub>H</sub>[i]; // 讀入第 i 隻小獅子的身高並存入 lion<sub>H</sub>[i]
+	} // 讀入身高迴圈結束
+	for(int i=0; i&lt;N; ++i) // 使用迴圈依序讀入 N 隻小獅子的體重資料，並同步進行最小值比對
+	{ // 讀入體重與比較迴圈開始
+		cin&gt;&gt;lion<sub>W</sub>[i]; // 讀入第 i 隻小獅子的體重並存入 lion<sub>W</sub>[i]
+		if(lion<sub>H</sub>[i]*lion<sub>W</sub>[i]&lt;min) // 判斷第 i 隻獅子的「身高×體重」乘積是否小於當前記錄的最小值 min
+		{ // 若小於當前最小值則執行更新
+			min = lion<sub>H</sub>[i]*lion<sub>W</sub>[i]; // 將最小值 min 更新為當前小獅子的乘積
+			idx=i; // 將最小值的索引 idx 更新為當前小獅子的編號 i
+		} // 條件更新結束
+	} // 讀入體重與比較迴圈結束
+	cout&lt;&lt;lion<sub>H</sub>[idx]&lt;&lt;" "&lt;&lt;lion<sub>W</sub>[idx]&lt;&lt;endl; // 輸出擁有最小乘積小獅子的身高與體重，兩數以空格隔開並換行
+} // 主程式區塊結束</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
