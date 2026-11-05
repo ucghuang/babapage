@@ -1,56 +1,63 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>#14 201905_A2-Bonus - TOI 題目詳解與 C++ 實作</title>
+    <title>#14 201905_A2-Bonus - TOI 題目詳解、圖論推導與 C++ 實作</title>
     <style>
         :root {
             --primary: #2563eb;
             --primary-light: #eff6ff;
+            --primary-dark: #1d4ed8;
+            --secondary: #0f766e;
+            --secondary-light: #f0fdfa;
             --text-main: #1e293b;
             --text-muted: #64748b;
             --bg-main: #f8fafc;
             --card-bg: #ffffff;
             --border-color: #e2e8f0;
+            --accent-green: #16a34a;
+            --accent-amber: #d97706;
+            --code-bg: #0f172a;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
             background-color: var(--bg-main);
             color: var(--text-main);
-            line-height: 1.6;
-            padding: 40px;
+            line-height: 1.65;
+            padding: 30px 15px;
         }
         .container {
-            max-width: 900px;
+            max-width: 960px;
             margin: 0 auto;
         }
         .problem-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 32px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            padding: 36px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
         .card-header {
             border-bottom: 2px solid var(--border-color);
-            padding-bottom: 15px;
+            padding-bottom: 18px;
             margin-bottom: 24px;
             display: flex;
             justify-content: space-between;
             align-items: baseline;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
         }
         .card-header h1 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             color: #1e3a8a;
+            font-weight: 700;
         }
         .header-right {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
         .index-tag {
             color: var(--primary);
@@ -60,10 +67,10 @@
             font-size: 13px;
             color: var(--text-muted);
             background: #f1f5f9;
-            padding: 4px 10px;
-            border-radius: 4px;
+            padding: 5px 12px;
+            border-radius: 6px;
             text-decoration: none;
-            transition: background 0.15s;
+            transition: all 0.15s ease;
         }
         .file-name-meta:hover {
             background: #e2e8f0;
@@ -74,86 +81,289 @@
             text-decoration: none;
             color: var(--primary);
             background: var(--primary-light);
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 6px;
             border: 1px solid #bfdbfe;
             font-weight: 600;
-            transition: background 0.15s;
+            transition: all 0.15s ease;
         }
         .external-link-btn:hover {
             background: #dbeafe;
         }
         .section-title {
-            font-size: 1.15rem;
-            color: #334155;
-            margin: 24px 0 12px 0;
-            border-left: 4px solid var(--primary);
-            padding-left: 10px;
+            font-size: 1.25rem;
+            color: #1e293b;
+            margin: 32px 0 16px 0;
+            border-left: 5px solid var(--primary);
+            padding-left: 12px;
+            font-weight: 700;
         }
         .analysis-box {
             background: #f8fafc;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 20px;
+            padding: 22px;
             font-size: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         .analysis-box ul {
-            margin-left: 20px;
-            margin-top: 8px;
+            margin-left: 22px;
+            margin-top: 10px;
         }
         .analysis-box li {
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+        }
+        .diagram-container {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            margin: 18px 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+        .diagram-container svg {
+            max-width: 100%;
+            height: auto;
+        }
+        .diagram-caption {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+        .trace-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+            background: #ffffff;
+        }
+        .trace-table th, .trace-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            text-align: left;
+        }
+        .trace-table th {
+            background: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+        }
+        .trace-table tr:hover {
+            background: #f8fafc;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-start { background: #dbeafe; color: #1e40af; }
+        .badge-mid { background: #e0e7ff; color: #3730a3; }
+        .badge-end { background: #dcfce7; color: #166534; }
+        .math-expr {
+            font-family: "Cambria Math", "Times New Roman", serif;
+            font-style: italic;
         }
         .code-box {
-            background-color: #0f172a;
-            color: #f1f5f9;
-            padding: 20px;
+            background-color: var(--code-bg);
+            color: #f8fafc;
+            padding: 22px;
             border-radius: 8px;
             overflow-x: auto;
             font-size: 14px;
             font-family: Consolas, Monaco, "Courier New", monospace;
             line-height: 1.6;
         }
+        .code-comment { color: #94a3b8; }
+        .code-keyword { color: #f43f5e; font-weight: 600; }
+        .code-func { color: #38bdf8; }
+        .code-type { color: #34d399; }
+        .sub-header {
+            font-size: 1.05rem;
+            color: #334155;
+            margin: 18px 0 8px 0;
+            font-weight: 600;
+        }
+        .io-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 14px 0;
+        }
+        @media (max-width: 640px) {
+            .io-block { grid-template-columns: 1fr; }
+            body { padding: 15px 8px; }
+            .problem-card { padding: 20px; }
+        }
+        .pre-box {
+            background: #e2e8f0;
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-family: Consolas, monospace;
+            font-size: 13.5px;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .highlight-calc {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 10px 14px;
+            margin: 10px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: 14.5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="problem-card">
+            <!-- 標題與來源標記 -->
             <div class="card-header">
                 <h1><span class="index-tag">#14</span> 201905_A2-Bonus (巨額獎金)</h1>
                 <div class="header-right">
-                    <a href="../questions/201905_A2-Bonus(Q).pdf" class="file-name-meta" target="_blank">PDF: 201905_A2-Bonus(Q).pdf</a>
-                    <a href="../TOI_All_Problems_Integrated.html#prob-14" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
+                    <a href="https://ucghuang.github.io/babapage/questions/201905_A2-Bonus(Q).pdf" class="file-name-meta" target="_blank">PDF: 201905_A2-Bonus(Q).pdf</a>
+                    <a href="https://ucghuang.github.io/babapage/TOI_All_Problems_Integrated.html#prob-14" class="external-link-btn" target="_blank">開啟題目與原始解法 ↗</a>
                 </div>
             </div>
 
+            <!-- 題目規格與條件拆解 -->
             <div class="section-part">
-                <h2 class="section-title">題目摘要</h2>
+                <h2 class="section-title">題目摘要與規格解析</h2>
                 <div class="analysis-box">
-                    <p><strong>問題敘述：</strong> 戀愛遊戲中玩家要從初始階段 <span style="font-style: italic;">S<sub>0</sub></span> 經過多個事件選擇到達結局階段 <span style="font-style: italic;">S<sub>N-1</sub></span>。每條路線不能重複造訪同一個階段。給定 <span style="font-style: italic;">N</span> 個階段與 <span style="font-style: italic;">E</span> 條事件導向邊，請計算總共有多少條不同的通關路線數 <span style="font-style: italic;">R</span>。</p>
-                    <p><strong>輸入格式：</strong> 第一列有兩個正整數 <span style="font-style: italic;">N</span> 及 <span style="font-style: italic;">E</span> (<span style="font-style: italic;">2 ≤ N ≤ 10<sup>6</sup></span>)；接著 <span style="font-style: italic;">E</span> 列每列有兩個整數 <span style="font-style: italic;">i</span>、<span style="font-style: italic;">j</span>，表示存在事件可從階段 <span style="font-style: italic;">S<sub>i</sub></span> 進入階段 <span style="font-style: italic;">S<sub>j</sub></span>。</p>
-                    <p><strong>輸出格式：</strong> 輸出一個正整數 <span style="font-style: italic;">R</span>，代表從初始階段到結局階段的總路線數。</p>
-                </div>
-            </div>
-
-            <div class="section-part">
-                <h2 class="section-title">演算法使用解析：【圖論演算法與記憶化搜尋 / DFS】</h2>
-                <div class="analysis-box">
-                    <p>本題採用<strong>圖論深度優先搜尋 (DFS) 與記憶化 (Memoization) 策略</strong>：</p>
-                    <ul>
-                        <li>由於遊戲是有向無環圖 (DAG)，我們可以從終點階段 <span style="font-style: italic;">S<sub>N-1</sub></span> 出發，透過反向建立邊（從終點往回推導至起點）來計算到達各點的路線數。</li>
-                        <li>利用記憶化陣列 <code>R[cur]</code> 記錄已經計算過的節點路線數，若該節點已經算過則直接回傳，避免重複遞迴導致時間超時 (TLE)。</li>
+                    <p><strong>情境敘述：</strong> 戀愛遊戲中，玩家從初始階段 <span class="math-expr">S<sub>0</sub></span> 開始，透過經歷各種不同事件轉移至後續階段，最終抵達結局階段 <span class="math-expr">S<sub>N-1</sub></span>。公司需要統計從起點到終點所有可能經歷的不同劇情路線總數 <span class="math-expr">R</span>，以此作為收費公式的核心變數。</p>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>無環特性 (DAG)：</strong> 題目規定「玩家最多僅能經歷一次任意階段，沒有任何事件能回到曾走過的階段」，這說明圖中<b>絕對不存在環（No Cycle）</b>，保證為有向無環圖（Directed Acyclic Graph, DAG）。</li>
+                        <li><strong>單一單向流：</strong> 始終從 <span class="math-expr">S<sub>0</sub></span> 出發，在 <span class="math-expr">S<sub>N-1</sub></span> 結束，且保證路徑數 <span class="math-expr">R ≥ 1</span>，無重邊。</li>
+                        <li><strong>測資規模：</strong> 
+                            <ul>
+                                <li>第一組 (10%)：<span class="math-expr">2 ≤ N ≤ 100</span></li>
+                                <li>第二組 (30%)：<span class="math-expr">2 ≤ N ≤ 50,000</span></li>
+                                <li>第三組 (60%)：<span class="math-expr">2 ≤ N ≤ 1,000,000</span>，邊數 <span class="math-expr">N-1 ≤ E ≤ 2N</span>。百萬級別的節點數要求演算法必須在 <b>O(N + E)</b> 線性時間內完成，嚴禁任何無記憶化的指數型回溯暴搜。</li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>
 
+            <!-- PDF 原題架構圖視覺化重現 -->
             <div class="section-part">
-                <h2 class="section-title">課堂黑板板書推導</h2>
+                <h2 class="section-title">PDF 原題結構拓撲圖（對應範例 2）</h2>
                 <div class="analysis-box">
-                    <p><strong>【輸入範例 1 實際運作推導】</strong></p>
-                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
-9 12
+                    <p>下圖完整重現官方 PDF 題本第一頁中繪製的劇情事件網路圖。該圖清晰呈現階段之間的相依分支，可直觀看出從 <span class="math-expr">S<sub>0</sub></span> 到 <span class="math-expr">S<sub>9</sub></span> 的匯流走向：</p>
+                    
+                    <div class="diagram-container">
+                        <svg viewBox="0 0 850 360" width="100%" height="320" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569" />
+                                </marker>
+                                <marker id="arrow-blue" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb" />
+                                </marker>
+                                <filter id="shadow" x="-10%" y="-10%" width="125%" height="125%">
+                                    <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.1"/>
+                                </filter>
+                            </defs>
+
+                            <!-- 連接線 (Edges) -->
+                            <!-- 從 S0 -->
+                            <line x1="80" y1="180" x2="200" y2="100" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+                            <line x1="80" y1="180" x2="200" y2="260" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+                            
+                            <!-- 從 S1 -->
+                            <line x1="200" y1="100" x2="360" y2="40" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+                            <line x1="200" y1="100" x2="360" y2="110" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+                            <line x1="200" y1="100" x2="360" y2="180" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+                            <line x1="200" y1="100" x2="360" y2="260" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+                            <!-- 從 S2 -->
+                            <line x1="200" y1="260" x2="360" y2="260" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+                            <!-- 從 S6 -->
+                            <line x1="360" y1="260" x2="520" y2="260" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+                            <line x1="360" y1="260" x2="520" y2="330" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+                            <!-- 匯入終點 S9 -->
+                            <line x1="360" y1="40" x2="720" y2="180" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                            <line x1="360" y1="110" x2="720" y2="180" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                            <line x1="360" y1="180" x2="720" y2="180" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                            <line x1="520" y1="260" x2="720" y2="180" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                            <line x1="520" y1="330" x2="720" y2="180" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
+
+                            <!-- 節點繪製 (Nodes) -->
+                            <!-- S0 -->
+                            <ellipse cx="80" cy="180" rx="38" ry="24" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5" filter="url(#shadow)"/>
+                            <text x="80" y="186" font-size="16" font-weight="bold" fill="#1e40af" text-anchor="middle">S₀</text>
+
+                            <!-- S1, S2 -->
+                            <ellipse cx="200" cy="100" rx="38" ry="24" fill="#ffffff" stroke="#334155" stroke-width="2" filter="url(#shadow)"/>
+                            <text x="200" y="106" font-size="16" font-weight="600" fill="#0f172a" text-anchor="middle">S₁</text>
+                            
+                            <ellipse cx="200" cy="260" rx="38" ry="24" fill="#ffffff" stroke="#334155" stroke-width="2" filter="url(#shadow)"/>
+                            <text x="200" y="266" font-size="16" font-weight="600" fill="#0f172a" text-anchor="middle">S₂</text>
+
+                            <!-- S3, S4, S5, S6 -->
+                            <ellipse cx="360" cy="40" rx="36" ry="22" fill="#ffffff" stroke="#334155" stroke-width="2" filter="url(#shadow)"/>
+                            <text x="360" y="46" font-size="15" fill="#0f172a" text-anchor="middle">S₃</text>
+
+                            <ellipse cx="360" cy="110" rx="36" ry="22" fill="#ffffff" stroke="#334155" stroke-width="2" filter="url(#shadow)"/>
+                            <text x="360" y="116" font-size="15" fill="#0f172a" text-anchor="middle">S₄</text>
+
+                            <ellipse cx="360" cy="180" rx="36" ry="22" fill="#ffffff" stroke="#334155" stroke-width="2" filter="url(#shadow)"/>
+                            <text x="360" y="186" font-size="15" fill="#0f172a" text-anchor="middle">S₅</text>
+
+                            <ellipse cx="360" cy="260" rx="36" ry="22" fill="#ffffff" stroke="#334155" stroke-width="2" filter="url(#shadow)"/>
+                            <text x="360" y="266" font-size="15" fill="#0f172a" text-anchor="middle">S₆</text>
+
+                            <!-- S7, S8 -->
+                            <ellipse cx="520" cy="260" rx="36" ry="22" fill="#ffffff" stroke="#334155" stroke-width="2" filter="url(#shadow)"/>
+                            <text x="520" y="266" font-size="15" fill="#0f172a" text-anchor="middle">S₇</text>
+
+                            <ellipse cx="520" cy="330" rx="36" ry="22" fill="#ffffff" stroke="#334155" stroke-width="2" filter="url(#shadow)"/>
+                            <text x="520" y="336" font-size="15" fill="#0f172a" text-anchor="middle">S₈</text>
+
+                            <!-- S9 終點 -->
+                            <ellipse cx="720" cy="180" rx="42" ry="26" fill="#ecfdf5" stroke="#16a34a" stroke-width="2.5" filter="url(#shadow)"/>
+                            <text x="720" y="186" font-size="16" font-weight="bold" fill="#166534" text-anchor="middle">S₉</text>
+                        </svg>
+                        <div class="diagram-caption">▲ 圖 1：PDF 原題題目結構示範圖（輸入範例 2）之拓撲流程結構</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 演算法數學原理推導 -->
+            <div class="section-part">
+                <h2 class="section-title">演算法本質：DAG 動態規劃與反向記憶化搜尋</h2>
+                <div class="analysis-box">
+                    <p>在有向無環圖 (DAG) 中，計算從源點 <span class="math-expr">S<sub>0</sub></span> 到各節點的總路徑數具備嚴格的<strong>無後效性</strong>與<strong>最優子結構</strong>：</p>
+                    <div class="highlight-calc">
+                        <strong>動態規劃狀態轉移核心公式：</strong><br>
+                        對於圖中任一節點 <span class="math-expr">v</span>，到達該節點的路線總數 <span class="math-expr">R[v]</span> 等於所有能一步走到它的前置節點（前驅點集 <span class="math-expr">Pred(v)</span>）之路線數總和：
+                        <div style="font-size: 16px; margin: 8px 0; text-align: center;">
+                            <span class="math-expr">R[v] = &sum;<sub>u &isin; Pred(v)</sub> R[u]</span>，且邊界條件為 <span class="math-expr">R[0] = 1</span>
+                        </div>
+                    </div>
+                    <p><strong>反向建圖技巧（Reverse Edge Technique）：</strong></p>
+                    <ul>
+                        <li><strong>建圖方式：</strong> 當輸入一條從 <span class="math-expr">t1 &rarr; t2</span> 的邊時，原始解答使用 <code>Edge[t2].push_back(t1)</code> 建立<b>反向邊</b>。這表示 <code>Edge[v]</code> 儲存的是「可以走到 <span class="math-expr">v</span> 的所有前置節點」。</li>
+                        <li><strong>搜尋邏輯：</strong> 從終點 <span class="math-expr">DFS(N-1)</span> 發動，程式會沿著反向邊逐步向前探索，直到碰到已知基底狀態 <span class="math-expr">R[0] = 1</span>，接著回溯累加，並把結果記錄在 <code>R[cur]</code>。</li>
+                        <li><strong>剪枝與避免重複（記憶化）：</strong> 每個節點只需完整探索一次。若 <code>R[u] &gt; 0</code>，代表該點已經計算出路線數，直接取值累加，不進入重複遞迴，保證時間複雜度被嚴格壓制在 <span class="math-expr">O(N + E)</span>。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 三大範例深入黑板推導 -->
+            <div class="section-part">
+                <h2 class="section-title">三大範例詳細推導演練</h2>
+                
+                <!-- 範例 1 -->
+                <div class="analysis-box">
+                    <h3 class="sub-header" style="color: #1e40af;">【範例 1 推導】N = 9, E = 12（交錯匯流圖）</h3>
+                    <div class="io-block">
+                        <div>
+                            <strong>輸入測資：</strong>
+                            <div class="pre-box">9 12
 0 1
 0 2
 0 3
@@ -165,29 +375,112 @@
 7 6
 6 8
 2 8
-5 8</pre>
-                    <ul>
-                        <li><strong>圖形結構分析：</strong> 總共有 9 個階段（編號 0 到 8），起點為 <span style="font-style: italic;">S<sub>0</sub></span>，終點為 <span style="font-style: italic;">S<sub>8</sub></span>。</li>
-                        <li><strong>反向邊與遞迴追溯過程：</strong>
-                            <ul>
-                                <li>我們從終點 <span style="font-style: italic;">S<sub>8</sub></span> 出發，找出能通往 <span style="font-style: italic;">S<sub>8</sub></span> 的前置階段有：<span style="font-style: italic;">S<sub>2</sub></span>、<span style="font-style: italic;">S<sub>5</sub></span>、<span style="font-style: italic;">S<sub>6</sub></span>。</li>
-                                <li>因此 <span style="font-style: italic;">S<sub>8</sub></span> 的總路線數等於這三個前置階段路線數的加總：<span style="font-style: italic;">R[8] = R[2] + R[5] + R[6]</span>。</li>
-                                <li>我們依序遞迴往前計算：
-                                    <ul>
-                                        <li><span style="font-style: italic;">S<sub>6</sub></span> 的前置有 <span style="font-style: italic;">S<sub>4</sub></span> 和 <span style="font-style: italic;">S<sub>7</sub></span>（皆可通往 <span style="font-style: italic;">S<sub>6</sub></span>）。</li>
-                                        <li><span style="font-style: italic;">S<sub>4</sub></span> 的前置有 <span style="font-style: italic;">S<sub>1</sub></span> 和 <span style="font-style: italic;">S<sub>3</sub></span>。</li>
-                                        <li><span style="font-style: italic;">S<sub>1</sub>, S<sub>3</sub>, S<sub>7</sub>, S<sub>2</sub>, S<sub>5</sub></span> 的前置皆可追溯回初始起點 <span style="font-style: italic;">S<sub>0</sub></span>（起始點路線數 <span style="font-style: italic;">R[0] = 1</span>）。</li>
-                                    </ul>
-                                </li>
-                                <li>透過記憶化 DFS 逐層加總回傳，最終在 <span style="font-style: italic;">S<sub>8</sub></span> 匯集得到總路線數為 5。</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <p>👉 <strong>輸出範例 1 結果：</strong> <code>5</code></p>
+5 8</div>
+                        </div>
+                        <div>
+                            <strong>輸出結果：</strong>
+                            <div class="pre-box">5</div>
+                            <div style="font-size: 13px; color: var(--text-muted); margin-top: 6px;">
+                                起點為 0，終點為 8。<br>
+                                到達 8 的前置階段為：2、5、6。
+                            </div>
+                        </div>
+                    </div>
 
-                    <p style="margin-top: 20px;"><strong>【輸入範例 2 實際運作推導】</strong></p>
-                    <pre style="background: #e2e8f0; padding: 10px; border-radius: 6px; margin: 10px 0;">輸入：
-10 14
+                    <p><strong>反向遞迴推導鏈與各節點數值：</strong></p>
+                    <table class="trace-table">
+                        <thead>
+                            <tr>
+                                <th>節點 (Node)</th>
+                                <th>角色</th>
+                                <th>前置來源節點 (Pred)</th>
+                                <th>推導計算式</th>
+                                <th>計算結果 R[v]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>S₀</strong></td>
+                                <td><span class="badge badge-start">起點</span></td>
+                                <td>無</td>
+                                <td>題目基底設定（邊界）</td>
+                                <td><strong>1</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>S₁</strong></td>
+                                <td><span class="badge badge-mid">中繼點</span></td>
+                                <td>S₀</td>
+                                <td>R[1] = R[0]</td>
+                                <td><strong>1</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>S₂</strong></td>
+                                <td><span class="badge badge-mid">匯入點</span></td>
+                                <td>S₀</td>
+                                <td>R[2] = R[0]</td>
+                                <td><strong>1</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>S₃</strong></td>
+                                <td><span class="badge badge-mid">中繼點</span></td>
+                                <td>S₀</td>
+                                <td>R[3] = R[0]</td>
+                                <td><strong>1</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>S₄</strong></td>
+                                <td><span class="badge badge-mid">匯流點</span></td>
+                                <td>S₁, S₃</td>
+                                <td>R[4] = R[1] + R[3] = 1 + 1</td>
+                                <td><strong>2</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>S₅</strong></td>
+                                <td><span class="badge badge-mid">匯入點</span></td>
+                                <td>S₀</td>
+                                <td>R[5] = R[0]</td>
+                                <td><strong>1</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>S₇</strong></td>
+                                <td><span class="badge badge-mid">中繼點</span></td>
+                                <td>S₀</td>
+                                <td>R[7] = R[0]</td>
+                                <td><strong>1</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>S₆</strong></td>
+                                <td><span class="badge badge-mid">匯流點</span></td>
+                                <td>S₄, S₇</td>
+                                <td>R[6] = R[4] + R[7] = 2 + 1</td>
+                                <td><strong>3</strong></td>
+                            </tr>
+                            <tr style="background: #f0fdf4;">
+                                <td><strong>S₈</strong></td>
+                                <td><span class="badge badge-end">終點</span></td>
+                                <td>S₂, S₅, S₆</td>
+                                <td>R[8] = R[2] + R[5] + R[6] = 1 + 1 + 3</td>
+                                <td><strong>5</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p><strong>五條實體通關路徑枚舉：</strong></p>
+                    <ol style="margin-left: 22px; font-size: 14px; margin-top: 6px;">
+                        <li><span class="math-expr">S₀ &rarr; S₂ &rarr; S₈</span></li>
+                        <li><span class="math-expr">S₀ &rarr; S₅ &rarr; S₈</span></li>
+                        <li><span class="math-expr">S₀ &rarr; S₇ &rarr; S₆ &rarr; S₈</span></li>
+                        <li><span class="math-expr">S₀ &rarr; S₁ &rarr; S₄ &rarr; S₆ &rarr; S₈</span></li>
+                        <li><span class="math-expr">S₀ &rarr; S₃ &rarr; S₄ &rarr; S₆ &rarr; S₈</span></li>
+                    </ol>
+                </div>
+
+                <!-- 範例 2 -->
+                <div class="analysis-box">
+                    <h3 class="sub-header" style="color: #1e40af;">【範例 2 推導】N = 10, E = 14（PDF 題本原題圖示完整解析）</h3>
+                    <div class="io-block">
+                        <div>
+                            <strong>輸入測資：</strong>
+                            <div class="pre-box">10 14
 0 1
 0 2
 1 3
@@ -201,56 +494,190 @@
 6 7
 6 8
 7 9
-8 9</pre>
-                    <ul>
-                        <li><strong>圖形結構分析：</strong> 總共有 10 個階段（編號 0 到 9），起點為 <span style="font-style: italic;">S<sub>0</sub></span>，終點為 <span style="font-style: italic;">S<sub>9</sub></span>。</li>
-                        <li><strong>反向邊與遞迴追溯過程：</strong>
+8 9</div>
+                        </div>
+                        <div>
+                            <strong>輸出結果：</strong>
+                            <div class="pre-box">7</div>
+                            <div style="font-size: 13px; color: var(--text-muted); margin-top: 6px;">
+                                對應首頁示意圖：<br>
+                                終點 S₉ 共有 5 個直通前置點：S₃, S₄, S₅, S₇, S₈。
+                            </div>
+                        </div>
+                    </div>
+
+                    <p><strong>詳細節點推算順序：</strong></p>
+                    <table class="trace-table">
+                        <thead>
+                            <tr>
+                                <th>節點 (v)</th>
+                                <th>直接前驅來源 (Pred)</th>
+                                <th>推導過程與來源值</th>
+                                <th>結果 R[v]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>S₀</strong></td>
+                                <td>—</td>
+                                <td>起始基準點</td>
+                                <td><strong>1</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>S₁</strong></td>
+                                <td>S₀</td>
+                                <td>R[1] = R[0] = 1</td>
+                                <td><strong>1</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>S₂</strong></td>
+                                <td>S₀</td>
+                                <td>R[2] = R[0] = 1</td>
+                                <td><strong>1</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>S₃, S₄, S₅</strong></td>
+                                <td>S₁</td>
+                                <td>皆為 R[1]，個別數值皆為 1</td>
+                                <td><strong>各為 1</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>S₆</strong></td>
+                                <td>S₁, S₂</td>
+                                <td>R[6] = R[1] + R[2] = 1 + 1</td>
+                                <td><strong>2</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>S₇</strong></td>
+                                <td>S₆</td>
+                                <td>R[7] = R[6] = 2</td>
+                                <td><strong>2</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>S₈</strong></td>
+                                <td>S₆</td>
+                                <td>R[8] = R[6] = 2</td>
+                                <td><strong>2</strong></td>
+                            </tr>
+                            <tr style="background: #f0fdf4;">
+                                <td><strong>S₉ (終點)</strong></td>
+                                <td>S₃, S₄, S₅, S₇, S₈</td>
+                                <td>R[9] = R[3] + R[4] + R[5] + R[7] + R[8] = 1 + 1 + 1 + 2 + 2</td>
+                                <td><strong>7</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p><strong>七條完整路徑檢驗清單：</strong></p>
+                    <ul style="margin-left: 22px; font-size: 14px;">
+                        <li><strong>經由 S₁ 上層獨立事件（3 條）：</strong>
                             <ul>
-                                <li>從終點 <span style="font-style: italic;">S<sub>9</sub></span> 出發，其前置階段有：<span style="font-style: italic;">S<sub>3</sub></span>、<span style="font-style: italic;">S<sub>4</sub></span>、<span style="font-style: italic;">S<sub>5</sub></span>、<span style="font-style: italic;">S<sub>7</sub></span>、<span style="font-style: italic;">S<sub>8</sub></span>。</li>
-                                <li>程式透過 DFS 從終點 <span style="font-style: italic;">S<sub>9</sub></span> 往回反向搜尋，並利用 <code>R[cur]</code> 陣列記錄每個階段可以到達終點的合法分支數。</li>
-                                <li>當所有分支路徑在起點 <span style="font-style: italic;">S<sub>0</sub></span> 匯聚並完整加總後，計算出總通關路線數為 7。</li>
+                                <li><span class="math-expr">S₀ &rarr; S₁ &rarr; S₃ &rarr; S₉</span></li>
+                                <li><span class="math-expr">S₀ &rarr; S₁ &rarr; S₄ &rarr; S₉</span></li>
+                                <li><span class="math-expr">S₀ &rarr; S₁ &rarr; S₅ &rarr; S₉</span></li>
+                            </ul>
+                        </li>
+                        <li><strong>經由 S₁ 走向 S₆ 下層事件（2 條）：</strong>
+                            <ul>
+                                <li><span class="math-expr">S₀ &rarr; S₁ &rarr; S₆ &rarr; S₇ &rarr; S₉</span></li>
+                                <li><span class="math-expr">S₀ &rarr; S₁ &rarr; S₆ &rarr; S₈ &rarr; S₉</span></li>
+                            </ul>
+                        </li>
+                        <li><strong>經由 S₂ 走向 S₆ 下層事件（2 條）：</strong>
+                            <ul>
+                                <li><span class="math-expr">S₀ &rarr; S₂ &rarr; S₆ &rarr; S₇ &rarr; S₉</span></li>
+                                <li><span class="math-expr">S₀ &rarr; S₂ &rarr; S₆ &rarr; S₈ &rarr; S₉</span></li>
                             </ul>
                         </li>
                     </ul>
-                    <p>👉 <strong>輸出範例 2 結果：</strong> <code>7</code></p>
+                </div>
+
+                <!-- 範例 3 -->
+                <div class="analysis-box">
+                    <h3 class="sub-header" style="color: #1e40af;">【範例 3：邊界極端結構】單一直線鏈 vs 二分鑽石圖 (Diamonds)</h3>
+                    <p>為驗證程式在各種極端結構下的穩定度與空間時間開銷，我們考察以下兩種典型結構：</p>
+                    
+                    <div style="margin-top: 12px;">
+                        <strong>情況 A：單一路徑鏈條（Minimal Branches）</strong>
+                        <p style="font-size: 14px; color: var(--text-muted);">若輸入為 <span class="math-expr">0 &rarr; 1 &rarr; 2 &rarr; ... &rarr; N-1</span>，僅有 <span class="math-expr">N-1</span> 條邊。DFS 從終點一路遞迴深搜回起點，每一層累加 1，最終 <span class="math-expr">R[N-1] = 1</span>。遞迴深度達到 <span class="math-expr">N</span>，因此在百萬測資時，C++ 編譯環境需具備足夠的 Stack 空間。</p>
+                    </div>
+
+                    <div style="margin-top: 14px;">
+                        <strong>情況 B：連續菱形結構（Exponential Growth）</strong>
+                        <p style="font-size: 14px; color: var(--text-muted);">
+                            若每兩個節點之間都形成雙分叉鑽石菱形結構（例如 <span class="math-expr">S<sub>2k</sub></span> 同時連到 <span class="math-expr">S<sub>2k+1</sub></span> 與 <span class="math-expr">S<sub>2k+2</sub></span>，再匯入下一層），路線總數將呈指數級成長（<span class="math-expr">2<sup>k</sup></span>）。
+                            此時 <code>long long</code> 能夠防止在數值高達 <span class="math-expr">2<sup>63</sup> - 1</span> 前發生溢位。原解法採用的 <code>long long R[]</code> 能確保大量組合數時的計算正確性。
+                        </p>
+                    </div>
                 </div>
             </div>
 
+            <!-- C++ 完整註解程式碼 -->
             <div class="section-part">
-                <h2 class="section-title">參考解答 C++ 程式碼（百分之百保留原始解答邏輯與變數名稱，含每行詳細中文教學註解）</h2>
-                <pre class="code-box"><code>#include&lt;bits/stdc++.h&gt;  // 引入常用 C++ 標頭檔
+                <h2 class="section-title">參考解答 C++ 完整原始碼與教學註解</h2>
+                <div class="analysis-box" style="margin-bottom: 12px; background: #fffbeb; border-color: #fef3c7;">
+                    <p style="color: #92400e; font-size: 14px;">
+                        💡 <strong>實作重點提示：</strong> 
+                        本程式使用 <code>vector&lt;int&gt; Edge[]</code> 建立反向鄰接表（將目標指向來源），並初始化 <code>R[0] = 1</code>。透過記憶化 DFS，確保每個節點只會被展開一次，整體執行時間為嚴格的線性時間 <code>O(V + E)</code>，完美通過百萬階測資。
+                    </p>
+                </div>
+                <pre class="code-box"><code><span class="code-comment">#include &lt;bits/stdc++.h&gt;  // 引入標準函式庫 (包含 vector, iostream 等)</span>
 
-std::vector&lt;int&gt; Edge[1000005];  // 宣告鄰接表，用來儲存圖形中每個階段的前置或後續事件邊
-long long R[1000005]={1};  // 宣告記憶化陣列 R，記錄到達各階段的路線總數，初始將起點設為 1
+<span class="code-comment">// 宣告反向鄰接表：Edge[v] 儲存所有能夠「一步走向 v」的前置節點 (Predecessors)</span>
+<span class="code-comment">// 題目的階段數量 N 最大可達 1,000,000，陣列空間設定 1000005 以防越界</span>
+<span class="code-type">std::vector</span>&lt;<span class="code-type">int</span>&gt; Edge[1000005];
 
-// DFS 函式：遞迴尋找並計算從當前節點出發的總路線數
-void DFS(int cur)
+<span class="code-comment">// 宣告路線數記憶化陣列 R</span>
+<span class="code-comment">// R[0] = 1 代表起始階段 S0 自成 1 條路線 (遞迴基準條件 Base Case)</span>
+<span class="code-comment">// 其餘 R[i] 預設初始化為 0，表示「該階段路線數尚未被計算」</span>
+<span class="code-type">long long</span> R[1000005] = {1};
+
+<span class="code-comment">/**
+ * DFS 記憶化搜尋函式
+ * @param cur 目前欲計算總路線數的目標階段編號
+ */</span>
+<span class="code-type">void</span> <span class="code-func">DFS</span>(<span class="code-type">int</span> cur)
 {
-    int n=Edge[cur].size();  // 取得與當前節點相連的邊數量
-    for(int i=0;i&lt;n;i+=1)
+    <span class="code-type">int</span> n = Edge[cur].size();  <span class="code-comment">// 取得該節點的所有前置節點數量</span>
+
+    <span class="code-comment">// 遍歷所有能走向 cur 的前驅階段</span>
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> i = 0; i &lt; n; i += 1)
     {
-        // 若目標鄰居節點的路線數尚未被計算過（等於 0）
-        if (R[Edge[cur][i]]==0)
-            DFS(Edge[cur][i]);  // 遞迴先計算該鄰居節點的路線數（記憶化搜尋）
-            
-        R[cur]+=R[Edge[cur][i]];  // 將鄰居節點的路線數累加到當前節點中
+        <span class="code-type">int</span> prev_node = Edge[cur][i];
+
+        <span class="code-comment">// 如果前置節點的路線總數尚未計算過 (數值為 0)，先遞迴深搜計算該節點</span>
+        <span class="code-keyword">if</span> (R[prev_node] == 0)
+        {
+            <span class="code-func">DFS</span>(prev_node);
+        }
+
+        <span class="code-comment">// 累加所有前置節點的路線數至目前節點</span>
+        R[cur] += R[prev_node];
     }
 }
 
-int main()
+<span class="code-type">int</span> <span class="code-func">main</span>()
 {
-    int S,E;
-    std::cin&gt;&gt;S&gt;&gt;E;  // 讀入階段總數 S 與事件邊總數 E
-    for(int i=0;i&lt;E;i+=1)
+    <span class="code-comment">// 加速標準 I/O 串流讀取速度</span>
+    <span class="code-type">std::ios_base</span>::<span class="code-func">sync_with_stdio</span>(<span class="code-keyword">false</span>);
+    <span class="code-type">std::cin</span>.<span class="code-func">tie</span>(NULL);
+
+    <span class="code-type">int</span> S, E;
+    <span class="code-keyword">if</span> (!(<span class="code-type">std::cin</span> &gt;&gt; S &gt;&gt; E)) <span class="code-keyword">return</span> 0;  <span class="code-comment">// 讀入階段數 S (即 N) 與事件邊數 E</span>
+
+    <span class="code-keyword">for</span> (<span class="code-type">int</span> i = 0; i &lt; E; i += 1)
     {
-        int t1,t2;
-        std::cin&gt;&gt;t1&gt;&gt;t2;  // 讀入每一條事件邊連接的兩個階段 t1 與 t2
-        Edge[t2].push<sub>b</sub>ack(t1);  // 建立反向邊，方便從終點往回推導路線
+        <span class="code-type">int</span> t1, t2;
+        <span class="code-type">std::cin</span> &gt;&gt; t1 &gt;&gt; t2;  <span class="code-comment">// 讀入一條單向事件邊：從階段 t1 進入階段 t2</span>
+        Edge[t2].push_back(t1);  <span class="code-comment">// 建立反向邊：將 t1 加入到 t2 的前驅列表中</span>
     }
-    
-    DFS(S-1);  // 從最終結局階段（編號 S-1）開始進行 DFS 搜尋
-    
-    std::cout&lt;&lt;R[S-1]&lt;&lt;std::endl;  // 輸出從起點到終點的總路線數 R
+
+    <span class="code-comment">// 從最後一個結局階段 (編號 S - 1) 開始進行反向記憶化搜尋</span>
+    <span class="code-func">DFS</span>(S - 1);
+
+    <span class="code-comment">// 輸出結局階段所匯集出的總通關路線數 R</span>
+    <span class="code-type">std::cout</span> &lt;&lt; R[S - 1] &lt;&lt; <span class="code-type">std::endl</span>;
+
+    <span class="code-keyword">return</span> 0;
 }</code></pre>
             </div>
         </div>
