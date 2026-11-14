@@ -78,25 +78,137 @@
             </div>
         </section>
 
-        <!-- 專用開發與截圖工具區塊 -->
+        <!-- 左右併排區：左側「專用開發與截圖工具」 / 右側「競賽與解題平台」 -->
         <section class="mb-12">
-            <h2 class="text-xl font-bold text-slate-700 mb-6 border-l-4 border-cyan-600 pl-3">
-                專用開發與截圖工具
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- m5 / Blockly 工具卡片 -->
-                <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border border-slate-200 flex flex-col justify-between">
-                    <div>
-                        <div class="text-cyan-600 text-2xl font-bold mb-2">🧩 TOOL</div>
-                        <h3 class="font-bold text-lg text-slate-800 mb-2">m5 / Blockly 截圖與解析工具</h3>
-                        <p class="text-sm text-slate-600 mb-4">
-                            支援拖曳開啟或貼上 <code>.m5</code> / <code>.xml</code> 積木檔，一鍵生成無黑底、字樣與參數清晰的純白高解析度 PNG 截圖或直接複製至剪貼簿。
-                        </p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                
+                <!-- 左側欄：專用開發與截圖工具 (佔 1 欄) -->
+                <div class="lg:col-span-1">
+                    <h2 class="text-xl font-bold text-slate-700 mb-6 border-l-4 border-cyan-600 pl-3">
+                        專用開發與截圖工具
+                    </h2>
+                    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <div class="text-cyan-600 text-2xl font-bold mb-2">🧩 TOOL</div>
+                            <h3 class="font-bold text-lg text-slate-800 mb-2">m5 / Blockly 截圖與解析工具</h3>
+                            <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+                                支援拖曳開啟或貼上 <code>.m5</code> / <code>.xml</code> 積木檔，一鍵生成無黑底、字樣與參數清晰的純白高解析度 PNG 截圖或直接複製至剪貼簿。
+                            </p>
+                        </div>
+                        <a href="m5_viewer_PNG.html" target="_blank" rel="noopener noreferrer" class="inline-block text-center bg-cyan-50 hover:bg-cyan-600 hover:text-white text-cyan-700 font-medium py-2.5 px-4 rounded-lg transition text-sm mt-2">
+                            開啟截圖工具 ↗
+                        </a>
                     </div>
-                    <a href="m5_viewer_PNG.html" target="_blank" rel="noopener noreferrer" class="inline-block text-center bg-cyan-50 hover:bg-cyan-600 hover:text-white text-cyan-700 font-medium py-2 px-4 rounded-lg transition text-sm">
-                        開啟截圖工具 ↗
-                    </a>
                 </div>
+
+                <!-- 右側欄：外部競賽與解題平台 (佔 2 欄) -->
+                <div class="lg:col-span-2">
+                    <h2 class="text-xl font-bold text-slate-700 mb-6 border-l-4 border-amber-500 pl-3">
+                        資訊科技競賽與積木解題平台
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- 1. 科技教育創意實作競賽【資訊科技組】 -->
+                        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border border-slate-200 flex flex-col justify-between">
+                            <div>
+                                <div class="text-amber-600 text-sm font-bold tracking-wider mb-1">🏆 01 · 官方網站</div>
+                                <h3 class="font-bold text-base text-slate-800 mb-2">科技教育創意實作競賽【資訊科技組】</h3>
+                                <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                                    全國科技教育創意實作競賽資訊科技組官方平台，提供競賽簡章、題目公告與歷屆資源。
+                                </p>
+                            </div>
+                            <a href="https://demo.csie.ntnu.edu.tw/" target="_blank" rel="noopener noreferrer" class="inline-block text-center bg-amber-50 hover:bg-amber-600 hover:text-white text-amber-700 font-medium py-2 px-4 rounded-lg transition text-sm">
+                                前往競賽網站 ↗
+                            </a>
+                        </div>
+
+                        <!-- 2. 法蘭斯解題積木平台 -->
+                        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border border-slate-200 flex flex-col justify-between">
+                            <div>
+                                <div class="text-amber-600 text-sm font-bold tracking-wider mb-1">🧱 02 · 積木練習</div>
+                                <h3 class="font-bold text-base text-slate-800 mb-2">法蘭斯解題積木平台</h3>
+                                <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                                    視覺化積木程式解題與測試環境，適合訓練運算思維與競賽題型模擬。
+                                </p>
+                            </div>
+                            <a href="https://fustyles.github.io/competition/" target="_blank" rel="noopener noreferrer" class="inline-block text-center bg-amber-50 hover:bg-amber-600 hover:text-white text-amber-700 font-medium py-2 px-4 rounded-lg transition text-sm">
+                                開啟練習平台 ↗
+                            </a>
+                        </div>
+
+                        <!-- 3. 縣市競賽題目共享平台 (含互動式代碼查詢提示) -->
+                        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border border-slate-200 flex flex-col justify-between md:col-span-2">
+                            <div>
+                                <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                                    <span class="text-amber-600 text-sm font-bold tracking-wider">🗺️ 03 · 題庫共享</span>
+                                    <span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-medium">內附 19 縣市競賽模式代碼</span>
+                                </div>
+                                <h3 class="font-bold text-base text-slate-800 mb-2">縣市競賽題目共享平台</h3>
+                                <p class="text-xs text-slate-600 mb-3 leading-relaxed">
+                                    匯集各縣市資訊科技競賽試題的 Blockly 練習環境。進入平台後，請輸入下方對應縣市的「國小 / 國中」競賽模式代碼：
+                                </p>
+
+                                <!-- 可折疊的縣市代碼速查表 -->
+                                <details class="mb-4 bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs group">
+                                    <summary class="cursor-pointer font-semibold text-slate-700 hover:text-amber-700 select-none flex items-center justify-between">
+                                        <span>🔍 點此展開「各縣市競賽模式代碼表」（點擊代碼可一鍵複製）</span>
+                                        <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                                    </summary>
+                                    <div class="mt-3 pt-3 border-t border-slate-200">
+                                        <input type="text" id="citySearchInput" placeholder="輸入縣市名稱或代碼快速篩選（例如：桃園、15）..." class="w-full mb-2.5 px-3 py-1.5 bg-white border border-slate-300 rounded text-xs focus:outline-none focus:border-amber-500">
+                                        <div id="cityCodeGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-48 overflow-y-auto pr-1">
+                                            <!-- 由下方 JS 動態渲染縣市與一鍵複製按鈕 -->
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>
+                            <a href="https://tnjbox.github.io/blockly-lab/" target="_blank" rel="noopener noreferrer" class="inline-block text-center bg-amber-50 hover:bg-amber-600 hover:text-white text-amber-700 font-medium py-2 px-4 rounded-lg transition text-sm">
+                                進入題目共享平台 ↗
+                            </a>
+                        </div>
+
+                        <!-- 4. osep-judge -->
+                        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border border-slate-200 flex flex-col justify-between">
+                            <div>
+                                <div class="text-amber-600 text-sm font-bold tracking-wider mb-1">⚖️ 04 · 線上評測</div>
+                                <h3 class="font-bold text-base text-slate-800 mb-2">osep-judge</h3>
+                                <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                                    積木與程式語言線上評測編輯器（Editor），提供即時程式碼測試與自動化結果驗證。
+                                </p>
+                            </div>
+                            <a href="https://p2766602-beep.github.io/osep-judge/editor.html" target="_blank" rel="noopener noreferrer" class="inline-block text-center bg-amber-50 hover:bg-amber-600 hover:text-white text-amber-700 font-medium py-2 px-4 rounded-lg transition text-sm">
+                                開啟評測編輯器 ↗
+                            </a>
+                        </div>
+
+                        <!-- 5. 從「我不會」到我能解題 (含測試帳密提示) -->
+                        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border border-slate-200 flex flex-col justify-between">
+                            <div>
+                                <div class="text-amber-600 text-sm font-bold tracking-wider mb-1">🚀 05 · 循序訓練</div>
+                                <h3 class="font-bold text-base text-slate-800 mb-2">從「我不會」到我能解題。</h3>
+                                <p class="text-xs text-slate-600 mb-3 leading-relaxed">
+                                    階梯式運算思維與解題引導訓練平台，協助初學者逐步建立解題信心。
+                                </p>
+                                <!-- 登入資訊提示框 -->
+                                <div class="bg-amber-50/70 border border-amber-200 rounded-lg p-2.5 mb-4 text-xs text-slate-700 flex items-center justify-between">
+                                    <div>
+                                        <span class="font-semibold text-amber-800">測試帳密：</span>
+                                        帳號 <code class="bg-white px-1.5 py-0.5 rounded border border-amber-200 font-mono text-slate-800">demo</code> /
+                                        密碼 <code class="bg-white px-1.5 py-0.5 rounded border border-amber-200 font-mono text-slate-800">1234</code>
+                                    </div>
+                                    <button type="button" onclick="copyText('demo', this)" title="複製帳號" class="text-amber-700 hover:text-amber-900 underline ml-2 shrink-0">
+                                        複製帳號
+                                    </button>
+                                </div>
+                            </div>
+                            <a href="https://it-training.weichin.date/" target="_blank" rel="noopener noreferrer" class="inline-block text-center bg-amber-50 hover:bg-amber-600 hover:text-white text-amber-700 font-medium py-2 px-4 rounded-lg transition text-sm">
+                                前往訓練平台 ↗
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -163,5 +275,77 @@
         <p>TOI 學習資源整合平台 &copy; 2026 | 重視模組化與可延展性，培育具備邏輯拆解與運算思維的行動者。</p>
     </footer>
 
+    <!-- 互動腳本：縣市競賽代碼渲染、篩選與一鍵複製 -->
+    <script>
+        const cityCodes = [
+            { city: '嘉義市', elem: '114TCPE01', junior: '114TCPJ01' },
+            { city: '嘉義縣', elem: '114TCPE02', junior: '114TCPJ02' },
+            { city: '彰化縣', elem: '114TCPE03', junior: '114TCPJ03' },
+            { city: '新竹市', elem: '114TCPE04', junior: '114TCPJ04' },
+            { city: '新竹縣', elem: '114TCPE05', junior: '114TCPJ05' },
+            { city: '花蓮縣', elem: '114TCPE06', junior: '114TCPJ06' },
+            { city: '南投縣', elem: '114TCPE07', junior: '114TCPJ07' },
+            { city: '新北市', elem: '114TCPE08', junior: '114TCPJ08' },
+            { city: '澎湖縣', elem: '114TCPE09', junior: '114TCPJ09' },
+            { city: '臺中市', elem: '114TCPE10', junior: '114TCPJ10' },
+            { city: '臺南市', elem: '114TCPE11', junior: '114TCPJ11' },
+            { city: '臺北市', elem: '114TCPE12', junior: '114TCPJ12' },
+            { city: '臺東縣', elem: '114TCPE13', junior: '114TCPJ13' },
+            { city: '基隆市', elem: '114TCPE14', junior: '114TCPJ14' },
+            { city: '桃園市', elem: '114TCPE15', junior: '114TCPJ15' },
+            { city: '雲林縣', elem: '114TCPE16', junior: '114TCPJ16' },
+            { city: '金門縣', elem: '114TCPE17', junior: '114TCPJ17' },
+            { city: '苗栗縣', elem: '114TCPE18', junior: '114TCPJ18' },
+            { city: '屏東縣', elem: '114TCPE19', junior: '114TCPJ19' }
+        ];
+
+        function copyText(text, btnElement) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btnElement.innerText;
+                btnElement.innerText = '已複製!';
+                btnElement.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600');
+                setTimeout(() => {
+                    btnElement.innerText = originalText;
+                    btnElement.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600');
+                }, 1200);
+            });
+        }
+
+        function renderCityCodes(filter = '') {
+            const grid = document.getElementById('cityCodeGrid');
+            const keyword = filter.trim().toUpperCase().replace('台', '臺');
+            const filtered = cityCodes.filter(item =>
+                item.city.includes(keyword) ||
+                item.elem.includes(keyword) ||
+                item.junior.includes(keyword)
+            );
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="text-slate-400 col-span-2 py-2 text-center">找不到相符的縣市或代碼</div>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => `
+                <div class="flex items-center justify-between bg-white px-2.5 py-1.5 rounded border border-slate-200">
+                    <span class="font-bold text-slate-700">${item.city}</span>
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="copyText('${item.elem}', this)" title="複製國小代碼" class="px-1.5 py-0.5 rounded bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 font-mono text-[11px] transition">
+                            國小:${item.elem}
+                        </button>
+                        <button type="button" onclick="copyText('${item.junior}', this)" title="複製國中代碼" class="px-1.5 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-mono text-[11px] transition">
+                            國中:${item.junior}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('citySearchInput').addEventListener('input', (e) => {
+            renderCityCodes(e.target.value);
+        });
+
+        // 初始載入全部縣市代碼
+        renderCityCodes();
+    </script>
 </body>
 </html>
