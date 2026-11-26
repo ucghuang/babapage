@@ -78,27 +78,68 @@
             </div>
         </section>
 
-        <!-- 左右併排區：左側「專用開發與截圖工具」 / 右側「競賽與解題平台」 -->
+        <!-- 左右併排區：左側「練習網站 + 專用開發與截圖工具」 / 右側「競賽與解題平台」 -->
         <section class="mb-12">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                 
-                <!-- 左側欄：專用開發與截圖工具 (佔 1 欄) -->
-                <div class="lg:col-span-1">
-                    <h2 class="text-xl font-bold text-slate-700 mb-6 border-l-4 border-cyan-600 pl-3">
-                        專用開發與截圖工具
-                    </h2>
-                    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border border-slate-200 flex flex-col justify-between">
-                        <div>
-                            <div class="text-cyan-600 text-2xl font-bold mb-2">🧩 TOOL</div>
-                            <h3 class="font-bold text-lg text-slate-800 mb-2">m5 / Blockly 截圖與解析工具</h3>
-                            <p class="text-sm text-slate-600 mb-4 leading-relaxed">
-                                支援拖曳開啟或貼上 <code>.m5</code> / <code>.xml</code> 積木檔，一鍵生成無黑底、字樣與參數清晰的純白高解析度 PNG 截圖或直接複製至剪貼簿。
-                            </p>
+                <!-- 左側欄：上方為「練習網站」、下方為「專用開發與截圖工具」 (佔 1 欄) -->
+                <div class="lg:col-span-1 space-y-8">
+                    
+                    <!-- 左上區塊：練習網站 -->
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-700 mb-6 border-l-4 border-violet-600 pl-3">
+                            練習網站
+                        </h2>
+                        <div class="space-y-4">
+                            <!-- 1. bdesigner -->
+                            <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-5 border border-slate-200 flex flex-col justify-between">
+                                <div>
+                                    <div class="text-violet-600 text-sm font-bold tracking-wider mb-1">🎯 01 · 積木練習</div>
+                                    <h3 class="font-bold text-base text-slate-800 mb-1.5">bdesigner</h3>
+                                    <p class="text-xs text-slate-600 mb-3 leading-relaxed">
+                                        Blockly 視覺化積木程式設計與線上互動練習環境。
+                                    </p>
+                                </div>
+                                <a href="https://bdesigner.star-kids.info/blockly2/index.php" target="_blank" rel="noopener noreferrer" class="inline-block text-center bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 font-medium py-2 px-4 rounded-lg transition text-sm">
+                                    前往練習 ↗
+                                </a>
+                            </div>
+
+                            <!-- 2. 官方網站 -->
+                            <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-5 border border-slate-200 flex flex-col justify-between">
+                                <div>
+                                    <div class="text-violet-600 text-sm font-bold tracking-wider mb-1">🏛️ 02 · 官方練習環境</div>
+                                    <h3 class="font-bold text-base text-slate-800 mb-1.5">官方網站</h3>
+                                    <p class="text-xs text-slate-600 mb-3 leading-relaxed">
+                                        師大資工資訊科技競賽官方空白練習畫布（Blank Kata）環境。
+                                    </p>
+                                </div>
+                                <a href="https://demo.csie.ntnu.edu.tw/ms/solo?kata=blank-kata" target="_blank" rel="noopener noreferrer" class="inline-block text-center bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 font-medium py-2 px-4 rounded-lg transition text-sm">
+                                    開啟官方練習 ↗
+                                </a>
+                            </div>
                         </div>
-                        <a href="m5_viewer_PNG.html" target="_blank" rel="noopener noreferrer" class="inline-block text-center bg-cyan-50 hover:bg-cyan-600 hover:text-white text-cyan-700 font-medium py-2.5 px-4 rounded-lg transition text-sm mt-2">
-                            開啟截圖工具 ↗
-                        </a>
                     </div>
+
+                    <!-- 左下區塊：專用開發與截圖工具 -->
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-700 mb-6 border-l-4 border-cyan-600 pl-3">
+                            專用開發與截圖工具
+                        </h2>
+                        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border border-slate-200 flex flex-col justify-between">
+                            <div>
+                                <div class="text-cyan-600 text-2xl font-bold mb-2">🧩 TOOL</div>
+                                <h3 class="font-bold text-lg text-slate-800 mb-2">m5 / Blockly 截圖與解析工具</h3>
+                                <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+                                    支援拖曳開啟或貼上 <code>.m5</code> / <code>.xml</code> 積木檔，一鍵生成無黑底、字樣與參數清晰的純白高解析度 PNG 截圖或直接複製至剪貼簿。
+                                </p>
+                            </div>
+                            <a href="m5_viewer_PNG.html" target="_blank" rel="noopener noreferrer" class="inline-block text-center bg-cyan-50 hover:bg-cyan-600 hover:text-white text-cyan-700 font-medium py-2.5 px-4 rounded-lg transition text-sm mt-2">
+                                開啟截圖工具 ↗
+                            </a>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- 右側欄：外部競賽與解題平台 (佔 2 欄) -->
